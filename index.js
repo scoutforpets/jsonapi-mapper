@@ -1,5 +1,6 @@
 var _ = require('lodash'),
-    adapters = require('./lib/adapters/');
+    adapters = require('./lib/adapters/'),
+    JSONAPISerializer = require('jsonapi-serializer');
 
 /**
  * Constructor that initializes a new instance of ohMyJSONAPI
@@ -22,12 +23,23 @@ function OhMyJSONAPI(adapter, baseUrl, serializerOptions) {
  * @param  {[type]} type [description]
  * @return {[type]}      [description]
  */
-OhMyJSONAPI.prototype.toJSONAPI = function(data, type) {
-  // if (!type) { throw new Error('toJSONAPI(): `type` is required.')}
-  if (!data) {
-    throw new Error('toJSONAPI(): `data` is required.')
-  }
-  return this._adapter(data, type, this._baseUrl, this._serializerOptions);
+OhMyJSONAPI.prototype.toJSONAPI = function(data, type, includeRelations) {
+  if (!type) { throw new Error('toJSONAPI(): `type` is required.')}
+  if (!data) { throw new Error('toJSONAPI(): `data` is required.')}
+
+  return this._adapter(data, type, this._baseUrl, this._serializerOptions, includeRelations);
+}
+
+/**
+ * Provides access to a new instance of the raw serializer. For more information
+ * on options, please see https://github.com/SeyZ/jsonapi-serializer.
+ * @param  {[type]} type    [description]
+ * @param  {[type]} data    [description]
+ * @param  {[type]} options [description]
+ * @return {[type]}         [description]
+ */
+OhMyJSONAPI.prototype.serializer = function(type, data, options) {
+  return new JSONAPISerializer(type, data, options);
 }
 
 /**

@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/jamesdixon/oh-my-jsonapi",
   "dependencies": {
+    "inflection": "1.7.2",
     "jsonapi-serializer": "2.0.3",
-    "lodash": "3.10.1",
-    "lodash-inflection": "1.3.0"
+    "lodash": "3.10.1"
   },
   "devDependencies": {
     "bookshelf": "0.8.2",
