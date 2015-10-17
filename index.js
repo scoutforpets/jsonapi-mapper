@@ -4,17 +4,23 @@ var _ = require('lodash'),
 
 /**
  * Constructor that initializes a new instance of ohMyJSONAPI
- * with the desired adapter.
+ * with the desired adapter. If no adapter is passed
  * @param  {[type]} adapter [description]
  * @return {[type]}         [description]
  */
 function OhMyJSONAPI(adapter, baseUrl, serializerOptions) {
-  if (!adapter) {
-    throw new Error('OhMyJSONAPI(): a valid adapter must be specified.');
-  }
-  this._adapter = _lookupAdapter(adapter);
-  this._baseUrl =  _.trimRight(baseUrl, '/');
-  this._serializerOptions = serializerOptions;
+
+  // Lookup and set the adapter if it exists.
+  var adapter = _lookupAdapter(adapter);
+  this._adapter = adapter ? adapter : null;
+
+  // Trim and set the baseUrl, if it exists.
+  this._baseUrl =  baseUrl !== undefined ? _.trimRight(baseUrl, '/') : null;
+
+  // Set default serializer options.
+  this._serializerOptions = _.assign({
+    includeRelations: true
+  }, serializerOptions);
 }
 
 /**
@@ -24,10 +30,16 @@ function OhMyJSONAPI(adapter, baseUrl, serializerOptions) {
  * @return {[type]}      [description]
  */
 OhMyJSONAPI.prototype.toJSONAPI = function(data, type, includeRelations) {
-  if (!type) { throw new Error('toJSONAPI(): `type` is required.')}
   if (!data) { throw new Error('toJSONAPI(): `data` is required.')}
+  if (!type) { throw new Error('toJSONAPI(): `type` is required.')}
 
-  return this._adapter(data, type, this._baseUrl, this._serializerOptions, includeRelations);
+  // If an adapter was set, use it, otherwise, pass
+  // everything to the raw serializer.
+  if (this._adapter) {
+      return this._adapter(data, type, this._baseUrl, this._serializerOptions, includeRelations);
+  } else {
+    return this.serializer(type, data, this._serializerOptions);
+  }
 }
 
 /**
@@ -48,10 +60,12 @@ OhMyJSONAPI.prototype.serializer = function(type, data, options) {
  * @return {[type]}         [description]
  */
 function _lookupAdapter(adapter) {
-  if (adapters[adapter]) {
-    return adapters[adapter];
-  } else {
-    throw new Error('Invalid adapter. Please choose from [bookshelf]');
+  if (adapter) {
+    if (adapters[adapter]) {
+      return adapters[adapter];
+    } else {
+      throw new Error('Invalid adapter. Please choose from [bookshelf]');
+    }
   }
 }
 
