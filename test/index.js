@@ -15,30 +15,10 @@ describe('OhMyJSONAPI', function() {
     }).to.throw(Error);
     done();
   });
-
-  it("should throw an error when called without", function(done) {
-    expect(function() {
-      return new OhMyJSONAPI();
-    }).to.throw(Error);
-    done();
-  });
-
 });
 
 describe("OhMyJSONAPI#toJSONAPI", function() {
 
-  it("should return a valid JSON API payload", function(done) {
-    var payload = new OhMyJSONAPI('bookshelf').toJSONAPI({}, 'fakeType');
-    expect(payload).to.be.a('object');
-    done();
-  });
-
-  // it("should throw an error when a `type` isn't defined", function(done) {
-  //   expect(function() {
-  //     return new OhMyJSONAPI('bookshelf').toJSONAPI();
-  //   }).to.throw(Error);
-  //   done();
-  // });
 
   it("should throw an error when a `data` isn't defined", function(done) {
     expect(function() {
@@ -47,4 +27,10 @@ describe("OhMyJSONAPI#toJSONAPI", function() {
     done();
   });
 
+  it("should throw an error when a `type` isn't defined", function(done) {
+    expect(function() {
+      return new OhMyJSONAPI('bookshelf').toJSONAPI({}, 'test');
+    }).to.throw(Error);
+    done();
+  });
 });
