@@ -18,9 +18,7 @@ function OhMyJSONAPI(adapter, baseUrl, serializerOptions) {
   this._baseUrl =  baseUrl !== undefined ? _.trimRight(baseUrl, '/') : null;
 
   // Set default serializer options.
-  this._serializerOptions = _.assign({
-    includeRelations: true
-  }, serializerOptions);
+  this._serializerOptions = serializerOptions;
 }
 
 /**
