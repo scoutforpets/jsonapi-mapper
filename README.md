@@ -1,4 +1,4 @@
-# oh-my-jsonapi
+# OhMyJSONAPI
 OhMyJSONAPI is a wrapper around @Seyz's excellent JSON API 1.0-compliant serializer, [jsonapi-serializer](https://github.com/SeyZ/jsonapi-serializer), that removes the pain of generating the necessary serializer options for each of your models.
 
 ## how does it work?
