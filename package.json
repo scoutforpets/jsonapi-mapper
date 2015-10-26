@@ -1,6 +1,6 @@
 {
   "name": "oh-my-jsonapi",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,8 @@
   "dependencies": {
     "inflection": "1.7.2",
     "jsonapi-serializer": "2.0.4",
-    "lodash": "3.10.1"
+    "lodash": "3.10.1",
+    "qs": "5.2.0"
   },
   "devDependencies": {
     "bookshelf": "0.8.2",

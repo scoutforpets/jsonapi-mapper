@@ -27,14 +27,14 @@ function OhMyJSONAPI(adapter, baseUrl, serializerOptions) {
  * @param  {[type]} type [description]
  * @return {[type]}      [description]
  */
-OhMyJSONAPI.prototype.toJSONAPI = function(data, type, includeRelations) {
+OhMyJSONAPI.prototype.toJSONAPI = function(data, type, options) {
   if (!data) { throw new Error('toJSONAPI(): `data` is required.')}
   if (!type) { throw new Error('toJSONAPI(): `type` is required.')}
 
   // If an adapter was set, use it, otherwise, pass
   // everything to the raw serializer.
   if (this._adapter) {
-      return this._adapter(data, type, this._baseUrl, this._serializerOptions, includeRelations);
+      return this._adapter(data, type, this._baseUrl, this._serializerOptions, options);
   } else {
     return this.serializer(type, data, this._serializerOptions);
   }
