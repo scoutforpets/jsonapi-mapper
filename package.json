@@ -1,6 +1,6 @@
 {
   "name": "oh-my-jsonapi",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "index.js",
   "scripts": {
