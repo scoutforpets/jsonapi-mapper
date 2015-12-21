@@ -1,44 +1,10 @@
+import {Model, Collection} from './bookshelf-extras';
 import {Model as BModel, Collection as BCollection} from 'bookshelf';
-import * as inflection from 'inflection';
 import * as serializer from 'jsonapi-serializer';
-
-'use strict';
-
-// Using internally defined properties
-class Model extends BModel<any> {
-  attributes: any;
-}
-
-// Using internally defined properties
-class Collection extends BCollection<any> {
-  models: Model[];
-  length: number;
-}
-
-export function buildSelfLink(baseUrl, modelType, queryParams) {
-  return {
-    self: function(model: any, related: any): string {
-
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
-
-      // TODO CHECK LOGIC BEHIND
-      // If an id was specified
-      if (model && model.id) {
-        return link + '/' + model.id;
-
-      } else if (model) {
-        return null;
-
-      } else {
-        return link;
-      }
-    }
-  };
-}
+import * as inflection from 'inflection';
 
 /**
- * Builds the relationship transform schema
+ * Builds the relationship transform schema.
  * @param baseUrl
  * @param relationType
  * @param relationKeys
@@ -51,7 +17,7 @@ export function buildRelation(baseUrl: string,
                               relationKeys: string[],
                               modelType: string,
                               included: boolean)
-                              : serializer.ISerializerOptions {
+: serializer.ISerializerOptions {
 
   // Pluralize the relation and model types to conform with the spec
   relationType = inflection.pluralize(relationType);
@@ -83,7 +49,7 @@ export function buildRelation(baseUrl: string,
 
 /**
  * Retrieves a relation's attributes depending on the
- * type of relationship (one, many)
+ * type of relationship (one, many).
  * @param data
  * @returns {any}
  * @private
@@ -96,14 +62,14 @@ export function getRelationAttributes(data: Model | Collection): any {
   if (m instanceof BModel) {
     return m.attributes;
 
-  // Data as Collection
+    // Data as Collection
   } else if (c instanceof BCollection) {
     return c.models[0].attributes;
   }
 }
 
 /**
- * Determines wether a Bookshelf object's data is empty
+ * Determines wether a Bookshelf object's data is empty.
  * @param data
  * @returns {boolean}
  */
