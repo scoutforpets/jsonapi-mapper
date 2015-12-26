@@ -1,24 +1,44 @@
 import * as inflection from 'inflection';
 import * as Qs from 'qs';
+import * as Serializer from 'jsonapi-serializer';
+import {Collection} from './bookshelf-extras';
 
-// TODO CHECK IF NEEDED EXPORT
 interface IPagParams {
   offset: number;
   limit: number;
   total?: number;
 }
 
-export function pagination(baseUrl: string,
-                           type: string,
-                           pag: IPagParams,
-                           query: any = {}) {
+/**
+ * Generates the top level links object.
+ * @param baseUrl
+ * @param type
+ * @param queryParams
+ * @returns any TODO LINKS OBJECT
+ */
+export function buildTop(baseUrl: string, type: string, queryParams: any): Serializer.ILinkObj {
+  return buildSelf(baseUrl, type, queryParams);
+}
+
+/**
+ * Generates pagination links for a collection.
+ * @param baseUrl
+ * @param type
+ * @param pag
+ * @param query
+ * @returns any TODO PAGINATION LINKS OBJECT
+ */
+export function buildPagination(baseUrl: string,
+                                type: string,
+                                pag: IPagParams,
+                                query: any = {}): any {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
   query = _.omit(query, 'page');
-  let queryStr = Qs.stringify(query, {encode: false});
+  let queryStr: string = Qs.stringify(query, {encode: false});
 
   return {
-    first: function() {
+    first: function(): string {
 
       return baseLink +
         '?page[limit]=' + pag.limit +
@@ -27,7 +47,7 @@ export function pagination(baseUrl: string,
 
     },
 
-    prev: function() {
+    prev: function(): string {
       // No previous if its the first
       if (pag.offset === 0) return null;
 
@@ -37,9 +57,9 @@ export function pagination(baseUrl: string,
         queryStr;
     },
 
-    next: function(model) {
+    next: function(collection: Collection): string {
       // No next if its the last
-      if (model.length < pag.limit ||
+      if (collection.length < pag.limit ||
         (pag.total && pag.offset + pag.limit >= pag.total)) return null;
 
       return baseLink +
@@ -48,24 +68,18 @@ export function pagination(baseUrl: string,
         queryStr;
     },
 
-    last: function(dataSet, model) {
+    last: function(): string {
+      // No last if no total to compare
+      if (!pag.total) return null;
 
-      if (pag.total) {
-
-        // base url for the collection
-        var link = baseLink;
-
-        link += '?page[limit]=' + pag.limit;
-        link += '&page[offset]=' + (pag.total - pag.limit);
-
-        return link;
-
-      } else {
-        return null;
-      }
+      return baseLink +
+        '?page[limit]=' + pag.limit +
+        '&page[offset]=' + (pag.total - pag.limit) +
+        queryStr;
     }
   };
 }
+
 /**
  * Generates the resource's url.
  * @param baseUrl
@@ -73,20 +87,21 @@ export function pagination(baseUrl: string,
  * @param queryParams
  * @returns {{self: (function(any, any): string)}}
  */
-export function buildSelfLink(baseUrl, modelType, queryParams) {
+export function buildSelf(baseUrl: string, modelType: string, queryParams: any): Serializer.ILinkObj {
   return {
-    self: function(model: any, related: any): string {
+    // TODO IMPROVE ANY TYPE
+    self: function(data: any): string {
 
       let link: string = baseUrl + '/' +
         inflection.pluralize(modelType);
 
       // TODO CHECK LOGIC BEHIND
       // If an id was specified
-      if (model && model.id) {
-        return link + '/' + model.id;
+      if (data && data.id) {
+        return link + '/' + data.id;
 
         // If just the model
-      } else if (model) {
+      } else if (data) {
         return undefined;
 
         // If nothing

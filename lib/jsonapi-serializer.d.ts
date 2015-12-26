@@ -5,9 +5,16 @@ declare module 'jsonapi-serializer' {
 
   module Serializer {
 
+    type Link = string | LinkFunc;
+
     interface ILinkObj {
-      self?: string | LinkFunc;
-      related?: string | LinkFunc;
+      self?: Link;
+      related?: Link;
+
+      first?: Link;
+      previous?: Link;
+      next?: Link;
+      last?: Link;
     }
 
     interface ISerializerOptions {
