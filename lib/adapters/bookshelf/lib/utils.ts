@@ -1,4 +1,4 @@
-import {Model, Collection} from './bookshelf-extras';
+import {Data, Model, Collection} from './bookshelf-extras';
 import {Model as BModel, Collection as BCollection} from 'bookshelf';
 import * as serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
@@ -29,17 +29,17 @@ export function buildRelation(baseUrl: string,
     ref: 'id',
     attributes: relationKeys,
     relationshipLinks: {
-      self: function(model: any, related: any): string {
-        return baseRelationUrl + model.id +
+      self: function(data: Data, related: Model): string {
+        return baseRelationUrl + related.id +
           '/relationships/' + relationType;
       },
-      related: function(model: any, related: any): string {
-        return baseRelationUrl + model.id +
+      related: function(model: Data, related: Model): string {
+        return baseRelationUrl + related.id +
           '/' + relationType;
       }
     },
     includedLinks: {
-      self: function(model: any, related: any): string {
+      self: function(model: Data, related: Model): string {
         return baseUrl + '/' + relationType + '/' + related.id;
       }
     },
@@ -54,7 +54,7 @@ export function buildRelation(baseUrl: string,
  * @returns {any}
  * @private
  */
-export function getRelationAttributes(data: Model | Collection): any {
+export function getRelationAttributes(data: Data): any {
   let m: Model = <Model>data;
   let c: Collection = <Collection> data;
 

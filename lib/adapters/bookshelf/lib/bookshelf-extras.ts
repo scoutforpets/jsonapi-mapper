@@ -1,12 +1,15 @@
 import {Model as BModel, Collection as BCollection} from 'bookshelf';
 
 // Using internally defined properties
-export class Model extends BModel<any> {
+export interface Model extends BModel<any> {
+  id: any; // TODO IMPROVE REAL TYPE
   attributes: any;
 }
 
 // Using internally defined properties
-export class Collection extends BCollection<any> {
+export interface Collection extends BCollection<any> {
   models: Model[];
   length: number;
 }
+
+export type Data = Model | Collection;
