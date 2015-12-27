@@ -48,34 +48,53 @@ export function buildRelation(baseUrl: string,
 }
 
 /**
- * Retrieves a relation's attributes depending on the
- * type of relationship (one, many).
+ * Retrieves data's attributes list
+ * @param data
+ * @returns {string[]}
+ */
+export function getDataAttributesList(data: Data): any {
+  return _.keys(getDataAttributes(data));
+}
+
+/**
+ * Retrieves data's attributes
  * @param data
  * @returns {any}
  * @private
  */
-export function getRelationAttributes(data: Data): any {
-  let m: Model = <Model>data;
-  let c: Collection = <Collection> data;
-
-  // Data as Model
-  if (m instanceof BModel) {
+export function getDataAttributes(data: Data): any {
+  // Model Case
+  if (isModel(data)) {
+    let m: Model = <Model> data;
     return m.attributes;
 
-    // Data as Collection
-  } else if (c instanceof BCollection) {
-    return c.models[0].attributes;
+  // Collection Case
+  } else if (isCollection(data)) {
+    let c: Collection = <Collection> data;
+    return c.models[0] && c.models[0].attributes;
   }
 }
 
 /**
- * Determines wether a Bookshelf object's data is empty.
+ * Determines whether a Bookshelf object's data is empty.
  * @param data
  * @returns {boolean}
  */
 export function isDataEmpty(data: Model | Collection): boolean {
-  return (<Model>data).attributes === undefined &&
-    ((<Collection>data).models === undefined || (<Collection>data).length === 0);
+  if (isModel(data)) {
+    return false;
+  } else if (isCollection(data)) {
+    return (<Collection> data).length === 0;
+  }
+}
+
+/**
+ * Determine whether a Bookshelf object is a Model.
+ * @param data
+ * @returns {boolean}
+ */
+export function isModel(data: Data): boolean {
+  return data instanceof BModel;
 }
 
 /**
@@ -83,6 +102,6 @@ export function isDataEmpty(data: Model | Collection): boolean {
  * @param data
  * @returns {boolean}
  */
-export function isCollection(data: any): boolean {
-  return data.models !== undefined;
+export function isCollection(data: Data): boolean {
+  return data instanceof BCollection;
 }

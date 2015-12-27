@@ -1,7 +1,10 @@
+import * as _ from 'lodash';
 import * as inflection from 'inflection';
 import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
-import {Collection} from './bookshelf-extras';
+
+import {Data, Model, Collection} from './bookshelf-extras';
+import * as utils from './utils';
 
 interface IPagParams {
   offset: number;
@@ -14,10 +17,16 @@ interface IPagParams {
  * @param baseUrl
  * @param type
  * @param queryParams
+ * @param pag
  * @returns any TODO LINKS OBJECT
  */
-export function buildTop(baseUrl: string, type: string, queryParams: any): Serializer.ILinkObj {
-  return buildSelf(baseUrl, type, queryParams);
+export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?: IPagParams): Serializer.ILinkObj {
+  let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
+
+  // Add pagination if given
+  if (pag) _.assign(obj, buildSelf(baseUrl, type, queryParams));
+
+  return obj;
 }
 
 /**
@@ -34,6 +43,7 @@ export function buildPagination(baseUrl: string,
                                 query: any = {}): any {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
+
   query = _.omit(query, 'page');
   let queryStr: string = Qs.stringify(query, {encode: false});
 
@@ -87,25 +97,21 @@ export function buildPagination(baseUrl: string,
  * @param queryParams
  * @returns {{self: (function(any, any): string)}}
  */
-export function buildSelf(baseUrl: string, modelType: string, queryParams: any): Serializer.ILinkObj {
+export function buildSelf(baseUrl: string, modelType: string, queryParams?: any): Serializer.ILinkObj {
   return {
-    // TODO IMPROVE ANY TYPE
-    self: function(data: any): string {
+    self: function(data: Data): string {
 
       let link: string = baseUrl + '/' +
         inflection.pluralize(modelType);
 
-      // TODO CHECK LOGIC BEHIND
-      // If an id was specified
-      if (data && data.id) {
-        return link + '/' + data.id;
+      // If a model
+      if (utils.isModel(data)) {
+        let model: Model = <Model> data;
 
-        // If just the model
-      } else if (data) {
-        return undefined;
+        return link + '/' + model.id; // TODO ADD QUERY PARAMS
 
-        // If nothing
-      } else {
+      // If collection
+      } else if (utils.isCollection(data)) {
         return link;
       }
     }
