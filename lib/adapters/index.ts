@@ -1,4 +1,4 @@
-import * as bookshelf from './bookshelf';
+import * as bookshelf from './bookshelf/index';
 
 'use strict';
 
