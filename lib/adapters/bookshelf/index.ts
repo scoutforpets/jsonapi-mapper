@@ -1,37 +1,26 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as inflection from 'inflection';
 import * as Serializer from 'jsonapi-serializer';
-import * as qs from 'qs';
 
 import {Data, Model, Collection} from './bookshelf-extras';
-import {Model as BModel, Collection as BCollection} from 'bookshelf';
+import * as inters from '../../interfaces';
 import * as links from './links';
 import * as utils from './utils';
-
-interface QueryObj {
-  [key: string]: string;
-}
-
-interface adapterOpts {
-  query?: QueryObj;
-  pagination?: links.IPagParams;
-}
 
 export default function BookshelfAdapter(data: Data,
                                          type: string,
                                          baseUrl: string,
                                          serializerOptions: Serializer.ISerializerOptions,
-                                         options: adapterOpts = {}): any {
+                                         adapterOptions: inters.IAdapterOptions = {}): any {
 
   // TODO ADD meta property of serializerOptions TO template
 
   let template: Serializer.ISerializerOptions = {};
 
   // Build links objects
-  template.topLevelLinks = links.buildTop(baseUrl, type, options.query, options.pagination);
-  template.dataLinks = links.buildSelf(baseUrl, type, options.query);
+  template.topLevelLinks = links.buildTop(baseUrl, type, adapterOptions.query, adapterOptions.pagination);
+  template.dataLinks = links.buildSelf(baseUrl, type, adapterOptions.query);
 
   // Serializer process for a Model
   if (utils.isModel(data)) {

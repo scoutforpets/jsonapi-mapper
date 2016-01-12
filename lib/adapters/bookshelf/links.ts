@@ -4,13 +4,9 @@ import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
 import {Data, Model, Collection} from './bookshelf-extras';
+import * as inters from '../../interfaces';
 import * as utils from './utils';
 
-export interface IPagParams {
-  offset: number;
-  limit: number;
-  total?: number;
-}
 
 /**
  * Generates the top level links object.
@@ -20,7 +16,7 @@ export interface IPagParams {
  * @param pag
  * @returns any TODO LINKS OBJECT
  */
-export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?: IPagParams): Serializer.ILinkObj {
+export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?: inters.IPagParams): Serializer.ILinkObj {
   let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
 
   // Add pagination if given
@@ -40,7 +36,7 @@ export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?:
 export function buildPagination(baseUrl: string,
                                 type: string,
                                 query: any = {},
-                                pag: IPagParams): any {
+                                pag: inters.IPagParams): any {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
 
