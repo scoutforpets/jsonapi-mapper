@@ -3,30 +3,15 @@
 import * as _ from 'lodash';
 import * as validator from  'validator';
 
-import * as adapters from 'lib/adapters';
-import * as JSONAPISerializer from 'jsonapi-serializer';
-
-// TODO Modify
-interface ISerializerOptions {
-
-}
-
-// TODO Modify
-interface IAdapterOptions {
-  includeRelations?: boolean;
-  query?: any; // TODO Verify
-  pagination?: {
-    offset: number;
-    limit: number;
-    total?: number;
-  };
-}
+import * as Serializer from 'jsonapi-serializer';
+import * as adapters from './lib/adapters/adapters';
+import * as inters from './lib/interfaces';
 
 export default class OhMyJSONAPI {
 
-  private adapter: Adapter;
+  private adapter: inters.IAdapter;
   private baseUrl: string;
-  private serializerOptions: ISerializerOptions;
+  private serializerOptions: any;
 
   /**
    * Constructor that initializes a new instance of ohMyJSONAPI
@@ -36,13 +21,10 @@ export default class OhMyJSONAPI {
    * @param serializerOptions
    * @return {[type]}         [description]
    */
-  // TODO better argument types
-  constructor(adapterName: string, baseUrl: string, serializerOptions: ISerializerOptions) {
+  constructor(adapterName: string, baseUrl: string, serializerOptions: any) {
 
     // Lookup and set the adapter if it exists
-    let adapter: Adapter = _lookupAdapter(adapterName);
-
-    this.adapter = adapter;
+    this.adapter = _lookupAdapter(adapterName);
 
     // Trim and set the baseUrl, if it exists.
     this.baseUrl = validator.isURL(baseUrl) ? _.trimRight(baseUrl, '/') : '';
@@ -58,9 +40,8 @@ export default class OhMyJSONAPI {
    * @param data
    * @param options
    */
-  // TODO better argument types
-  static serializer(type, data, options): JSONAPISerializer {
-    return new JSONAPISerializer(type, data, options); // TODO Comment
+  static serializer(type: string, data: any, options: Serializer.ISerializerOptions): Serializer {
+    return new Serializer(type, data, options);
   }
 
   /**
@@ -70,8 +51,7 @@ export default class OhMyJSONAPI {
    * @param options
    * @return {[type]}      [description]
    */
-  // TODO better argument types
-  toJSONAPI(data: any, type: string, options: IAdapterOptions): any {
+  toJSONAPI(data: any, type: string, options: inters.IAdapterOptions): any {
     if (!data) { throw new Error('toJSONAPI(): `data` is required.'); }
     if (!type) { throw new Error('toJSONAPI(): `type` is required.'); }
 
@@ -89,8 +69,8 @@ export default class OhMyJSONAPI {
  * @param adapterName
  * @private
  */
-function _lookupAdapter(adapterName: string): Adapter {
-  let adapter = adapters[adapterName];
+function _lookupAdapter(adapterName: string): inters.IAdapter {
+  let adapter: inters.IAdapter = adapters[adapterName];
   if (!adapter) {
     throw new Error('Invalid adapter. Please choose from [bookshelf]');
   }

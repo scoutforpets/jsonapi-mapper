@@ -8,16 +8,17 @@ export interface IPagParams {
   total?: number;
 }
 
-export interface QueryObj {
+export interface IQueryObj {
   [key: string]: string;
 }
 
 export interface IAdapterOptions {
-  query?: QueryObj;
+  includeRelations?: boolean;
+  query?: IQueryObj;
   pagination?: IPagParams;
 }
 
-export interface Adapter {
+export interface IAdapter {
   (
     data: any,
     type: string,
