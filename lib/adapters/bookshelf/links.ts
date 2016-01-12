@@ -6,7 +6,7 @@ import * as Serializer from 'jsonapi-serializer';
 import {Data, Model, Collection} from './bookshelf-extras';
 import * as utils from './utils';
 
-interface IPagParams {
+export interface IPagParams {
   offset: number;
   limit: number;
   total?: number;
@@ -24,7 +24,7 @@ export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?:
   let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
 
   // Add pagination if given
-  if (pag) _.assign(obj, buildSelf(baseUrl, type, queryParams));
+  if (pag) _.assign(obj, buildPagination(baseUrl, type, queryParams, pag));
 
   return obj;
 }
@@ -39,8 +39,8 @@ export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?:
  */
 export function buildPagination(baseUrl: string,
                                 type: string,
-                                pag: IPagParams,
-                                query: any = {}): any {
+                                query: any = {},
+                                pag: IPagParams): any {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
 
@@ -108,7 +108,7 @@ export function buildSelf(baseUrl: string, modelType: string, queryParams?: any)
       if (utils.isModel(data)) {
         let model: Model = <Model> data;
 
-        return link + '/' + model.id; // TODO ADD QUERY PARAMS
+        return link + '/' + model.id; // TODO ADD QUERY PARAMS AND PAGINATION
 
       // If collection
       } else if (utils.isCollection(data)) {
