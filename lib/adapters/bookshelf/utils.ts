@@ -1,5 +1,5 @@
-import {Data, Model, Collection} from './bookshelf-extras';
-import {Model as BModel, Collection as BCollection} from 'bookshelf';
+import {Data, Model, Collection} from './extras';
+import * as _ from 'lodash';
 import * as serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
 
@@ -66,7 +66,7 @@ export function getDataAttributes(data: Data): any {
   // Model Case
   if (isModel(data)) {
     let m: Model = <Model> data;
-    return m.attributes;
+    return _.omit(m.attributes);
 
   // Collection Case
   } else if (isCollection(data)) {
@@ -76,25 +76,13 @@ export function getDataAttributes(data: Data): any {
 }
 
 /**
- * Determines whether a Bookshelf object's data is empty.
- * @param data
- * @returns {boolean}
- */
-export function isDataEmpty(data: Model | Collection): boolean {
-  if (isModel(data)) {
-    return false;
-  } else if (isCollection(data)) {
-    return (<Collection> data).length === 0;
-  }
-}
-
-/**
  * Determine whether a Bookshelf object is a Model.
  * @param data
  * @returns {boolean}
  */
 export function isModel(data: Data): boolean {
-  return data instanceof BModel;
+  // Is-not-a-Duck-typing
+  return (<Collection> data).models === undefined;
 }
 
 /**
@@ -103,5 +91,6 @@ export function isModel(data: Data): boolean {
  * @returns {boolean}
  */
 export function isCollection(data: Data): boolean {
-  return data instanceof BCollection;
+  // Duck-typing
+  return (<Collection> data).models !== undefined;
 }
