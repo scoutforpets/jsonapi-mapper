@@ -2,7 +2,7 @@
   "name": "oh-my-jsonapi",
   "version": "0.0.9",
   "description": "JSON API-Compliant Serialization for your ORM",
-  "main": "index.js",
+  "main": "es5/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
@@ -32,7 +32,8 @@
     "lodash": "3.10.1",
     "qs": "5.2.0",
     "tsd": "^0.6.5",
-    "typescript": "^1.7.5"
+    "typescript": "^1.7.5",
+    "validator": "^4.5.0"
   },
   "devDependencies": {
     "bookshelf": "0.8.2",
