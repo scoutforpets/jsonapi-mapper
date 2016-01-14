@@ -3,7 +3,7 @@ import * as inflection from 'inflection';
 import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
-import {Data, Model, Collection} from './bookshelf-extras';
+import {Data, Model, Collection} from './extras';
 import * as inters from '../../interfaces';
 import * as utils from './utils';
 

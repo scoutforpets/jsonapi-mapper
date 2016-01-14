@@ -3,16 +3,17 @@
 import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
 
-import {Data, Model, Collection} from './bookshelf-extras';
+import {Data, Model, Collection} from './extras';
 import * as inters from '../../interfaces';
 import * as links from './links';
 import * as utils from './utils';
 
-export default function BookshelfAdapter(data: Data,
-                                         type: string,
-                                         baseUrl: string,
-                                         serializerOptions: Serializer.ISerializerOptions,
-                                         adapterOptions: inters.IAdapterOptions = {}): any {
+export default function Adapter(
+    data: Data,
+    type: string,
+    baseUrl: string,
+    serializerOptions: Serializer.ISerializerOptions,
+    adapterOptions: inters.IAdapterOptions = {}): any {
 
   // TODO ADD meta property of serializerOptions TO template
 
@@ -54,5 +55,6 @@ export default function BookshelfAdapter(data: Data,
   _.assign(template, serializerOptions);
 
   // Return the data in JSON API format
-  return new Serializer(type, JSON.stringify(data), template);
+  let json: any = data.toJSON();
+  return new Serializer(type, json, template);
 }

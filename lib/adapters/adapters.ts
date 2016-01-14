@@ -1,10 +1,10 @@
-import * as bookshelf from './bookshelf/index';
+import bookshelf from './bookshelf/index';
 
 'use strict';
 
-export default {
-  bookshelf: bookshelf
+export {
+  bookshelf
 
-  // Add future adapters here:
-  // sequelize: sequelize
+  // Add future imported adapters here
+  // sequelize
 }
