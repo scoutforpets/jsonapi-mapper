@@ -4,11 +4,11 @@ import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
 
 import {Data, Model, Collection} from './extras';
-import * as inters from '../../interfaces';
+import * as inters from '../../interfaces.d';
 import * as links from './links';
 import * as utils from './utils';
 
-export default function Adapter(
+let adapter: inters.IAdapter = function(
     data: Data,
     type: string,
     baseUrl: string,
@@ -57,4 +57,6 @@ export default function Adapter(
   // Return the data in JSON API format
   let json: any = data.toJSON();
   return new Serializer(type, json, template);
-}
+};
+
+export default adapter;

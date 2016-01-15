@@ -4,9 +4,8 @@ import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
 import {Data, Model, Collection} from './extras';
-import * as inters from '../../interfaces';
+import * as inters from '../../interfaces.d';
 import * as utils from './utils';
-
 
 /**
  * Generates the top level links object.
@@ -16,7 +15,13 @@ import * as utils from './utils';
  * @param pag
  * @returns any TODO LINKS OBJECT
  */
-export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?: inters.IPagParams): Serializer.ILinkObj {
+export function buildTop(
+    baseUrl: string,
+    type: string,
+    queryParams?: any,
+    pag?: inters.IPagParams)
+    : Serializer.ILinkObj {
+
   let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
 
   // Add pagination if given
@@ -33,10 +38,12 @@ export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?:
  * @param query
  * @returns any TODO PAGINATION LINKS OBJECT
  */
-export function buildPagination(baseUrl: string,
-                                type: string,
-                                query: any = {},
-                                pag: inters.IPagParams): any {
+export function buildPagination(
+    baseUrl: string,
+    type: string,
+    query: any = {},
+    pag: inters.IPagParams)
+    : Serializer.ILinkObj {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
 
@@ -106,7 +113,7 @@ export function buildSelf(baseUrl: string, modelType: string, queryParams?: any)
 
         return link + '/' + model.id; // TODO ADD QUERY PARAMS AND PAGINATION
 
-      // If collection
+        // If collection
       } else if (utils.isCollection(data)) {
         return link;
       }

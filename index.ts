@@ -5,7 +5,7 @@ import * as validator from  'validator';
 
 import * as Serializer from 'jsonapi-serializer';
 import * as adapters from './lib/adapters/adapters';
-import * as inters from './lib/interfaces';
+import * as inters from './lib/interfaces.d';
 
 class OhMyJSONAPI {
 
