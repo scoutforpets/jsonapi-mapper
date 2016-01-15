@@ -1,5 +1,3 @@
-'use strict';
-
 import * as Serializer from 'jsonapi-serializer';
 
 export interface IPagParams {
