@@ -38,5 +38,61 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should not add the id to the attributes', () => {
+    let model: bs.Model<any> = bookshelf.Model.forge<any>({id: '5'});
+    let result: any = serializer.toJSONAPI(model, 'models');
+
+    expect(_.has(result, 'data.attributes.id')).toBe(false);
+  });
+
+  it('should ignore any *_id attribute on the attributes', () => {
+    let model: bs.Model<any> = bookshelf.Model.forge<any>({
+      id: '4',
+      attr: 'value',
+      'related_id': 123,
+      'another_id': '456'
+    });
+
+    let result: any = serializer.toJSONAPI(model, 'models');
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          attr: 'value'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+    expect(_.has(result, 'data.attributes.related_id')).toBe(false);
+    expect(_.has(result, 'data.attributes.another_id')).toBe(false);
+  });
+
+  it('should ignore any *_type attribute on the attributes', () => {
+    let model: bs.Model<any> = bookshelf.Model.forge<any>({
+      id: '4',
+      attr: 'value',
+      'related_type': 'normal'
+    });
+
+    let result: any = serializer.toJSONAPI(model, 'models');
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          attr: 'value'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.has(result, 'data.attributes.related_type')).toBe(false);
+    expect(_.has(result, 'data.attributes.related-type')).toBe(false);
+  });
 });
 

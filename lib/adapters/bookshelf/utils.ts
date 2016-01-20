@@ -49,11 +49,16 @@ export function buildRelation(baseUrl: string,
 
 /**
  * Retrieves data's attributes list
+ * omiting _id and _type attributes
  * @param data
  * @returns {string[]}
  */
 export function getDataAttributesList(data: Data): any {
-  return _.keys(getDataAttributes(data));
+  return _.keys(getDataAttributes(data)).filter((name: string) =>
+    name !== 'id' &&
+    !_.endsWith(name, '_id') &&
+    !_.endsWith(name, '_type')
+  );
 }
 
 /**
@@ -66,7 +71,7 @@ export function getDataAttributes(data: Data): any {
   // Model Case
   if (isModel(data)) {
     let m: Model = <Model> data;
-    return _.omit(m.attributes);
+    return m.attributes;
 
   // Collection Case
   } else if (isCollection(data)) {
