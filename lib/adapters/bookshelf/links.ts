@@ -22,7 +22,9 @@ export function buildTop(
     pag?: inters.IPagParams)
     : Serializer.ILinkObj {
 
-  let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
+  let obj: Serializer.ILinkObj = {
+    self: baseUrl + '/' + inflection.pluralize(type)
+  };
 
   // Add pagination if given
   if (pag) _.assign(obj, buildPagination(baseUrl, type, queryParams, pag));
@@ -113,10 +115,42 @@ export function buildSelf(baseUrl: string, modelType: string, queryParams?: any)
 
         return link + '/' + model.id; // TODO ADD QUERY PARAMS AND PAGINATION
 
-        // If collection
+      // If collection
       } else if (utils.isCollection(data)) {
         return link;
       }
     }
   };
 }
+
+export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, queryParams?: any): Serializer.ILinkObj {
+  return {
+    self: function(data: Data): string {
+
+      let link: string = baseUrl + '/' +
+        inflection.pluralize(modelType);
+
+      // Primary data is expected to be a model
+      link += '/' + (<Model> data).id;
+
+      // Add relationship url component
+      link += '/relationships/' + relatedType;
+
+      return link;
+    },
+    related: function(data: Data): string {
+
+      let link: string = baseUrl + '/' +
+        inflection.pluralize(modelType);
+
+      // Primary data is expected to be a model
+      link += '/' + (<Model> data).id;
+
+      // Add relationship url component
+      link += '/' + relatedType;
+
+      return link;
+    }
+  };
+}
+

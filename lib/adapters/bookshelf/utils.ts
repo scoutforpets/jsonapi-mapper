@@ -2,47 +2,29 @@ import {Data, Model, Collection} from './extras';
 import * as _ from 'lodash';
 import * as serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
+import * as links from './links';
 
 /**
  * Builds the relationship transform schema.
  * @param baseUrl
- * @param relationType
- * @param relationKeys
  * @param modelType
+ * @param relatedType
+ * @param relatedKeys
  * @param included
  * @returns serializer.ISerializerOptions
  */
 export function buildRelation(baseUrl: string,
-                              relationType: string,
-                              relationKeys: string[],
                               modelType: string,
+                              relatedType: string,
+                              relatedKeys: string[],
                               included: boolean)
 : serializer.ISerializerOptions {
 
-  // Pluralize the relation and model types to conform with the spec
-  relationType = inflection.pluralize(relationType);
-  modelType = inflection.pluralize(modelType);
-
-  let baseRelationUrl: string = baseUrl + '/' + modelType + '/';
-
   return {
     ref: 'id',
-    attributes: relationKeys,
-    relationshipLinks: {
-      self: function(data: Data, related: Model): string {
-        return baseRelationUrl + related.id +
-          '/relationships/' + relationType;
-      },
-      related: function(model: Data, related: Model): string {
-        return baseRelationUrl + related.id +
-          '/' + relationType;
-      }
-    },
-    includedLinks: {
-      self: function(model: Data, related: Model): string {
-        return baseUrl + '/' + relationType + '/' + related.id;
-      }
-    },
+    attributes: relatedKeys,
+    relationshipLinks: links.buildRelationship(baseUrl, modelType, relatedType),
+    includedLinks: links.buildSelf(baseUrl, modelType),
     included: included
   };
 }

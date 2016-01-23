@@ -37,7 +37,7 @@ let adapter: inters.IAdapter = function(
       template.attributes.push(relName);
 
       // Add relation serialization
-      template[relName] = utils.buildRelation(baseUrl, relName, utils.getDataAttributesList(relModel), type, true);
+      template[relName] = utils.buildRelation(baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
 
     });
 
