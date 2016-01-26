@@ -7,7 +7,7 @@ import * as bs from 'bookshelf';
 import * as knex from 'knex';
 
 type Model = bs.Model<any>;
-
+type Collection = bs.Collection<any>;
 
 describe('Bookshelf Adapter', () => {
   let bookshelf: bs;
@@ -99,6 +99,30 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
+
+  it('should serialize a collection', () => {
+    let elements: Model[] = _.range(5).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = serializer.toJSONAPI(collection, 'models');
+
+    let expected: any = {
+      data: _.range(5).map((num: number) => {
+        return {
+          id: num.toString(),
+          type: 'models',
+          attributes: {
+            attr: 'value' + num
+          }
+        };
+      })
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
 });
 
 describe('Bookshelf links', () => {
@@ -180,7 +204,34 @@ describe('Bookshelf links', () => {
   });
 
   it('should add pagination links', () => {
-    pending('not critical');
+    let limit: number = 10;
+    let offset: number = 40;
+    let total: number = 100;
+
+    let elements: Model[] = _.range(10).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = serializer.toJSONAPI(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        total: total
+      }
+    });
+
+    let expected: any = {
+      links: {
+        first: domain + '/models?page[limit]=' + limit + '&page[offset]=' + 0,
+        prev: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset - limit),
+        next: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset + limit),
+        last: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (total - limit)
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
   });
 
 });
