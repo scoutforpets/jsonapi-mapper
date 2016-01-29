@@ -237,7 +237,6 @@ describe('Bookshelf links', () => {
 });
 
 describe('Bookshelf relations', () => {
-  pending('not yet worked on');
 
   let bookshelf: bs;
   let serializer: Omja.Translator;
@@ -252,8 +251,54 @@ describe('Bookshelf relations', () => {
     bookshelf.knex.destroy(done);
   });
 
-  it('should add relationships object');
-  it('should put the related data in the included key');
+  it('should add relationships object', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
+
+    let result: any = serializer.toJSONAPI(model, 'models');
+
+    let expected: any = {
+      data: {
+        id: '5',
+        type: 'models',
+        attributes: {
+          attr: 'value'
+        },
+        relationships: {
+          'related-model': {
+            data: {
+              id: '10',
+              type: 'related-models'
+            }
+          }
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
+  it('should put the related data in the included array', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
+
+    let result: any = serializer.toJSONAPI(model, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
 
   it('should give an API to ignore relations');
   it('should give an API to merge relations attributes');
