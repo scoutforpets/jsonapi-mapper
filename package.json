@@ -4,7 +4,7 @@
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
