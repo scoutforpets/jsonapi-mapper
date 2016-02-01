@@ -4,7 +4,7 @@
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/index.js",
   "scripts": {
-    "postinstall": "tsd install && tsc",
+    "prepublish": "tsd install && tsc",
     "test": "jasmine"
   },
   "repository": {
@@ -22,11 +22,17 @@
     "serializer"
   ],
   "author": "James Dixon <jim.w.dixon@gmail.com>",
+  "contributors": [
+    {"name": "Manuel Pacheco", "email": "manuelalejandropm@gmail.com"}
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jamesdixon/oh-my-jsonapi/issues"
   },
   "homepage": "https://github.com/jamesdixon/oh-my-jsonapi",
+  "files": [
+    "es5"
+  ],
   "dependencies": {
     "inflection": "1.7.2",
     "jasmine": "^2.4.1",
