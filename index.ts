@@ -5,9 +5,9 @@ import * as validator from  'validator';
 
 import * as Serializer from 'jsonapi-serializer';
 import * as adapters from './lib/adapters/adapters';
-import * as inters from './lib/interfaces';
+import * as inters from './lib/interfaces.d';
 
-class OhMyJSONAPI {
+export class Translator {
 
   private adapter: inters.IAdapter;
   private baseUrl: string;
@@ -21,7 +21,7 @@ class OhMyJSONAPI {
    * @param serializerOptions
    * @return {[type]}         [description]
    */
-  constructor(adapterName: string, baseUrl: string, serializerOptions: any) {
+  constructor(adapterName: string, baseUrl: string, serializerOptions?: any) {
 
     // Lookup and set the adapter if it exists
     this.adapter = _lookupAdapter(adapterName);
@@ -51,7 +51,9 @@ class OhMyJSONAPI {
    * @param options
    * @return {[type]}      [description]
    */
-  toJSONAPI(data: any, type: string, options: inters.IAdapterOptions = {}): any {
+  toJSONAPI(data: any, type: string, options: inters.IAdapterOptions = {
+    relations: true
+  }): any {
     if (!data) { throw new Error('toJSONAPI(): `data` is required.'); }
     if (!type) { throw new Error('toJSONAPI(): `type` is required.'); }
 
@@ -59,7 +61,7 @@ class OhMyJSONAPI {
     if (this.adapter) {
       return this.adapter(data, type, this.baseUrl, this.serializerOptions, options);
     } else {
-      return OhMyJSONAPI.serializer(type, data, this.serializerOptions);
+      return Translator.serializer(type, data, this.serializerOptions);
     }
   }
 }
@@ -76,5 +78,3 @@ function _lookupAdapter(adapterName: string): inters.IAdapter {
   }
   return adapter;
 }
-
-export = OhMyJSONAPI;

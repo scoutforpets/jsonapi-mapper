@@ -4,9 +4,8 @@ import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
 import {Data, Model, Collection} from './extras';
-import * as inters from '../../interfaces';
+import * as inters from '../../interfaces.d';
 import * as utils from './utils';
-
 
 /**
  * Generates the top level links object.
@@ -16,8 +15,16 @@ import * as utils from './utils';
  * @param pag
  * @returns any TODO LINKS OBJECT
  */
-export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?: inters.IPagParams): Serializer.ILinkObj {
-  let obj: Serializer.ILinkObj = buildSelf(baseUrl, type, queryParams);
+export function buildTop(
+    baseUrl: string,
+    type: string,
+    queryParams?: any,
+    pag?: inters.IPagParams)
+    : Serializer.ILinkObj {
+
+  let obj: Serializer.ILinkObj = {
+    self: baseUrl + '/' + inflection.pluralize(type)
+  };
 
   // Add pagination if given
   if (pag) _.assign(obj, buildPagination(baseUrl, type, queryParams, pag));
@@ -33,10 +40,12 @@ export function buildTop(baseUrl: string, type: string, queryParams?: any, pag?:
  * @param query
  * @returns any TODO PAGINATION LINKS OBJECT
  */
-export function buildPagination(baseUrl: string,
-                                type: string,
-                                query: any = {},
-                                pag: inters.IPagParams): any {
+export function buildPagination(
+    baseUrl: string,
+    type: string,
+    query: any = {},
+    pag: inters.IPagParams)
+    : Serializer.ILinkObj {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
 
@@ -113,3 +122,35 @@ export function buildSelf(baseUrl: string, modelType: string, queryParams?: any)
     }
   };
 }
+
+export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, queryParams?: any): Serializer.ILinkObj {
+  return {
+    self: function(data: Data): string {
+
+      let link: string = baseUrl + '/' +
+        inflection.pluralize(modelType);
+
+      // Primary data is expected to be a model
+      link += '/' + (<Model> data).id;
+
+      // Add relationship url component
+      link += '/relationships/' + relatedType;
+
+      return link;
+    },
+    related: function(data: Data): string {
+
+      let link: string = baseUrl + '/' +
+        inflection.pluralize(modelType);
+
+      // Primary data is expected to be a model
+      link += '/' + (<Model> data).id;
+
+      // Add relationship url component
+      link += '/' + relatedType;
+
+      return link;
+    }
+  };
+}
+

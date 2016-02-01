@@ -1,5 +1,3 @@
-'use strict';
-
 import * as Serializer from 'jsonapi-serializer';
 
 export interface IPagParams {
@@ -16,6 +14,7 @@ export interface IAdapterOptions {
   includeRelations?: boolean;
   query?: IQueryObj;
   pagination?: IPagParams;
+  relations?: boolean | string[];
 }
 
 export interface IAdapter {

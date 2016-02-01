@@ -12,9 +12,10 @@ declare module 'jsonapi-serializer' {
       related?: Link;
 
       first?: Link;
-      previous?: Link;
-      next?: Link;
       last?: Link;
+
+      prev?: Link;
+      next?: Link;
     }
 
     interface ISerializerOptions {
