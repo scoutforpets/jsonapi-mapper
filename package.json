@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-translator",
-  "version": "0.0.9",
+  "version": "0.6.0",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/index.js",
   "scripts": {
