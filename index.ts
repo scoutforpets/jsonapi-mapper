@@ -51,7 +51,9 @@ export class Translator {
    * @param options
    * @return {[type]}      [description]
    */
-  toJSONAPI(data: any, type: string, options: inters.IAdapterOptions = {}): any {
+  toJSONAPI(data: any, type: string, options: inters.IAdapterOptions = {
+    relations: true
+  }): any {
     if (!data) { throw new Error('toJSONAPI(): `data` is required.'); }
     if (!type) { throw new Error('toJSONAPI(): `type` is required.'); }
 

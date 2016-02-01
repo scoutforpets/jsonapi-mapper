@@ -14,6 +14,7 @@ export interface IAdapterOptions {
   includeRelations?: boolean;
   query?: IQueryObj;
   pagination?: IPagParams;
+  relations?: boolean | string[];
 }
 
 export interface IAdapter {

@@ -279,7 +279,7 @@ describe('Bookshelf relations', () => {
 
   });
 
-  it('should put the related data in the included array', () => {
+  it('should put the single related object in the included array', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
 
@@ -300,7 +300,47 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should give an API to ignore relations');
-  it('should give an API to merge relations attributes');
+  it('should put the array of related objects in the included array', () => {
+    pending('Not targeted for release 1.x');
+  });
+
+  it('should give an API to ignore relations', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (<any> model).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
+    ]);
+
+    let result1: any = serializer.toJSONAPI(model, 'models', {relations: true});
+    let result2: any = serializer.toJSONAPI(model, 'models', {relations: false});
+
+    let expected1: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value20'
+          }
+        },
+        {
+          id: '11',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value21'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected1)(result1)).toBe(true);
+    expect(_.has(result2, 'data.relationships.related-models')).toBe(false);
+    expect(_.has(result2, 'included')).toBe(false);
+
+  });
+
+  it('should give an API to merge relations attributes', () => {
+    pending('Not targeted for release 1.x');
+  });
 
 });

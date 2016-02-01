@@ -4,6 +4,7 @@
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/index.js",
   "scripts": {
+    "postinstall": "tsd install && tsc",
     "test": "jasmine"
   },
   "repository": {
@@ -33,6 +34,7 @@
     "lodash": "3.10.1",
     "qs": "5.2.0",
     "tsd": "^0.6.5",
+    "type-check": "^0.3.2",
     "typescript": "^1.7.5",
     "validator": "^4.5.0"
   },

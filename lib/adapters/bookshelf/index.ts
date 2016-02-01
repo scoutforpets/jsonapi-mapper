@@ -2,18 +2,21 @@
 
 import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
-
+import * as tc from 'type-check';
 import {Data, Model, Collection} from './extras';
 import * as inters from '../../interfaces.d';
 import * as links from './links';
 import * as utils from './utils';
+
+type Checker = (typeDescription: string , inst: any, options?: TypeCheck.Options) => boolean;
+let typeCheck: Checker = tc.typeCheck;
 
 let adapter: inters.IAdapter = function(
     data: Data,
     type: string,
     baseUrl: string,
     serializerOptions: Serializer.ISerializerOptions,
-    adapterOptions: inters.IAdapterOptions = {}): any {
+    adapterOptions: inters.IAdapterOptions): any {
 
   // TODO ADD meta property of serializerOptions TO template
 
@@ -30,16 +33,26 @@ let adapter: inters.IAdapter = function(
     // Add list of valid attributes
     template.attributes = utils.getDataAttributesList(model);
 
-    // Add relations
-    _.forOwn(model.relations, function(relModel: Model, relName: string): void {
+    // Add relations (only if permitted)
+    if (adapterOptions.relations) {
+      _.forOwn(model.relations, function(relModel: Model, relName: string): void {
 
-      // Add relation to attribute list
-      template.attributes.push(relName);
+        // Skip if the relation is not permitted
+        if (adapterOptions.relations === false ||
+          (typeCheck('[String]', adapterOptions.relations) &&
+            (<string[]> adapterOptions.relations).indexOf(relName) < 0)) {
 
-      // Add relation serialization
-      template[relName] = utils.buildRelation(baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+          return;
+        }
 
-    });
+        // Add relation to attribute list
+        template.attributes.push(relName);
+
+        // Add relation serialization
+        template[relName] = utils.buildRelation(baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+
+      });
+    }
 
   // Serializer process for a Collection
   } else if (utils.isCollection(data)) {
