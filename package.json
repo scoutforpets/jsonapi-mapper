@@ -1,8 +1,8 @@
 {
-  "name": "jsonapi-translator",
+  "name": "jsonapi-mapper",
   "version": "0.6.0",
   "description": "JSON API-Compliant Serialization for your ORM",
-  "main": "es5/index.js",
+  "main": "es5/src/mapper.js",
   "scripts": {
     "prepublish": "tsd install && tsc",
     "test": "jasmine"
