@@ -34,15 +34,16 @@ export default class Bookshelf implements I.Mapper {
    * @param bookshelfOptions
    * @returns {"jsonapi-serializer".Serializer}
    */
-  map(data: any, type: string, bookshelfOptions?: I.BookshelfOptions): any {
+  map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
 
     // TODO ADD meta property of serializerOptions TO template
 
+    let self: this = this;
     let template: Serializer.ISerializerOptions = {};
 
     // Build links objects
-    template.topLevelLinks = links.buildTop(this.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
-    template.dataLinks = links.buildSelf(this.baseUrl, type, bookshelfOptions.query);
+    template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
+    template.dataLinks = links.buildSelf(self.baseUrl, type, bookshelfOptions.query);
 
     // Serializer process for a Model
     if (utils.isModel(data)) {
@@ -67,7 +68,7 @@ export default class Bookshelf implements I.Mapper {
           template.attributes.push(relName);
 
           // Add relation serialization
-          template[relName] = utils.buildRelation(this.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
 
         });
       }

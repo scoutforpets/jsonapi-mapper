@@ -133,7 +133,7 @@ describe('Bookshelf links', () => {
 
   beforeAll(() => {
     bookshelf = bs(knex((<knex.Config> {})));
-    mapper = new Mapper.Bookshelf('bookshelf', domain);
+    mapper = new Mapper.Bookshelf(domain);
   });
 
   afterAll((done: Function) => {
