@@ -6,22 +6,22 @@ import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
 import {Data, Model, Collection} from './extras';
-import * as inters from '../../interfaces.d';
+import * as I from '../interfaces.d';
 import * as utils from './utils';
 
 /**
  * Generates the top level links object.
  * @param baseUrl
  * @param type
- * @param queryParams
+ * @param query
  * @param pag
  * @returns any TODO LINKS OBJECT
  */
 export function buildTop(
     baseUrl: string,
     type: string,
-    queryParams?: any,
-    pag?: inters.IPagParams)
+    pag?: I.IPagParams,
+    query?: I.IQueryObj)
     : Serializer.ILinkObj {
 
   let obj: Serializer.ILinkObj = {
@@ -29,7 +29,7 @@ export function buildTop(
   };
 
   // Add pagination if given
-  if (pag) _.assign(obj, buildPagination(baseUrl, type, queryParams, pag));
+  if (pag) _.assign(obj, buildPagination(baseUrl, type, pag, query));
 
   return obj;
 }
@@ -45,8 +45,8 @@ export function buildTop(
 export function buildPagination(
     baseUrl: string,
     type: string,
-    query: any = {},
-    pag: inters.IPagParams)
+    pag: I.IPagParams,
+    query: any = {})
     : Serializer.ILinkObj {
 
   let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
@@ -101,10 +101,10 @@ export function buildPagination(
  * Generates the resource's url.
  * @param baseUrl
  * @param modelType
- * @param queryParams
+ * @param query
  * @returns {{self: (function(any, any): string)}}
  */
-export function buildSelf(baseUrl: string, modelType: string, queryParams?: any): Serializer.ILinkObj {
+export function buildSelf(baseUrl: string, modelType: string, query?: any): Serializer.ILinkObj {
   return {
     self: function(data: Data): string {
 
@@ -125,7 +125,15 @@ export function buildSelf(baseUrl: string, modelType: string, queryParams?: any)
   };
 }
 
-export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, queryParams?: any): Serializer.ILinkObj {
+/**
+ * Generates the relationship links inside the primary resource
+ * @param baseUrl
+ * @param modelType
+ * @param relatedType
+ * @param query
+ * @returns {{self: (function(Data): string), related: (function(Data): string)}}
+ */
+export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
   return {
     self: function(data: Data): string {
 
