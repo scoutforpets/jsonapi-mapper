@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-mapper",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/src/mapper.js",
   "scripts": {
@@ -13,13 +13,13 @@
   },
   "keywords": [
     "json",
-    "json",
     "api",
     "json-api",
-    "bookshelf",
     "orm",
-    "serialization",
-    "serializer"
+    "mapper",
+    "bookshelf",
+    "serializer",
+    "serialization"
   ],
   "author": "James Dixon <jim.w.dixon@gmail.com>",
   "contributors": [
@@ -27,9 +27,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jamesdixon/oh-my-jsonapi/issues"
+    "url": "https://github.com/zoitravel/oh-my-jsonapi/issues"
   },
-  "homepage": "https://github.com/jamesdixon/oh-my-jsonapi",
+  "homepage": "https://github.com/zoitravel/oh-my-jsonapi",
   "files": [
     "es5"
   ],
@@ -46,8 +46,6 @@
   },
   "devDependencies": {
     "bookshelf": "^0.9.1",
-    "chai": "3.3.0",
-    "knex": "^0.9.0",
-    "mocha": "2.3.3"
+    "knex": "^0.9.0"
   }
 }
