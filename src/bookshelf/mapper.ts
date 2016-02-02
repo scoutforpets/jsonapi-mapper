@@ -22,7 +22,7 @@ export default class Bookshelf implements I.Mapper {
    * @param baseUrl
    * @param serializerOptions
    */
-  constructor(baseUrl: string, serializerOptions: Serializer.ISerializerOptions) {
+  constructor(baseUrl: string, serializerOptions?: Serializer.ISerializerOptions) {
     this.baseUrl = baseUrl;
     this.serializerOptions = serializerOptions;
   }
@@ -34,7 +34,7 @@ export default class Bookshelf implements I.Mapper {
    * @param bookshelfOptions
    * @returns {"jsonapi-serializer".Serializer}
    */
-  map(data: any, type: string, bookshelfOptions: I.BookshelfOptions): any {
+  map(data: any, type: string, bookshelfOptions?: I.BookshelfOptions): any {
 
     // TODO ADD meta property of serializerOptions TO template
 
