@@ -1,3 +1,5 @@
+'use strict';
+
 import {Model as BModel, Collection as BCollection} from 'bookshelf';
 
 //

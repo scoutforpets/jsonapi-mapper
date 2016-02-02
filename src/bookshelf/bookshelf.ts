@@ -1,10 +1,11 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as Serializer from 'jsonapi-serializer';
+import * as serializer from 'jsonapi-serializer';
 import * as tc from 'type-check';
+
 import {Data, Model, Collection} from './extras';
-import * as inters from '../../interfaces.d';
+import * as inters from '../interfaces.d';
 import * as links from './links';
 import * as utils from './utils';
 

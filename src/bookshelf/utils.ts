@@ -1,3 +1,5 @@
+'use strict';
+
 import {Data, Model, Collection} from './extras';
 import * as _ from 'lodash';
 import * as serializer from 'jsonapi-serializer';

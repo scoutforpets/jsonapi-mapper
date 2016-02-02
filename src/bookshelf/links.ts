@@ -1,3 +1,5 @@
+'use strict';
+
 import * as _ from 'lodash';
 import * as inflection from 'inflection';
 import * as Qs from 'qs';
