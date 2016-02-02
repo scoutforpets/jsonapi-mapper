@@ -16,7 +16,7 @@ let adapter: inters.IAdapter = function(
     type: string,
     baseUrl: string,
     serializerOptions: Serializer.ISerializerOptions,
-    adapterOptions: inters.IAdapterOptions): any {
+    adapterOptions: inters.IBookshelfOptions): any {
 
   // TODO ADD meta property of serializerOptions TO template
 
