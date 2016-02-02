@@ -1,30 +1,29 @@
 import * as serializer from 'jsonapi-serializer';
 
 // Main interface that mappers must implement
-export interface Mapper<T extends IMapperOptions> {
-  new(baseUrl: string, serialOpts: serializer.ISerializerOptions);
-  map(data: any, type: string, mapperOptions: T): any;
+export interface Mapper {
+  map(data: any, type: string, mapperOptions: MapperOptions): any;
 }
 
 // Default mapper options
-export interface IMapperOptions {}
+export interface MapperOptions {}
 
 // Mapper options for bookshelf
-export interface IBookshelfOptions extends IMapperOptions {
+export interface BookshelfOptions extends MapperOptions {
   includeRelations?: boolean;
-  query?: IQueryObj;
-  pagination?: IPagParams;
+  query?: QueryObj;
+  pagination?: PagParams;
   relations?: boolean | string[];
 }
 
 // Pagination fields
-export interface IPagParams {
+export interface PagParams {
   offset: number;
   limit: number;
   total?: number;
 }
 
 // Query objects must be flat with string values
-export interface IQueryObj {
+export interface QueryObj {
   [key: string]: string;
 }

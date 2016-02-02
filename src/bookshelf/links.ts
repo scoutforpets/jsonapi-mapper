@@ -20,8 +20,8 @@ import * as utils from './utils';
 export function buildTop(
     baseUrl: string,
     type: string,
-    pag?: I.IPagParams,
-    query?: I.IQueryObj)
+    pag?: I.PagParams,
+    query?: I.QueryObj)
     : Serializer.ILinkObj {
 
   let obj: Serializer.ILinkObj = {
@@ -45,7 +45,7 @@ export function buildTop(
 export function buildPagination(
     baseUrl: string,
     type: string,
-    pag: I.IPagParams,
+    pag: I.PagParams,
     query: any = {})
     : Serializer.ILinkObj {
 
