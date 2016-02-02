@@ -1,22 +1,23 @@
 'use strict';
 
-import * as Serializer from 'jsonapi-serializer';
 import * as _ from 'lodash';
-import * as Omja from '../index';
 import * as bs from 'bookshelf';
 import * as knex from 'knex';
+
+import * as Serializer from 'jsonapi-serializer';
+import * as Mapper from '../src/mapper';
 
 type Model = bs.Model<any>;
 type Collection = bs.Collection<any>;
 
 describe('Bookshelf Adapter', () => {
   let bookshelf: bs;
-  let serializer: Omja.Translator;
+  let mapper: Mapper.Bookshelf;
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
     bookshelf = bs(knex((<knex.Config> {})));
-    serializer = new Omja.Translator('bookshelf', domain);
+    mapper = new Mapper.Bookshelf(domain);
   });
 
   afterAll((done: Function) => {
@@ -30,7 +31,7 @@ describe('Bookshelf Adapter', () => {
       description: 'something to use as a test'
     });
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -48,7 +49,7 @@ describe('Bookshelf Adapter', () => {
 
   it('should not add the id to the attributes', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     expect(_.has(result, 'data.attributes.id')).toBe(false);
   });
@@ -61,7 +62,7 @@ describe('Bookshelf Adapter', () => {
       'another_id': '456'
     });
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -84,7 +85,7 @@ describe('Bookshelf Adapter', () => {
       'related_type': 'normal'
     });
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -107,7 +108,7 @@ describe('Bookshelf Adapter', () => {
 
     let collection: Collection = bookshelf.Collection.forge<any>(elements);
 
-    let result: any = serializer.toJSONAPI(collection, 'models');
+    let result: any = mapper.map(collection, 'models');
 
     let expected: any = {
       data: _.range(5).map((num: number) => {
@@ -127,12 +128,12 @@ describe('Bookshelf Adapter', () => {
 
 describe('Bookshelf links', () => {
   let bookshelf: bs;
-  let serializer: Omja.Translator;
+  let mapper: Mapper.Bookshelf;
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
     bookshelf = bs(knex((<knex.Config> {})));
-    serializer = new Omja.Translator('bookshelf', domain);
+    mapper = new Mapper.Bookshelf(domain);
   });
 
   afterAll((done: Function) => {
@@ -142,7 +143,7 @@ describe('Bookshelf links', () => {
   it('should add top level links', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '10'});
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -160,7 +161,7 @@ describe('Bookshelf links', () => {
   it('should add primary data links', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -180,7 +181,7 @@ describe('Bookshelf links', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10'});
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -214,7 +215,7 @@ describe('Bookshelf links', () => {
 
     let collection: Collection = bookshelf.Collection.forge<any>(elements);
 
-    let result: any = serializer.toJSONAPI(collection, 'models', {
+    let result: any = mapper.map(collection, 'models', {
       pagination: {
         limit: limit,
         offset: offset,
@@ -239,12 +240,12 @@ describe('Bookshelf links', () => {
 describe('Bookshelf relations', () => {
 
   let bookshelf: bs;
-  let serializer: Omja.Translator;
+  let mapper: Mapper.Bookshelf;
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
     bookshelf = bs(knex((<knex.Config> {})));
-    serializer = new Omja.Translator('bookshelf', domain);
+    mapper = new Mapper.Bookshelf(domain);
   });
 
   afterAll((done: Function) => {
@@ -255,7 +256,7 @@ describe('Bookshelf relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       data: {
@@ -283,7 +284,7 @@ describe('Bookshelf relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
 
-    let result: any = serializer.toJSONAPI(model, 'models');
+    let result: any = mapper.map(model, 'models');
 
     let expected: any = {
       included: [
@@ -311,8 +312,8 @@ describe('Bookshelf relations', () => {
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
-    let result1: any = serializer.toJSONAPI(model, 'models', {relations: true});
-    let result2: any = serializer.toJSONAPI(model, 'models', {relations: false});
+    let result1: any = mapper.map(model, 'models', {relations: true});
+    let result2: any = mapper.map(model, 'models', {relations: false});
 
     let expected1: any = {
       included: [

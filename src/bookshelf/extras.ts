@@ -1,6 +1,7 @@
+'use strict';
+
 import {Model as BModel, Collection as BCollection} from 'bookshelf';
 
-//
 export interface RelationsObject {
   [relations: string]: Data;
 }

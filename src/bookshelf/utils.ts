@@ -1,6 +1,8 @@
+'use strict';
+
 import {Data, Model, Collection} from './extras';
 import * as _ from 'lodash';
-import * as serializer from 'jsonapi-serializer';
+import * as Serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
 import * as links from './links';
 
@@ -18,7 +20,7 @@ export function buildRelation(baseUrl: string,
                               relatedType: string,
                               relatedKeys: string[],
                               included: boolean)
-: serializer.ISerializerOptions {
+: Serializer.ISerializerOptions {
 
   return {
     ref: 'id',
