@@ -305,7 +305,7 @@ describe('Bookshelf relations', () => {
     pending('Not targeted for release 1.x');
   });
 
-  it('should give an API to ignore relations', () => {
+  it('should give an option to ignore relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (<any> model).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
@@ -338,6 +338,50 @@ describe('Bookshelf relations', () => {
     expect(_.has(result2, 'data.relationships.related-models')).toBe(false);
     expect(_.has(result2, 'included')).toBe(false);
 
+  });
+
+  it('should give an option to choose which relations to add', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (<any> model).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (<any> model).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {relations: ['related-two']});
+
+    let expected: any = {
+      included: [
+        {
+          id: '20',
+          type: 'related-twos',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should still support the deprecated includeRelations option', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (<any> model).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (<any> model).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {includeRelations: ['related-two']});
+
+    let expected: any = {
+      included: [
+        {
+          id: '20',
+          type: 'related-twos',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
   });
 
   it('should give an API to merge relations attributes', () => {

@@ -52,6 +52,9 @@ export default class Bookshelf implements I.Mapper {
       // Add list of valid attributes
       template.attributes = utils.getDataAttributesList(model);
 
+      // Provide support for withRelated option TODO WARNING DEPRECATED. To be deleted on next major version
+      if (bookshelfOptions.includeRelations) bookshelfOptions.relations = bookshelfOptions.includeRelations;
+
       // Add relations (only if permitted)
       if (bookshelfOptions.relations) {
         _.forOwn(model.relations, function (relModel: Model, relName: string): void {

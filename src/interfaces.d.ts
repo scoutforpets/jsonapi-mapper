@@ -10,10 +10,10 @@ export interface MapperOptions {}
 
 // Mapper options for bookshelf
 export interface BookshelfOptions extends MapperOptions {
-  includeRelations?: boolean;
   query?: QueryObj;
   pagination?: PagParams;
   relations?: boolean | string[];
+  includeRelations?: boolean | string[]; // TODO WARNING DEPRECATED. To be deleted on next major version
 }
 
 // Pagination fields
