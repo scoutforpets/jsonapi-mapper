@@ -47,6 +47,18 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should serialize null or undefined data', () => {
+    let result1: any = mapper.map(undefined, 'models');
+    let result2: any = mapper.map(null, 'models');
+
+    let expected: any = {
+      data: null
+    };
+
+    expect(_.matches(expected)(result1)).toBe(true);
+    expect(_.matches(expected)(result2)).toBe(true);
+  });
+
   it('should not add the id to the attributes', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
     let result: any = mapper.map(model, 'models');

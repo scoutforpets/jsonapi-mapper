@@ -90,7 +90,7 @@ export default class Bookshelf implements I.Mapper {
     _.assign(template, this.serializerOptions);
 
     // Return the data in JSON API format
-    let json: any = data.toJSON();
+    let json: any = (data && data.toJSON()) || null;
     return new Serializer(type, json, template);
   }
 }
