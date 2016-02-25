@@ -52,6 +52,9 @@ export function getDataAttributesList(data: Data): any {
  * @private
  */
 export function getDataAttributes(data: Data): any {
+  // Undefined case
+  if (!data) return {};
+
   // Model Case
   if (isModel(data)) {
     let m: Model = <Model> data;
@@ -70,6 +73,7 @@ export function getDataAttributes(data: Data): any {
  * @returns {boolean}
  */
 export function isModel(data: Data): boolean {
+  if (!data) return false;
   // Is-not-a-Duck-typing
   return (<Collection> data).models === undefined;
 }
@@ -80,6 +84,7 @@ export function isModel(data: Data): boolean {
  * @returns {boolean}
  */
 export function isCollection(data: Data): boolean {
+  if (!data) return false;
   // Duck-typing
   return (<Collection> data).models !== undefined;
 }

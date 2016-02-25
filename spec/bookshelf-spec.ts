@@ -101,6 +101,18 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
 
+  it('should serialize an empty collection', () => {
+    let collection: Collection = bookshelf.Collection.forge<any>();
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: []
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should serialize a collection', () => {
     let elements: Model[] = _.range(5).map((num: number) => {
       return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
