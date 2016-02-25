@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-mapper",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/src/mapper.js",
   "scripts": {
