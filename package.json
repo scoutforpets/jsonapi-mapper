@@ -5,6 +5,7 @@
   "main": "es5/src/mapper.js",
   "scripts": {
     "prepublish": "tsd install && tsc",
+    "pretest" : "tsc",
     "test": "jasmine"
   },
   "repository": {
