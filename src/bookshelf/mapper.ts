@@ -84,6 +84,30 @@ export default class Bookshelf implements I.Mapper {
       template.attributes = utils.getDataAttributesList(model);
 
       // Add relations TODO (HOW MANY TO MANY?)
+      //
+      // Provide support for withRelated option TODO WARNING DEPRECATED. To be deleted on next major version
+      if (bookshelfOptions.includeRelations) bookshelfOptions.relations = bookshelfOptions.includeRelations;
+
+      if (!_.isUndefined(model)) {
+        _.forOwn(model.relations, function (relModel: Model, relName: string): void {
+
+            // Skip if the relation is not permitted
+            if (bookshelfOptions.relations === false ||
+              (typeCheck('[String]', bookshelfOptions.relations) &&
+              (<string[]> bookshelfOptions.relations).indexOf(relName) < 0)) {
+
+              return;
+            }
+
+            // Add relation to attribute list
+            template.attributes.push(relName);
+
+            // Add relation serialization
+            template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+
+        });
+      }
+
     }
 
     // Override the template with the provided serializer options
