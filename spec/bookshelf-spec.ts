@@ -325,8 +325,72 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should return empty array when collection is empty', () => {
+    let collection: Collection = bookshelf.Collection.forge<any>([]); 
+
+    let result: any = mapper.map(collection, 'models');
+    
+    let expected: any = {
+      data : []
+    }
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should put the array of related objects in the included array', () => {
-    pending('Not targeted for release 1.x');
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+
+    (<any> model1).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
+    ]);
+
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+
+    (<any> model2).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
+      bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
+    ]);
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]); 
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value20'
+          }
+        },
+        {
+          id: '11',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value21'
+          }
+        },
+        {
+          id: '12',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value22'
+          }
+        },
+        {
+          id: '13',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value23'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
   });
 
   it('should give an option to ignore relations', () => {
