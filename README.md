@@ -1,6 +1,8 @@
 # OhMyJSONAPI [![Error Tracking](https://d26gfdfi90p7cf.cloudfront.net/rollbar-badge.144534.o.png)](https://rollbar.com)
 OhMyJSONAPI is a wrapper around @Seyz's excellent JSON API 1.0-compliant serializer, [jsonapi-serializer](https://github.com/SeyZ/jsonapi-serializer), that removes the pain of generating the necessary serializer options for each of your models.
 
+[![Join the chat at https://gitter.im/scoutforpets/oh-my-jsonapi](https://badges.gitter.im/scoutforpets/oh-my-jsonapi.svg)](https://gitter.im/scoutforpets/oh-my-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## how does it work?
 A serializer requires some sort of 'template' to understand how to convert what you're passing in to whatever you want to come out. When you're dealing with an ORM, such as [Bookshelf](https://github.com/tgriesser/bookshelf), it would be a real pain to have to generate the 'template' for every one of your Bookshelf models in order to convert them to JSON API. OhMyJSONAPI handles this by dynamically analyzing your models and generating the necessary 'template' to pass to the serializer.
 
