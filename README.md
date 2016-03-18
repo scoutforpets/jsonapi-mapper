@@ -1,7 +1,7 @@
 # JSON API Mapper [![Build Status](https://travis-ci.org/scoutforpets/jsonapi-mapper.svg?branch=master)](https://travis-ci.org/scoutforpets/jsonapi-mapper)
 JSON API Mapper (_formerly Oh My JSON API_) is a wrapper around [@Seyz](https://github.com/SeyZ/)'s excellent [JSON API](http://jsonapi.org/)-compliant serializer, [jsonapi-serializer](https://github.com/SeyZ/jsonapi-serializer), that removes the pain of generating the necessary options needed to serialize each of your ORM models.
 
-[![Join the chat at https://gitter.im/scoutforpets/oh-my-jsonapi](https://badges.gitter.im/scoutforpets/oh-my-jsonapi.svg)](https://gitter.im/scoutforpets/oh-my-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/scoutforpets/oh-my-jsonapi](https://badges.gitter.im/scoutforpets/jsonapi-mapper.svg)](https://gitter.im/scoutforpets/jsonapi-mapper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## _Breaking Changes_
 This project has recently been renamed and rewritten using Typescript. While most functionality is generally the same, there have been a few deprecations and changes to how the Mapper is initialized. Please see the [migration guide](#migrating-from-ohmyjsonapi) below.
@@ -37,7 +37,7 @@ The migration process is painless:
   ```javascript
   new OhMyJSONAPI('bookshelf', 'https://api.hotapp.com');
   ```
-  
+
   to
 
   ```javascript
