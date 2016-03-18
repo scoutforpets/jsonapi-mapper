@@ -75,6 +75,56 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should serialize a collection with custom id attribute', () => {
+    let CustomModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let CustomCollection : any = bookshelf.Collection.extend<any>({
+      model : CustomModel
+    })
+
+    let model1 : any = CustomModel.forge({
+      email : 'foo@example.com',
+      name: 'A test model1',
+      description: 'something to use as a test'
+    }); 
+
+    let model2 : any = CustomModel.forge({
+      email : 'bar@example.com',
+      name: 'A test model2',
+      description: 'something to use as a test'
+    }); 
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]); 
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: [
+        {
+          id : 'foo@example.com',
+          type: 'models',
+          attributes: {
+            email : 'foo@example.com',
+            name: 'A test model1',
+            description: 'something to use as a test'
+          }
+        },
+        {
+          id : 'bar@example.com',
+          type: 'models',
+          attributes: {
+            email : 'bar@example.com',
+            name: 'A test model2',
+            description: 'something to use as a test'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
 
   it('should serialize null or undefined data', () => {
     let result1: any = mapper.map(undefined, 'models');

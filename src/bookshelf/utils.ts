@@ -84,7 +84,12 @@ export function toJSON(data : any) : any {
   if (_.isPlainObject(json) && !_.has(json,'id')) {
     json.id = data.id; 
   // Collection case
-  } else if (_.isArray(json)) {
+  } else if (_.isArray(json) && json.length > 0 && !_.has(json[0], 'id')) {
+    // Explicit for loop to iterate
+    // over collection models and json array
+    for (let i = 0; i < json.length; ++i) {
+      json[i].id = data.models[i].id; 
+    }
   }
 
   return json; 
