@@ -69,14 +69,14 @@ export function getDataAttributes(data: Data): any {
 }
 
 /**
- * Convert a bookshelf model or collection to 
+ * Convert a bookshelf model or collection to
  * json adding the id attribute if missing
  * @param data
  * @returns {any}
  */
-export function toJSON(data : any) : any {
+export function toJSON(data: any): any {
 
-  let json : any = (data && data.toJSON()) || null;
+  let json: any = (data && data.toJSON()) || null;
 
   if (_.isNull(json)) { return json; }
 
@@ -93,23 +93,28 @@ export function toJSON(data : any) : any {
   // Collection case
   } else if (_.isArray(json) && json.length > 0) {
 
-    let noId = !_.has(json[0], 'id');
+    let noId: boolean = !_.has(json[0], 'id');
+
     // Explicit for loop to iterate
     // over collection models and json array
-    for (let i = 0; i < json.length; ++i) {
+    for (let index: number = 0; index < json.length; ++index) {
 
-      if (noId) { json[i].id = data.models[i].id; }
-      // Loop over data relations to fill the relationships objects
-      // and the included array
-      _.forOwn(data.models[i].relations, function (relModel: Model, relName: string): void {
-        if (!_.has(json[i][relName], 'id')) { json[i][relName].id = relModel.id; }
-      });
+      // IIFE to avoid let to var transformation errors
+      ((i: number) => {
+        if (noId) { json[i].id = data.models[i].id; }
 
+        // Loop over data relations to fill the relationships objects
+        // and the included array
+        _.forOwn(data.models[i].relations, (relModel: Model, relName: string): void => {
+          if (!_.has(json[i][relName], 'id')) { json[i][relName].id = relModel.id; }
+        });
+
+      })(index);
     }
 
   }
 
-  return json; 
+  return json;
 }
 
 /**
