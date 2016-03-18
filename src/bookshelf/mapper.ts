@@ -100,19 +100,19 @@ export default class Bookshelf implements I.Mapper {
                 return;
               }
 
-              // Add relation to attribute list
-              template.attributes.push(relName);
+              // Avoid duplicates
+              if (!_.include(template.attributes, relName)) {
+                // Add relation to attribute list
+                template.attributes.push(relName);
 
-              // Add relation serialization
-              template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+                // Add relation serialization
+                template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+              }
 
           });
         });
 
-        // Removed duplicates
-        template.attributes = _.uniq(template.attributes); 
       }
-
     }
 
     // Override the template with the provided serializer options
