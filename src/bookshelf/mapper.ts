@@ -35,7 +35,7 @@ export default class Bookshelf implements I.Mapper {
    * @returns {"jsonapi-serializer".Serializer}
    */
   map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
-
+    
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
@@ -119,7 +119,8 @@ export default class Bookshelf implements I.Mapper {
     _.assign(template, this.serializerOptions);
 
     // Return the data in JSON API format
-    let json: any = (data && data.toJSON()) || null;
+    let json : any = utils.toJSON(data); 
+    //let json: any = (data && data.toJSON()) || null;
     return new Serializer(type, json, template);
   }
 }

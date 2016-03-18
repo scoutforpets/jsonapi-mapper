@@ -64,7 +64,30 @@ export function getDataAttributes(data: Data): any {
   } else if (isCollection(data)) {
     let c: Collection = <Collection> data;
     return c.models[0] && c.models[0].attributes;
+
   }
+}
+
+/**
+ * Convert a bookshelf model or collection to 
+ * json adding the id attribute if missing
+ * @param data
+ * @returns {any}
+ */
+export function toJSON(data : any) : any {
+
+  let json : any = (data && data.toJSON()) || null;
+
+  if (_.isNull(json)) { return json; }
+
+  // Model case
+  if (_.isPlainObject(json) && !_.has(json,'id')) {
+    json.id = data.id; 
+  // Collection case
+  } else if (_.isArray(json)) {
+  }
+
+  return json; 
 }
 
 /**
