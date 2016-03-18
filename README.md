@@ -4,7 +4,7 @@ JSON API Mapper (_formerly Oh My JSON API_) is a wrapper around [@Seyz](https://
 [![Join the chat at https://gitter.im/scoutforpets/oh-my-jsonapi](https://badges.gitter.im/scoutforpets/oh-my-jsonapi.svg)](https://gitter.im/scoutforpets/oh-my-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## _Breaking Changes_
-This project has recently been renamed and rewritten using Typescript. While most functionality is generally the same, there have been a few deprecations and changes to how the Mapper is initialized. Please see the [migration guide](#Migrating-from-OhMyJSONAPI) below.
+This project has recently been renamed and rewritten using Typescript. While most functionality is generally the same, there have been a few deprecations and changes to how the Mapper is initialized. Please see the [migration guide](#migrating-from-ohmyjsonapi) below.
 
 ## How does it work?
 A serializer requires some sort of 'template' to understand how to convert what you're passing in to whatever you want to come out. When you're dealing with an ORM, such as [Bookshelf](https://github.com/tgriesser/bookshelf), it would be a real pain to have to generate the 'template' for every one of your Bookshelf models in order to convert them to JSON API. JSON API Mapper handles this by dynamically analyzing your models and automatically generating the necessary 'template' to pass to the serializer.
@@ -42,13 +42,13 @@ The migration process is painless:
   new Mapper.Bookshelf('https://api.hotapp.com');
   ```
 - Convert any instances of:
-```javascript
-jsonApi.toJSONAPI(myData, 'appointment');
-```
-to
-```javascript
-mapper.map(myData, 'appointment');
-```
+  ```javascript
+  jsonApi.toJSONAPI(myData, 'appointment');
+  ```
+  to
+  ```javascript
+  mapper.map(myData, 'appointment');
+  ```
 
 ## API
 ```javascript
@@ -78,4 +78,4 @@ The project source has been recently rewritten using [Typescript](http://www.typ
 
 # Credits
 - Thanks to [@Seyz](https://github.com/SeyZ/). Without his work, the project would not be possible.
-- Thanks to the [Zoi Travel team](https://github.com/zoitravel) (especially [@ShadowManu](https://github.com/shadowmanu)) for their hard work in migrating the codebase to Typescript and writing a comprehensive test suite.
+- Thanks to the [ZOI Travel team](https://github.com/zoitravel) (especially [@ShadowManu](https://github.com/shadowmanu)) for their hard work in migrating the codebase to Typescript and writing a comprehensive test suite.
