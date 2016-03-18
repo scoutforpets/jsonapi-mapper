@@ -64,7 +64,52 @@ export function getDataAttributes(data: Data): any {
   } else if (isCollection(data)) {
     let c: Collection = <Collection> data;
     return c.models[0] && c.models[0].attributes;
+
   }
+}
+
+/**
+ * Convert a bookshelf model or collection to 
+ * json adding the id attribute if missing
+ * @param data
+ * @returns {any}
+ */
+export function toJSON(data : any) : any {
+
+  let json : any = (data && data.toJSON()) || null;
+
+  if (_.isNull(json)) { return json; }
+
+  // Model case
+  if (_.isPlainObject(json)) {
+
+    if (!_.has(json, 'id')) { json.id = data.id; }
+    // Loop over data relations to fill the relationships objects
+    // and the included array
+    _.forOwn(data.relations, function (relModel: Model, relName: string): void {
+      if (!_.has(json[relName], 'id')) { json[relName].id = relModel.id; }
+    });
+
+  // Collection case
+  } else if (_.isArray(json) && json.length > 0) {
+
+    let noId = !_.has(json[0], 'id');
+    // Explicit for loop to iterate
+    // over collection models and json array
+    for (let i = 0; i < json.length; ++i) {
+
+      if (noId) { json[i].id = data.models[i].id; }
+      // Loop over data relations to fill the relationships objects
+      // and the included array
+      _.forOwn(data.models[i].relations, function (relModel: Model, relName: string): void {
+        if (!_.has(json[i][relName], 'id')) { json[i][relName].id = relModel.id; }
+      });
+
+    }
+
+  }
+
+  return json; 
 }
 
 /**
