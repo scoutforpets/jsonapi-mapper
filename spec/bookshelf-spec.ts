@@ -167,13 +167,7 @@ describe('Bookshelf Adapter', () => {
       description: 'something to use as a test'
     }); 
 
-    let model2 : any = CustomModel.forge({
-      email : 'bar@example.com',
-      name: 'A test model2',
-      description: 'something to use as a test'
-    }); 
-
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model1]); 
 
     let result: any = mapper.map(collection, 'models');
 
@@ -187,14 +181,55 @@ describe('Bookshelf Adapter', () => {
             name: 'A test model1',
             description: 'something to use as a test'
           }
-        },
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should serialize a collection with custom id attribute within a related model on relationships object', () => {
+    let CustomModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let CustomCollection : any = bookshelf.Collection.extend<any>({
+      model : CustomModel
+    })
+
+    let model : any = bookshelf.Model.forge({
+      id : 5,
+      name: 'A test model',
+      description: 'something to use as a test'
+    }); 
+
+    (<any> model).relations['related-model'] = CustomModel.forge({
+      email: 'foo@example.com', 
+      attr2: 'value2'
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model]); 
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: [
         {
-          id : 'bar@example.com',
           type: 'models',
+          id : '5',
           attributes: {
-            email : 'bar@example.com',
-            name: 'A test model2',
+            name: 'A test model',
             description: 'something to use as a test'
+          },
+          links : { self : 'https://domain.com/models/5' },
+          relationships : {
+            'related-model' : {
+              data: { id : 'foo@example.com', type : 'related-models' },
+              links : { 
+                self : 'https://domain.com/models/5/relationships/related-model',
+                related : 'https://domain.com/models/5/related-model'
+              }
+            }
           }
         }
       ]
@@ -202,6 +237,51 @@ describe('Bookshelf Adapter', () => {
 
     expect(_.matches(expected)(result)).toBe(true);
   });
+
+  it('should serialize a collection with custom id attribute within a related model on included array', () => {
+    let CustomModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let CustomCollection : any = bookshelf.Collection.extend<any>({
+      model : CustomModel
+    })
+
+    let model : any = bookshelf.Model.forge({
+      id : 5,
+      name: 'A test model',
+      description: 'something to use as a test'
+    }); 
+
+    (<any> model).relations['related-model'] = CustomModel.forge({
+      email: 'foo@example.com', 
+      attr2: 'value2'
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model]); 
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          type: 'related-models',
+          id : 'foo@example.com',
+          attributes: {
+            email: 'foo@example.com', 
+            attr2: 'value2'
+          },
+          links : { self : 'https://domain.com/models/5' },
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+
+
+
 
   it('should serialize null or undefined data', () => {
     let result1: any = mapper.map(undefined, 'models');
