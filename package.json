@@ -10,12 +10,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zoitravel/oh-my-jsonapi"
+    "url": "https://github.com/scoutforpets/jsonapi-mapper"
   },
   "keywords": [
     "json",
     "api",
     "json-api",
+    "jsonapi",
     "orm",
     "mapper",
     "bookshelf",
@@ -28,9 +29,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zoitravel/oh-my-jsonapi/issues"
+    "url": "https://github.com/scoutforpets/jsonapi-mapper/issues"
   },
-  "homepage": "https://github.com/zoitravel/oh-my-jsonapi",
+  "homepage": "https://github.com/scoutforpets/jsonapi-mapper",
   "files": [
     "es5"
   ],
