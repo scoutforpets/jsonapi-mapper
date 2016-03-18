@@ -81,8 +81,16 @@ export function toJSON(data : any) : any {
   if (_.isNull(json)) { return json; }
 
   // Model case
-  if (_.isPlainObject(json) && !_.has(json,'id')) {
-    json.id = data.id; 
+  if (_.isPlainObject(json)) {
+    if (!_.has(json, 'id')) { json.id = data.id; }
+
+    // Loop over data relations to fill the relationships objects
+    // and the included array
+    _.forOwn(data.relations, function (relModel: Model, relName: string): void {
+      if (!_.has(json[relName], 'id')) { json[relName].id = relModel.id; }
+    });
+    
+
   // Collection case
   } else if (_.isArray(json) && json.length > 0 && !_.has(json[0], 'id')) {
     // Explicit for loop to iterate

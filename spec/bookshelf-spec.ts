@@ -75,6 +75,83 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should serialize related model with custom id attribute in relationships object', () => {
+
+    let CustomModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let model : any = bookshelf.Model.forge({
+      id : 5,
+      name: 'A test model',
+      description: 'something to use as a test'
+    }); 
+
+    (<any> model).relations['related-model'] = CustomModel.forge({
+      email: 'foo@example.com', 
+      attr2: 'value2'
+    });
+            
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        relationships: {
+          'related-model': {
+            data: {
+              id: 'foo@example.com',
+              type: 'related-models' // TODO check correct casing
+            },
+            links: {
+              self: domain + '/models/' + '5' + '/relationships/' + 'related-model',
+              related: domain + '/models/' + '5' + '/related-model'
+            }
+          }
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should serialize related model with custom id attribute in included array', () => {
+
+    let CustomModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let model : any = bookshelf.Model.forge({
+      id : 5,
+      name: 'A test model',
+      description: 'something to use as a test'
+    }); 
+
+    (<any> model).relations['related-model'] = CustomModel.forge({
+      email: 'foo@example.com', 
+      attr2: 'value2'
+    });
+            
+
+    let result: any = mapper.map(model, 'models');
+
+
+    let expected: any = {
+      included: [
+        {
+          id: 'foo@example.com',
+          type: 'related-models',
+          attributes: {
+            email: 'foo@example.com', 
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should serialize a collection with custom id attribute', () => {
     let CustomModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
