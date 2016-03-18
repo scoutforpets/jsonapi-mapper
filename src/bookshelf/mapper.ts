@@ -35,7 +35,7 @@ export default class Bookshelf implements I.Mapper {
    * @returns {"jsonapi-serializer".Serializer}
    */
   map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
-
+    
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
@@ -100,26 +100,26 @@ export default class Bookshelf implements I.Mapper {
                 return;
               }
 
-              // Add relation to attribute list
-              template.attributes.push(relName);
+              // Avoid duplicates
+              if (!_.include(template.attributes, relName)) {
+                // Add relation to attribute list
+                template.attributes.push(relName);
 
-              // Add relation serialization
-              template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+                // Add relation serialization
+                template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+              }
 
           });
         });
 
-        // Removed duplicates
-        template.attributes = _.uniq(template.attributes); 
       }
-
     }
 
     // Override the template with the provided serializer options
     _.assign(template, this.serializerOptions);
 
     // Return the data in JSON API format
-    let json: any = (data && data.toJSON()) || null;
+    let json : any = utils.toJSON(data); 
     return new Serializer(type, json, template);
   }
 }
