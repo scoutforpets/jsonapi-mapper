@@ -271,7 +271,7 @@ describe('Bookshelf Adapter', () => {
             email: 'foo@example.com', 
             attr2: 'value2'
           },
-          links : { self : 'https://domain.com/models/5' },
+          links : { self : 'https://domain.com/related-models/5' },
         }
       ]
     };

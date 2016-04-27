@@ -26,7 +26,7 @@ export function buildRelation(baseUrl: string,
     ref: 'id',
     attributes: relatedKeys,
     relationshipLinks: links.buildRelationship(baseUrl, modelType, relatedType),
-    includedLinks: links.buildSelf(baseUrl, modelType),
+    includedLinks: links.buildSelf(baseUrl, relatedType || modelType),
     included: included
   };
 }
