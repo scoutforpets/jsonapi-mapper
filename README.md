@@ -1,4 +1,8 @@
-# JSON API Mapper [![Build Status](https://travis-ci.org/scoutforpets/jsonapi-mapper.svg?branch=master)](https://travis-ci.org/scoutforpets/jsonapi-mapper)
+# JSON API Mapper
+[![Build Status](https://travis-ci.org/scoutforpets/jsonapi-mapper.svg?branch=master)](https://travis-ci.org/scoutforpets/jsonapi-mapper)
+[![npm version](https://badge.fury.io/js/jsonapi-mapper.svg)](https://badge.fury.io/js/jsonapi-mapper)
+[![david dm](https://david-dm.org/scoutforpets/jsonapi-mapper.svg)](https://david-dm.org/scoutforpets/jsonapi-mapper)
+
 JSON API Mapper (_formerly Oh My JSON API_) is a wrapper around [@Seyz](https://github.com/SeyZ/)'s excellent [JSON API](http://jsonapi.org/)-compliant serializer, [jsonapi-serializer](https://github.com/SeyZ/jsonapi-serializer), that removes the pain of generating the necessary options needed to serialize each of your ORM models.
 
 [![Join the chat at https://gitter.im/scoutforpets/oh-my-jsonapi](https://badges.gitter.im/scoutforpets/jsonapi-mapper.svg)](https://gitter.im/scoutforpets/jsonapi-mapper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
