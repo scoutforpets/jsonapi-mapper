@@ -35,7 +35,7 @@ export default class Bookshelf implements I.Mapper {
    * @returns {"jsonapi-serializer".Serializer}
    */
   map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
-    
+
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
@@ -43,7 +43,7 @@ export default class Bookshelf implements I.Mapper {
 
     // Build links objects
     template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
-    template.dataLinks = links.buildSelf(self.baseUrl, type, bookshelfOptions.query);
+    template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
 
     // Serializer process for a Model
     if (utils.isModel(data)) {
@@ -73,6 +73,15 @@ export default class Bookshelf implements I.Mapper {
           // Add relation serialization
           template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
 
+          // Support a nested relationship
+          _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
+
+              // Add relation to attribute list
+              template[relName].attributes.push(nestedRelName);
+
+              // Add nested relation serialization
+              template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+          });
         });
       }
 
@@ -109,6 +118,16 @@ export default class Bookshelf implements I.Mapper {
                 template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
               }
 
+              // Support a nested relationship
+              _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
+
+                  // Add relation to attribute list
+                  template[relName].attributes.push(nestedRelName);
+
+                  // Add nested relation serialization
+                  template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+              });
+
           });
         });
 
@@ -119,7 +138,7 @@ export default class Bookshelf implements I.Mapper {
     _.assign(template, this.serializerOptions);
 
     // Return the data in JSON API format
-    let json : any = utils.toJSON(data); 
+    let json : any = utils.toJSON(data);
     return new Serializer(type, json, template);
   }
 }

@@ -56,7 +56,7 @@ describe('Bookshelf Adapter', () => {
       email : 'foo@example.com',
       name: 'A test model',
       description: 'something to use as a test'
-    }); 
+    });
 
     let result: any = mapper.map(model, 'models');
 
@@ -85,13 +85,13 @@ describe('Bookshelf Adapter', () => {
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
-    }); 
+    });
 
     (<any> model).relations['related-model'] = CustomModel.forge({
-      email: 'foo@example.com', 
+      email: 'foo@example.com',
       attr2: 'value2'
     });
-            
+
 
     let result: any = mapper.map(model, 'models');
 
@@ -125,13 +125,13 @@ describe('Bookshelf Adapter', () => {
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
-    }); 
+    });
 
     (<any> model).relations['related-model'] = CustomModel.forge({
-      email: 'foo@example.com', 
+      email: 'foo@example.com',
       attr2: 'value2'
     });
-            
+
 
     let result: any = mapper.map(model, 'models');
 
@@ -142,7 +142,7 @@ describe('Bookshelf Adapter', () => {
           id: 'foo@example.com',
           type: 'related-models',
           attributes: {
-            email: 'foo@example.com', 
+            email: 'foo@example.com',
             attr2: 'value2'
           }
         }
@@ -165,9 +165,9 @@ describe('Bookshelf Adapter', () => {
       email : 'foo@example.com',
       name: 'A test model1',
       description: 'something to use as a test'
-    }); 
+    });
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model1]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -201,14 +201,14 @@ describe('Bookshelf Adapter', () => {
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
-    }); 
+    });
 
     (<any> model).relations['related-model'] = CustomModel.forge({
-      email: 'foo@example.com', 
+      email: 'foo@example.com',
       attr2: 'value2'
     });
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -225,7 +225,7 @@ describe('Bookshelf Adapter', () => {
           relationships : {
             'related-model' : {
               data: { id : 'foo@example.com', type : 'related-models' },
-              links : { 
+              links : {
                 self : 'https://domain.com/models/5/relationships/related-model',
                 related : 'https://domain.com/models/5/related-model'
               }
@@ -251,14 +251,14 @@ describe('Bookshelf Adapter', () => {
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
-    }); 
+    });
 
     (<any> model).relations['related-model'] = CustomModel.forge({
-      email: 'foo@example.com', 
+      email: 'foo@example.com',
       attr2: 'value2'
     });
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -268,20 +268,16 @@ describe('Bookshelf Adapter', () => {
           type: 'related-models',
           id : 'foo@example.com',
           attributes: {
-            email: 'foo@example.com', 
+            email: 'foo@example.com',
             attr2: 'value2'
           },
-          links : { self : 'https://domain.com/models/5' },
+          links : { self : 'https://domain.com/related-models/foo@example.com' },
         }
       ]
     };
 
     expect(_.matches(expected)(result)).toBe(true);
   });
-
-
-
-
 
   it('should serialize null or undefined data', () => {
     let result1: any = mapper.map(undefined, 'models');
@@ -464,6 +460,131 @@ describe('Bookshelf links', () => {
 
   });
 
+  it('should add related links for nested relationships', () => {
+      let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+      let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+      let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
+
+      (<any> model1).relations['related-model'] = model2;
+      (<any> model2).relations['nested-related-model'] = model3;
+
+      let result: any = mapper.map(model1, 'models');
+
+      let expected: any = {
+        included: [
+          {
+            id: '6',
+            type: 'related-models',
+            attributes: {
+              attr: 'value'
+            },
+            relationships: {
+                'nested-related-model': {
+                    data: {
+                        type: 'nested-related-models',
+                        id: '7'
+                    },
+                    links: {
+                        self: `${domain}/related-models/6/relationships/nested-related-model`,
+                        related: `${domain}/related-models/6/nested-related-model`
+                    }
+                }
+            }
+          },
+          {
+            id: '7',
+            type: 'nested-related-models',
+            attributes: {
+              attr: 'value'
+            }
+          }
+          ],
+          data: {
+              relationships: {
+                  'related-model': {
+                      data: {
+                          type: 'related-models',
+                          id: '6'
+                      }
+                  }
+              }
+          }
+      };
+
+      expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
+  it('should add related links for nested relationships within a collection', () => {
+
+      let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+      let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+
+      (<any> model1).relations['related-model'] = model2;
+      (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+          bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
+          bookshelf.Model.forge<any>({id: '11', attr: 'value'})
+      ]);
+
+      let collection: Collection = bookshelf.Collection.forge<any>([model1]);
+
+      let result: any = mapper.map(collection, 'models');
+
+      let expected: any = {
+            included: [
+                {
+                    id: '6',
+                    type: 'related-models',
+                    attributes: {
+                        attr: 'value'
+                    },
+                    relationships: {
+                        'nested-related-models': {
+                            data: [{
+                                type: 'nested-related-models',
+                                id: '10'
+                            }, {
+                                    type: 'nested-related-models',
+                                    id: '11'
+                                }],
+                            links: {
+                                self: `${domain}/related-models/6/relationships/nested-related-models`,
+                                related: `${domain}/related-models/6/nested-related-models`
+                            }
+                        }
+                    }
+                },
+                {
+                    id: '10',
+                    type: 'nested-related-models',
+                    attributes: {
+                        attr: 'value'
+                    }
+                },
+                {
+                    id: '11',
+                    type: 'nested-related-models',
+                    attributes: {
+                        attr: 'value'
+                    }
+                }
+            ],
+            data: [{
+                relationships: {
+                    'related-model': {
+                        data: {
+                            type: 'related-models',
+                            id: '6'
+                        }
+                    }
+                }
+            }]
+        };
+
+      expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
   it('should add pagination links', () => {
     let limit: number = 10;
     let offset: number = 40;
@@ -540,7 +661,7 @@ describe('Bookshelf relations', () => {
 
   });
 
-  
+
   it('should put the single related object in the included array', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
@@ -563,10 +684,10 @@ describe('Bookshelf relations', () => {
   });
 
   it('should return empty array when collection is empty', () => {
-    let collection: Collection = bookshelf.Collection.forge<any>([]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([]);
 
     let result: any = mapper.map(collection, 'models');
-    
+
     let expected: any = {
       data : []
     }
@@ -589,7 +710,7 @@ describe('Bookshelf relations', () => {
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -645,7 +766,7 @@ describe('Bookshelf relations', () => {
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]); 
+    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -686,6 +807,123 @@ describe('Bookshelf relations', () => {
 
   });
 
+  it('should support including nested relationships', () => {
+
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+    let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
+
+    (<any> model1).relations['related-model'] = model2;
+    (<any> model2).relations['nested-related-model'] = model3;
+
+    let result: any = mapper.map(model1, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '6',
+          type: 'related-models',
+          attributes: {
+            attr: 'value'
+          },
+          relationships: {
+              'nested-related-model': {
+                  data: {
+                      type: 'nested-related-models',
+                      id: '7'
+                  }
+              }
+          }
+        },
+        {
+          id: '7',
+          type: 'nested-related-models',
+          attributes: {
+            attr: 'value'
+          }
+        }
+        ],
+        data: {
+            relationships: {
+                'related-model': {
+                    data: {
+                        type: 'related-models',
+                        id: '6'
+                    }
+                }
+            }
+        }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
+  it('should support including nested relationships when acting on a collection', () => {
+
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+
+    (<any> model1).relations['related-model'] = model2;
+    (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+        bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
+        bookshelf.Model.forge<any>({id: '11', attr: 'value'})
+    ]);
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1]);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+        included: [
+            {
+                id: '6',
+                type: 'related-models',
+                attributes: {
+                    attr: 'value'
+                },
+                relationships: {
+                    'nested-related-models': {
+                        data: [{
+                            type: 'nested-related-models',
+                            id: '10'
+                        }, {
+                                type: 'nested-related-models',
+                                id: '11'
+                            }]
+                    }
+                }
+            },
+            {
+                id: '10',
+                type: 'nested-related-models',
+                attributes: {
+                    attr: 'value'
+                }
+            },
+            {
+                id: '11',
+                type: 'nested-related-models',
+                attributes: {
+                    attr: 'value'
+                }
+            }
+        ],
+        data: [{
+            relationships: {
+                'related-model': {
+                    data: {
+                        type: 'related-models',
+                        id: '6'
+                    }
+                }
+            }
+        }]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
 
 
   it('should give an option to ignore relations', () => {

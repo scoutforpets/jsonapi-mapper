@@ -26,7 +26,7 @@ export function buildRelation(baseUrl: string,
     ref: 'id',
     attributes: relatedKeys,
     relationshipLinks: links.buildRelationship(baseUrl, modelType, relatedType),
-    includedLinks: links.buildSelf(baseUrl, modelType),
+    includedLinks: links.buildSelf(baseUrl, modelType, relatedType),
     included: included
   };
 }
@@ -84,10 +84,21 @@ export function toJSON(data: any): any {
   if (_.isPlainObject(json)) {
 
     if (!_.has(json, 'id')) { json.id = data.id; }
+
     // Loop over data relations to fill the relationships objects
     // and the included array
     _.forOwn(data.relations, function (relModel: Model, relName: string): void {
+
       if (!_.has(json[relName], 'id')) { json[relName].id = relModel.id; }
+
+      // Loop over nested relations, if they exist
+      _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
+
+          // `toJSON()` method isn't recursive, so need to convert nested relation to JSON explicitly
+          json[relName][nestedRelName] = nestedRelModel.toJSON();
+
+          if (!_.has(json[relName][nestedRelName], 'id')) { json[relName][nestedRelName].id = nestedRelModel.id; }
+      });
     });
 
   // Collection case
@@ -107,6 +118,15 @@ export function toJSON(data: any): any {
         // and the included array
         _.forOwn(data.models[i].relations, (relModel: Model, relName: string): void => {
           if (!_.has(json[i][relName], 'id')) { json[i][relName].id = relModel.id; }
+
+          // Loop over nested relations, if they exist
+          _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
+
+              // `toJSON()` method isn't recursive, so need to convert nested relation to JSON explicitly
+              json[i][relName][nestedRelName] = nestedRelModel.toJSON();
+
+              if (!_.has(json[i][relName][nestedRelName], 'id')) { json[i][relName][nestedRelName].id = nestedRelModel.id; }
+          });
         });
 
       })(index);

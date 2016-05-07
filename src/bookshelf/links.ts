@@ -104,21 +104,22 @@ export function buildPagination(
  * @param query
  * @returns {{self: (function(any, any): string)}}
  */
-export function buildSelf(baseUrl: string, modelType: string, query?: any): Serializer.ILinkObj {
+export function buildSelf(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
   return {
-    self: function(data: Data): string {
+    self: function(parent: Data, current: Data): string {
 
+      let type: string = relatedType || modelType;
       let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
+        inflection.pluralize(type);
 
       // If a model
-      if (utils.isModel(data)) {
-        let model: Model = <Model> data;
+      if (utils.isModel(current)) {
+        let model: Model = <Model> current;
 
         return link + '/' + model.id; // TODO ADD QUERY PARAMS AND PAGINATION
 
       // If collection
-      } else if (utils.isCollection(data)) {
+      } else if (utils.isCollection(current)) {
         return link;
       }
     }
@@ -135,7 +136,9 @@ export function buildSelf(baseUrl: string, modelType: string, query?: any): Seri
  */
 export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
   return {
-    self: function(data: Data): string {
+    self: function(model: Data, related: Data): string {
+
+      let data: Data = model[modelType] || model;
 
       let link: string = baseUrl + '/' +
         inflection.pluralize(modelType);
@@ -148,7 +151,9 @@ export function buildRelationship(baseUrl: string, modelType: string, relatedTyp
 
       return link;
     },
-    related: function(data: Data): string {
+    related: function(model: Data, related: Data): string {
+
+      let data: Data = model[modelType] || model;
 
       let link: string = baseUrl + '/' +
         inflection.pluralize(modelType);
@@ -163,4 +168,3 @@ export function buildRelationship(baseUrl: string, modelType: string, relatedTyp
     }
   };
 }
-
