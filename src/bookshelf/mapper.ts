@@ -113,6 +113,11 @@ export default class Bookshelf implements I.Mapper {
               if (!_.include(template.attributes, relName)) {
                 // Add relation to attribute list
                 template.attributes.push(relName);
+                // template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+              }
+
+              // Apply relation attributes
+              if (template[relName] === undefined || _.isEmpty(template[relName].attributes)) {
 
                 // Add relation serialization
                 template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);

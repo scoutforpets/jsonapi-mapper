@@ -925,6 +925,44 @@ describe('Bookshelf relations', () => {
 
   });
 
+  it('should put the array of related objects in the included array with proper attributes even if relation is empty', () => {
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+
+    (<any> model1).relations['related-models'] = bookshelf.Collection.forge<any>();
+
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+
+    (<any> model2).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
+      bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
+    ]);
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '12',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value22'
+          }
+        },
+        {
+          id: '13',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value23'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
 
   it('should give an option to ignore relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
