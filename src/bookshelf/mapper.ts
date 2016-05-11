@@ -35,7 +35,6 @@ export default class Bookshelf implements I.Mapper {
    * @returns {"jsonapi-serializer".Serializer}
    */
   map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
-
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
@@ -113,7 +112,6 @@ export default class Bookshelf implements I.Mapper {
               if (!_.include(template.attributes, relName)) {
                 // Add relation to attribute list
                 template.attributes.push(relName);
-                // template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
               }
 
               // Apply relation attributes
@@ -126,11 +124,19 @@ export default class Bookshelf implements I.Mapper {
               // Support a nested relationship
               _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
 
-                  // Add relation to attribute list
-                  template[relName].attributes.push(nestedRelName);
+                  // Avoid duplicates
+                  if (!_.includes(template[relName].attributes, nestedRelName)) {
 
-                  // Add nested relation serialization
-                  template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+                      // Add relation to attribute list
+                      template[relName].attributes.push(nestedRelName);
+                  }
+
+                  // Apply relation attributes
+                  if (template[relName][nestedRelName] === undefined || _.isEmpty(template[relName][nestedRelName].attributes)) {
+
+                      // Add nested relation serialization
+                      template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+                  }
               });
 
           });
