@@ -19,9 +19,11 @@ export interface Model extends BModel<any> {
  * @returns {boolean}
  */
 export function isModel(data: Data): data is Model {
-  if (!data) return false;
-  // Duck-typing
-  return (<Model> data).attributes !== undefined;
+  if (!data) {
+    return false;
+  } else {
+    return ! isCollection(data);
+  }
 }
 
 // Using internally defined properties
@@ -36,9 +38,12 @@ export interface Collection extends BCollection<any> {
  * @returns {boolean}
  */
 export function isCollection(data: Data): data is Collection {
-  if (!data) return false;
-  // Duck-typing
-  return (<Collection> data).models !== undefined;
+  if (!data) {
+    return false;
+  } else {
+    // Duck-typing
+    return (<Collection> data).models !== undefined;
+  }
 }
 
 
