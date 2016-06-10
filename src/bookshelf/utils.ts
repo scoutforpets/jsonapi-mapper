@@ -1,6 +1,6 @@
 'use strict';
 
-import {Data, Model, Collection} from './extras';
+import {Data, Model, isModel, Collection, isCollection} from './extras';
 import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
@@ -74,87 +74,32 @@ export function getDataAttributes(data: Data): any {
  * @param data
  * @returns {any}
  */
-export function toJSON(data: any): any {
+export function toJSON(data: Data): any {
 
   let json: any = (data && data.toJSON()) || null;
 
-  if (_.isNull(json)) { return json; }
+  // Nothing to convert
+  if (_.isNull(json)) { 
+    return json; 
 
   // Model case
-  if (_.isPlainObject(json)) {
-
+  } else if (isModel(data)) {
+    
+    // Assign the id for the model if it's not present already
     if (!_.has(json, 'id')) { json.id = data.id; }
 
-    // Loop over data relations to fill the relationships objects
-    // and the included array
-    _.forOwn(data.relations, function (relModel: Model, relName: string): void {
-
-      if (!_.has(json[relName], 'id')) { json[relName].id = relModel.id; }
-
-      // Loop over nested relations, if they exist
-      _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
-
-          // `toJSON()` method isn't recursive, so need to convert nested relation to JSON explicitly
-          json[relName][nestedRelName] = nestedRelModel.toJSON();
-
-          if (!_.has(json[relName][nestedRelName], 'id')) { json[relName][nestedRelName].id = nestedRelModel.id; }
-      });
+    // Loop over model relations to call toJSON recursively on them
+    _.forOwn(data.relations, function (rel: Data, relName: string): void {
+      json[relName] = toJSON(rel);
     });
 
   // Collection case
-  } else if (_.isArray(json) && json.length > 0) {
-
-    let noId: boolean = !_.has(json[0], 'id');
-
-    // Explicit for loop to iterate
-    // over collection models and json array
-    for (let index: number = 0; index < json.length; ++index) {
-
-      // IIFE to avoid let to var transformation errors
-      ((i: number) => {
-        if (noId) { json[i].id = data.models[i].id; }
-
-        // Loop over data relations to fill the relationships objects
-        // and the included array
-        _.forOwn(data.models[i].relations, (relModel: Model, relName: string): void => {
-          if (!_.has(json[i][relName], 'id')) { json[i][relName].id = relModel.id; }
-
-          // Loop over nested relations, if they exist
-          _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
-
-              // `toJSON()` method isn't recursive, so need to convert nested relation to JSON explicitly
-              json[i][relName][nestedRelName] = nestedRelModel.toJSON();
-
-              if (!_.has(json[i][relName][nestedRelName], 'id')) { json[i][relName][nestedRelName].id = nestedRelModel.id; }
-          });
-        });
-
-      })(index);
+  } else if (isCollection(data)) {
+    // Run a recursive toJSON on each model of the collection
+    for (let index: number = 0; index < data.length; ++index) {
+      json[index] = toJSON(data.models[index]);
     }
-
   }
 
   return json;
-}
-
-/**
- * Determine whether a Bookshelf object is a Model.
- * @param data
- * @returns {boolean}
- */
-export function isModel(data: Data): boolean {
-  if (!data) return false;
-  // Is-not-a-Duck-typing
-  return (<Collection> data).models === undefined;
-}
-
-/**
- * Determine whether a Bookshelf object is a Collection.
- * @param data
- * @returns {boolean}
- */
-export function isCollection(data: Data): boolean {
-  if (!data) return false;
-  // Duck-typing
-  return (<Collection> data).models !== undefined;
 }

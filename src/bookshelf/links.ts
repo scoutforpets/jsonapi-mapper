@@ -5,7 +5,7 @@ import * as inflection from 'inflection';
 import * as Qs from 'qs';
 import * as Serializer from 'jsonapi-serializer';
 
-import {Data, Model, Collection} from './extras';
+import {Data, Model, isModel, Collection, isCollection} from './extras';
 import * as I from '../interfaces.d';
 import * as utils from './utils';
 
@@ -113,13 +113,10 @@ export function buildSelf(baseUrl: string, modelType: string, relatedType: strin
         inflection.pluralize(type);
 
       // If a model
-      if (utils.isModel(current)) {
-        let model: Model = <Model> current;
-
-        return link + '/' + model.id; // TODO ADD QUERY PARAMS AND PAGINATION
-
+      if (isModel(current)) {
+        return link + '/' + current.id; // TODO ADD QUERY PARAMS AND PAGINATION
       // If collection
-      } else if (utils.isCollection(current)) {
+      } else if (isCollection(current)) {
         return link;
       }
     }
