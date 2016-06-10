@@ -1,6 +1,6 @@
 'use strict';
 
-import {Data, Model, Collection} from './extras';
+import {Data, Model, isModel, Collection, isCollection} from './extras';
 import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
 import * as inflection from 'inflection';
@@ -135,26 +135,4 @@ export function toJSON(data: any): any {
   }
 
   return json;
-}
-
-/**
- * Determine whether a Bookshelf object is a Model.
- * @param data
- * @returns {boolean}
- */
-export function isModel(data: Data): boolean {
-  if (!data) return false;
-  // Is-not-a-Duck-typing
-  return (<Collection> data).models === undefined;
-}
-
-/**
- * Determine whether a Bookshelf object is a Collection.
- * @param data
- * @returns {boolean}
- */
-export function isCollection(data: Data): boolean {
-  if (!data) return false;
-  // Duck-typing
-  return (<Collection> data).models !== undefined;
 }

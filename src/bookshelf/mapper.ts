@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as Serializer from 'jsonapi-serializer';
 import * as tc from 'type-check';
 
-import {Data, Model, Collection} from './extras';
+import {Data, Model, isModel, Collection, isCollection} from './extras';
 import * as I from '../interfaces.d';
 import * as links from './links';
 import * as utils from './utils';
@@ -45,18 +45,16 @@ export default class Bookshelf implements I.Mapper {
     template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
 
     // Serializer process for a Model
-    if (utils.isModel(data)) {
-      let model: Model = <Model> data;
-
+    if (isModel(data)) {
       // Add list of valid attributes
-      template.attributes = utils.getDataAttributesList(model);
+      template.attributes = utils.getDataAttributesList(data);
 
       // Provide support for withRelated option TODO WARNING DEPRECATED. To be deleted on next major version
       if (bookshelfOptions.includeRelations) bookshelfOptions.relations = bookshelfOptions.includeRelations;
 
       // Add relations (only if permitted)
       if (bookshelfOptions.relations) {
-        _.forOwn(model.relations, function (relModel: Model, relName: string): void {
+        _.forOwn(data.relations, function (relModel: Model, relName: string): void {
 
           // Skip if the relation is not permitted
           if (bookshelfOptions.relations === false ||
@@ -85,9 +83,9 @@ export default class Bookshelf implements I.Mapper {
       }
 
       // Serializer process for a Collection
-    } else if (utils.isCollection(data)) {
+    } else if (isCollection(data)) {
 
-      let model: Model = (<Collection> data).first();
+      let model: Model = data.first();
 
       if (!_.isUndefined(model)) {
 

@@ -13,10 +13,33 @@ export interface Model extends BModel<any> {
   relations:  RelationsObject;
 }
 
+/**
+ * Determine whether a Bookshelf object is a Model.
+ * @param data
+ * @returns {boolean}
+ */
+export function isModel(data: Data): data is Model {
+  if (!data) return false;
+  // Duck-typing
+  return (<Model> data).attributes !== undefined;
+}
+
 // Using internally defined properties
 export interface Collection extends BCollection<any> {
   models: Model[];
   length: number;
 }
+
+/**
+ * Determine whether a Bookshelf object is a Collection.
+ * @param data
+ * @returns {boolean}
+ */
+export function isCollection(data: Data): data is Collection {
+  if (!data) return false;
+  // Duck-typing
+  return (<Collection> data).models !== undefined;
+}
+
 
 export type Data = Model | Collection;
