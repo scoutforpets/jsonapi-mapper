@@ -95,11 +95,9 @@ export function toJSON(data: Data): any {
 
   // Collection case
   } else if (isCollection(data)) {
-    let collection = data as Collection;
-
     // Run a recursive toJSON on each model of the collection
-    for (let index: number = 0; index < collection.length; ++index) {
-      json[index] = toJSON(collection.models[index]);
+    for (let index: number = 0; index < data.length; ++index) {
+      json[index] = toJSON(data.models[index]);
     }
   }
 
