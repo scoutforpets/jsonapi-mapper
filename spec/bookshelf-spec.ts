@@ -633,7 +633,7 @@ describe('Bookshelf relations', () => {
     bookshelf.knex.destroy(done);
   });
 
-  fit('should add relationships object', () => {
+  it('should add relationships object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
     (<any> model).relations['related-model']
