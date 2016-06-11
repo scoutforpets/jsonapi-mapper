@@ -633,11 +633,13 @@ describe('Bookshelf relations', () => {
     bookshelf.knex.destroy(done);
   });
 
-  it('should add relationships object', () => {
+  fit('should add relationships object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
+    (<any> model).relations['related-model']
+                 .relations['inner-related-model'] = bookshelf.Model.forge<any>({id: '20', attr3: 'value3'});
 
-    let result: any = mapper.map(model, 'models');
+    let result: any = mapper.map(model, 'model');
 
     let expected: any = {
       data: {
@@ -654,13 +656,36 @@ describe('Bookshelf relations', () => {
             }
           }
         }
-      }
+      },
+      included: [
+        {
+          type: 'related-models',
+          id: '10',
+          attributes: {
+            attr2: 'value2'
+          },
+          relationships: {
+            'inner-related-model': {
+              data: {
+                id: '20',
+                type: 'inner-related-models'
+              }
+            }
+          }
+        },
+        {
+          type: 'inner-related-models',
+          id: '20',
+          attributes: {
+            attr3: 'value3'
+          }
+        }
+      ]
     };
 
     expect(_.matches(expected)(result)).toBe(true);
 
   });
-
 
   it('should put the single related object in the included array', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
