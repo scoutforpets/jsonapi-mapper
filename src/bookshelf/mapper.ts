@@ -1,7 +1,7 @@
 'use strict';
 
 import * as _ from 'lodash';
-import * as Serializer from 'jsonapi-serializer';
+import { Serializer, ILinkObj, ISerializerOptions } from 'jsonapi-serializer';
 import * as tc from 'type-check';
 
 import {Data, Model, isModel, Collection, isCollection} from './extras';
@@ -15,14 +15,14 @@ let typeCheck: Checker = tc.typeCheck;
 export default class Bookshelf implements I.Mapper {
 
   private baseUrl: string;
-  private serializerOptions: Serializer.ISerializerOptions;
+  private serializerOptions: ISerializerOptions;
 
   /**
    * Default constructor
    * @param baseUrl
    * @param serializerOptions
    */
-  constructor(baseUrl: string, serializerOptions?: Serializer.ISerializerOptions) {
+  constructor(baseUrl: string, serializerOptions?: ISerializerOptions) {
     this.baseUrl = baseUrl;
     this.serializerOptions = serializerOptions;
   }
@@ -38,7 +38,7 @@ export default class Bookshelf implements I.Mapper {
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
-    let template: Serializer.ISerializerOptions = {};
+    let template: ISerializerOptions = {};
 
     // Build links objects
     template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
@@ -107,7 +107,7 @@ export default class Bookshelf implements I.Mapper {
               }
 
               // Avoid duplicates
-              if (!_.include(template.attributes, relName)) {
+              if (!_.includes(template.attributes, relName)) {
                 // Add relation to attribute list
                 template.attributes.push(relName);
               }
@@ -148,6 +148,6 @@ export default class Bookshelf implements I.Mapper {
 
     // Return the data in JSON API format
     let json : any = utils.toJSON(data);
-    return new Serializer(type, json, template);
+    return new Serializer(type, template).serialize(json);
   }
 }
