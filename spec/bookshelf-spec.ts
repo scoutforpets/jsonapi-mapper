@@ -616,6 +616,48 @@ describe('Bookshelf links', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should not add pagination links if collection is empty', () => {
+    let limit: number = 10;
+    let offset: number = 40;
+    let total: number = 0;
+
+    let collection: Collection = bookshelf.Collection.forge<any>([]);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        total: total
+      }
+    });
+
+    expect(result.links).toBeDefined();
+    expect(Object.keys(result.links)).not.toContain(['first', 'prev', 'next', 'last']);
+  });
+
+  it('should not add pagination links if total <= limit', () => {
+    let limit: number = 10;
+    let offset: number = 40;
+    let total: number = 10;
+
+    let elements: Model[] = _.range(total).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        total: total
+      }
+    });
+
+    expect(result.links).toBeDefined();
+    expect(Object.keys(result.links)).not.toContain(['first', 'prev', 'next', 'last']);
+  });
+
 });
 
 describe('Bookshelf relations', () => {

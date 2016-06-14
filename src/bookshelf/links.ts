@@ -28,8 +28,13 @@ export function buildTop(
     self: baseUrl + '/' + inflection.pluralize(type)
   };
 
-  // Add pagination if given
-  if (pag) _.assign(obj, buildPagination(baseUrl, type, pag, query));
+  // Add pagination if given, total records is greater than 0 
+  // and total records is less than limit.
+  if (pag &&
+      pag.total > 0 &&
+      pag.total > pag.limit) {
+      _.assign(obj, buildPagination(baseUrl, type, pag, query));
+  }
 
   return obj;
 }
