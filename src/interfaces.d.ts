@@ -14,6 +14,7 @@ export interface BookshelfOptions extends MapperOptions {
   pagination?: PagParams;
   relations?: boolean | string[];
   includeRelations?: boolean | string[]; // TODO WARNING DEPRECATED. To be deleted on next major version
+  disableLinks?: boolean
 }
 
 // Pagination fields

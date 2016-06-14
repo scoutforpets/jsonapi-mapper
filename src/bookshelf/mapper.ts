@@ -41,8 +41,10 @@ export default class Bookshelf implements I.Mapper {
     let template: ISerializerOptions = {};
 
     // Build links objects
-    template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
-    template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
+    if (!bookshelfOptions.disableLinks) {
+        template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
+        template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
+    }
 
     // Serializer process for a Model
     if (isModel(data)) {
@@ -68,7 +70,7 @@ export default class Bookshelf implements I.Mapper {
           template.attributes.push(relName);
 
           // Add relation serialization
-          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true, bookshelfOptions.disableLinks);
 
           // Support a nested relationship
           _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
@@ -77,7 +79,7 @@ export default class Bookshelf implements I.Mapper {
               template[relName].attributes.push(nestedRelName);
 
               // Add nested relation serialization
-              template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+              template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true, bookshelfOptions.disableLinks);
           });
         });
       }
@@ -116,7 +118,7 @@ export default class Bookshelf implements I.Mapper {
               if (template[relName] === undefined || _.isEmpty(template[relName].attributes)) {
 
                 // Add relation serialization
-                template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+                template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true, bookshelfOptions.disableLinks);
               }
 
               // Support a nested relationship
@@ -133,7 +135,7 @@ export default class Bookshelf implements I.Mapper {
                   if (template[relName][nestedRelName] === undefined || _.isEmpty(template[relName][nestedRelName].attributes)) {
 
                       // Add nested relation serialization
-                      template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
+                      template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true, bookshelfOptions.disableLinks);
                   }
               });
 

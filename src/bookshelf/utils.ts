@@ -19,16 +19,22 @@ export function buildRelation(baseUrl: string,
                               modelType: string,
                               relatedType: string,
                               relatedKeys: string[],
-                              included: boolean)
+                              included: boolean,
+                              disableLinks: boolean)
 : Serializer.ISerializerOptions {
 
-  return {
+  let r: any = {
     ref: 'id',
     attributes: relatedKeys,
-    relationshipLinks: links.buildRelationship(baseUrl, modelType, relatedType),
-    includedLinks: links.buildSelf(baseUrl, modelType, relatedType),
     included: included
   };
+
+  if(!disableLinks) {
+      r.relationshipLinks = links.buildRelationship(baseUrl, modelType, relatedType);
+      r.includedLinks = links.buildSelf(baseUrl, modelType, relatedType);
+  }
+
+  return r;
 }
 
 /**
@@ -79,12 +85,12 @@ export function toJSON(data: Data): any {
   let json: any = (data && data.toJSON()) || null;
 
   // Nothing to convert
-  if (_.isNull(json)) { 
-    return json; 
+  if (_.isNull(json)) {
+    return json;
 
   // Model case
   } else if (isModel(data)) {
-    
+
     // Assign the id for the model if it's not present already
     if (!_.has(json, 'id')) { json.id = data.id; }
 
