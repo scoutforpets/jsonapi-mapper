@@ -28,6 +28,43 @@ export default class Bookshelf implements I.Mapper {
   }
 
   /**
+   * Recursively add all the (nested) relations to the template
+   * @param data
+   * @param type
+   * @param bookshelfOptions
+   * @param template
+   */
+  mapRelations(model: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions): any {
+    let self: this = this;
+    _.forOwn(model.relations, function (relModel: Model, relName: string): void {
+
+        // Skip if the relation is not permitted
+        if (bookshelfOptions.relations === false ||
+          (typeCheck('[String]', bookshelfOptions.relations) &&
+          (<string[]> bookshelfOptions.relations).indexOf(relName) < 0)) {
+
+          return;
+        }
+
+        // Avoid duplicates
+        if (!_.includes(template.attributes, relName)) {
+          // Add relation to attribute list
+          template.attributes.push(relName);
+        }
+
+        // Apply relation attributes
+        if (template[relName] === undefined || _.isEmpty(template[relName].attributes)) {
+
+          // Add relation serialization
+          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+        }
+
+        // recurse to add nested relations
+        self.mapRelations(relModel, relName, bookshelfOptions, template[relName]);
+    });
+  }
+
+  /**
    * Maps bookshelf data to a JSON-API 1.0 compliant object
    * @param data
    * @param type
@@ -54,32 +91,7 @@ export default class Bookshelf implements I.Mapper {
 
       // Add relations (only if permitted)
       if (bookshelfOptions.relations) {
-        _.forOwn(data.relations, function (relModel: Model, relName: string): void {
-
-          // Skip if the relation is not permitted
-          if (bookshelfOptions.relations === false ||
-            (typeCheck('[String]', bookshelfOptions.relations) &&
-            (<string[]> bookshelfOptions.relations).indexOf(relName) < 0)) {
-
-            return;
-          }
-
-          // Add relation to attribute list
-          template.attributes.push(relName);
-
-          // Add relation serialization
-          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
-
-          // Support a nested relationship
-          _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
-
-              // Add relation to attribute list
-              template[relName].attributes.push(nestedRelName);
-
-              // Add nested relation serialization
-              template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
-          });
-        });
+        self.mapRelations(data, type, bookshelfOptions, template);
       }
 
       // Serializer process for a Collection
@@ -96,48 +108,7 @@ export default class Bookshelf implements I.Mapper {
         if (bookshelfOptions.includeRelations) bookshelfOptions.relations = bookshelfOptions.includeRelations;
 
         data.forEach((model) => {
-          _.forOwn(model.relations, function (relModel: Model, relName: string): void {
-
-              // Skip if the relation is not permitted
-              if (bookshelfOptions.relations === false ||
-                (typeCheck('[String]', bookshelfOptions.relations) &&
-                (<string[]> bookshelfOptions.relations).indexOf(relName) < 0)) {
-
-                return;
-              }
-
-              // Avoid duplicates
-              if (!_.includes(template.attributes, relName)) {
-                // Add relation to attribute list
-                template.attributes.push(relName);
-              }
-
-              // Apply relation attributes
-              if (template[relName] === undefined || _.isEmpty(template[relName].attributes)) {
-
-                // Add relation serialization
-                template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
-              }
-
-              // Support a nested relationship
-              _.forOwn(relModel.relations, function (nestedRelModel: Model, nestedRelName: string): void {
-
-                  // Avoid duplicates
-                  if (!_.includes(template[relName].attributes, nestedRelName)) {
-
-                      // Add relation to attribute list
-                      template[relName].attributes.push(nestedRelName);
-                  }
-
-                  // Apply relation attributes
-                  if (template[relName][nestedRelName] === undefined || _.isEmpty(template[relName][nestedRelName].attributes)) {
-
-                      // Add nested relation serialization
-                      template[relName][nestedRelName] = utils.buildRelation(self.baseUrl, relName, nestedRelName, utils.getDataAttributesList(nestedRelModel), true);
-                  }
-              });
-
-          });
+          self.mapRelations(model, type, bookshelfOptions, template);
         });
 
       }
