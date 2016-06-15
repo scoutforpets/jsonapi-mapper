@@ -34,7 +34,7 @@ export default class Bookshelf implements I.Mapper {
    * @param bookshelfOptions
    * @param template
    */
-  mapRelations(model: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions): any {
+  mapRelations(model: Model, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions): void {
     let self: this = this;
     _.forOwn(model.relations, function (relModel: Model, relName: string): void {
 
