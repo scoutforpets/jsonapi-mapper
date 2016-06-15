@@ -637,7 +637,7 @@ describe('Bookshelf links', () => {
 
   it('should not add pagination links if total <= limit', () => {
     let limit: number = 10;
-    let offset: number = 40;
+    let offset: number = 0;
     let total: number = 10;
 
     let elements: Model[] = _.range(total).map((num: number) => {
