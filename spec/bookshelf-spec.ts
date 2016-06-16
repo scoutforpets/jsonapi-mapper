@@ -616,6 +616,26 @@ describe('Bookshelf links', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should give an option to disable all links', () => {
+
+      let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+      let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+
+      (<any> model1).relations['related-model'] = model2;
+      (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+          bookshelf.Model.forge<any>({id: '10', attr: 'value'})
+      ]);
+
+      let collection: Collection = bookshelf.Collection.forge<any>([model1]);
+
+      let result: any = mapper.map(collection, 'models', { disableLinks: true });
+
+      expect(result.links).not.toBeDefined();
+      expect(result.data[0].relationships['related-model'].links).not.toBeDefined();
+      expect(result.included[0].links).not.toBeDefined();
+      expect(result.included[1].links).not.toBeDefined();
+  });
+
 });
 
 describe('Bookshelf relations', () => {

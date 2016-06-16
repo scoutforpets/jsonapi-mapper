@@ -35,7 +35,9 @@ export default class Bookshelf implements I.Mapper {
    * @param template
    */
   mapRelations(model: Model, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions): void {
+
     let self: this = this;
+
     _.forOwn(model.relations, function (relModel: Model, relName: string): void {
 
         // Skip if the relation is not permitted
@@ -56,7 +58,7 @@ export default class Bookshelf implements I.Mapper {
         if (template[relName] === undefined || _.isEmpty(template[relName].attributes)) {
 
           // Add relation serialization
-          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true);
+          template[relName] = utils.buildRelation(self.baseUrl, type, relName, utils.getDataAttributesList(relModel), true, bookshelfOptions.disableLinks);
         }
 
         // recurse to add nested relations
@@ -78,8 +80,10 @@ export default class Bookshelf implements I.Mapper {
     let template: ISerializerOptions = {};
 
     // Build links objects
-    template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
-    template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
+    if (!bookshelfOptions.disableLinks) {
+        template.topLevelLinks = links.buildTop(self.baseUrl, type, bookshelfOptions.pagination, bookshelfOptions.query);
+        template.dataLinks = links.buildSelf(self.baseUrl, type, null, bookshelfOptions.query);
+    }
 
     // Serializer process for a Model
     if (isModel(data)) {
