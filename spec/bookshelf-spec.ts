@@ -616,6 +616,91 @@ describe('Bookshelf links', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should not add pagination links if no pagination data is passed', () => {
+    let limit: number = 10;
+    let offset: number = 40;
+    let total: number = 100;
+
+    let elements: Model[] = _.range(10).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = mapper.map(collection, 'models');
+
+    expect(result.links).not.toContain(['first', 'prev', 'next', 'last']);
+  });
+
+  it('should support bookshelf\'s new `rowCount` property passed by `Model#fetchPage`', () => {
+    let limit: number = 10;
+    let offset: number = 40;
+    let total: number = 100;
+
+    let elements: Model[] = _.range(10).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        rowCount: total
+      }
+    });
+
+    let expected: any = {
+      links: {
+        first: domain + '/models?page[limit]=' + limit + '&page[offset]=' + 0,
+        prev: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset - limit),
+        next: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset + limit),
+        last: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (total - limit)
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should omit `first` and `prev` pagination links if offset = 0', () => {
+    let limit: number = 5;
+    let offset: number = 0;
+    let total: number = 10;
+
+    let collection: Collection = bookshelf.Collection.forge<any>([]);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        total: total
+      }
+    });
+
+    expect(result.links).toBeDefined();
+    expect(Object.keys(result.links)).not.toContain(['next', 'last']);
+  });
+
+  it('should omit `next` and `last` pagination links if at last page', () => {
+    let limit: number = 5;
+    let offset: number = 0;
+    let total: number = 10;
+
+    let collection: Collection = bookshelf.Collection.forge<any>([]);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: {
+        limit: limit,
+        offset: offset,
+        total: total
+      }
+    });
+
+    expect(result.links).toBeDefined();
+    expect(Object.keys(result.links)).not.toContain(['first', 'prev']);
+  });
+
   it('should not add pagination links if collection is empty', () => {
     let limit: number = 10;
     let offset: number = 40;
@@ -638,7 +723,7 @@ describe('Bookshelf links', () => {
   it('should not add pagination links if total <= limit', () => {
     let limit: number = 10;
     let offset: number = 0;
-    let total: number = 10;
+    let total: number = 5;
 
     let elements: Model[] = _.range(total).map((num: number) => {
       return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});

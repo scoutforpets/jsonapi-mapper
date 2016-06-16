@@ -78,7 +78,7 @@ mapper#map(data, type, mapperOptions)
   - _(optional)_ `pagination` _(object)_: pagination-related parameters for building pagination links for collections.
     - _(required)_ `offset` _(integer)_
     - _(required)_ `limit` _(integer)_
-    - _(optional)_ `total` _(integer)_
+    - _(optional)_ `total` or `rowCount` _(integer)_
 
 # How can I contribute?
 The project is very open to collaboration from the public, especially on providing the groundwork for other ORM's (like [Sequelize](http://docs.sequelizejs.com/) or [Mongoose](http://mongoosejs.com/)). Just open a PR!

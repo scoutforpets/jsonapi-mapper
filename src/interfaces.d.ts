@@ -21,6 +21,7 @@ export interface PagParams {
   offset: number;
   limit: number;
   total?: number;
+  rowCount?: number;
 }
 
 // Query objects must be flat with string values
