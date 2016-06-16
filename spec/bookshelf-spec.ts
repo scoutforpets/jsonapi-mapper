@@ -629,7 +629,11 @@ describe('Bookshelf links', () => {
 
     let result: any = mapper.map(collection, 'models');
 
-    expect(result.links).not.toContain(['first', 'prev', 'next', 'last']);
+    expect(result.links).toBeDefined();
+    expect(Object.keys(result.links)).not.toContain('prev');
+    expect(Object.keys(result.links)).not.toContain('first');
+    expect(Object.keys(result.links)).not.toContain('next');
+    expect(Object.keys(result.links)).not.toContain('last');
   });
 
   it('should support bookshelf\'s new `rowCount` property passed by `Model#fetchPage`', () => {
@@ -679,12 +683,15 @@ describe('Bookshelf links', () => {
     });
 
     expect(result.links).toBeDefined();
-    expect(Object.keys(result.links)).not.toContain(['next', 'last']);
+    expect(Object.keys(result.links)).not.toContain('first');
+    expect(Object.keys(result.links)).not.toContain('prev');
+    expect(Object.keys(result.links)).toContain('next');
+    expect(Object.keys(result.links)).toContain('last');
   });
 
   it('should omit `next` and `last` pagination links if at last page', () => {
     let limit: number = 5;
-    let offset: number = 0;
+    let offset: number = 5;
     let total: number = 10;
 
     let collection: Collection = bookshelf.Collection.forge<any>([]);
@@ -698,7 +705,10 @@ describe('Bookshelf links', () => {
     });
 
     expect(result.links).toBeDefined();
-    expect(Object.keys(result.links)).not.toContain(['first', 'prev']);
+    expect(Object.keys(result.links)).toContain('first');
+    expect(Object.keys(result.links)).toContain('prev');
+    expect(Object.keys(result.links)).not.toContain('next');
+    expect(Object.keys(result.links)).not.toContain('last');
   });
 
   it('should not add pagination links if collection is empty', () => {
@@ -717,7 +727,10 @@ describe('Bookshelf links', () => {
     });
 
     expect(result.links).toBeDefined();
-    expect(Object.keys(result.links)).not.toContain(['first', 'prev', 'next', 'last']);
+    expect(Object.keys(result.links)).not.toContain('prev');
+    expect(Object.keys(result.links)).not.toContain('first');
+    expect(Object.keys(result.links)).not.toContain('next');
+    expect(Object.keys(result.links)).not.toContain('last');
   });
 
   it('should not add pagination links if total <= limit', () => {
@@ -740,7 +753,10 @@ describe('Bookshelf links', () => {
     });
 
     expect(result.links).toBeDefined();
-    expect(Object.keys(result.links)).not.toContain(['first', 'prev', 'next', 'last']);
+    expect(Object.keys(result.links)).not.toContain('prev');
+    expect(Object.keys(result.links)).not.toContain('first');
+    expect(Object.keys(result.links)).not.toContain('next');
+    expect(Object.keys(result.links)).not.toContain('last');
   });
 
 });
