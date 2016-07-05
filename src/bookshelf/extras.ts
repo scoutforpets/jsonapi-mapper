@@ -1,50 +1,51 @@
+/**
+ * The purpose of this module is to extend the initially defined properties,
+ * behaviors and characteristics of the bookshelf API
+ */
+
 'use strict';
 
-import {Model as BModel, Collection as BCollection} from 'bookshelf';
+import { Model as BModel, Collection as BCollection } from 'bookshelf';
 
+/**
+ * Internal form of the relations property of bookshelf objects
+ */
 export interface RelationsObject {
   [relations: string]: Data;
 }
 
-// Using internally defined properties
+/**
+ * Bookshelf Model including some private properties
+ */
 export interface Model extends BModel<any> {
-  id: any; // TODO IMPROVE REAL TYPE
+  id: any;
   attributes: any;
-  relations:  RelationsObject;
+  relations: RelationsObject;
 }
 
 /**
- * Determine whether a Bookshelf object is a Model.
- * @param data
- * @returns {boolean}
+ * Bookshelf Model Type Guard
+ * https://basarat.gitbooks.io/typescript/content/docs/types/typeGuard.html
  */
 export function isModel(data: Data): data is Model {
-  if (!data) {
-    return false;
-  } else {
-    return ! isCollection(data);
-  }
+  return data ? !isCollection(data) : false;
 }
 
-// Using internally defined properties
+/**
+ * Bookshelf Collection including some private properties
+ */
 export interface Collection extends BCollection<any> {
   models: Model[];
   length: number;
 }
 
 /**
- * Determine whether a Bookshelf object is a Collection.
- * @param data
- * @returns {boolean}
+ * Bookshelf Collection Type Guard
+ * https://basarat.gitbooks.io/typescript/content/docs/types/typeGuard.html
  */
 export function isCollection(data: Data): data is Collection {
-  if (!data) {
-    return false;
-  } else {
-    // Duck-typing
-    return (<Collection> data).models !== undefined;
-  }
+  // Type recognition based on duck-typing
+  return data ? (data as Collection).models !== undefined : false;
 }
-
 
 export type Data = Model | Collection;
