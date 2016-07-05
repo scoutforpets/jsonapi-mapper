@@ -1,31 +1,25 @@
-import * as serializer from 'jsonapi-serializer';
+import { PagOpts, QueryOpts } from './links';
 
-// Main interface that mappers must implement
+//// GENERAL INTERFACES FOR MAPPERS
+
+// Mapper
 export interface Mapper {
-  map(data: any, type: string, mapperOptions?: MapperOptions): any;
+  map(data: any, type: string, mapOpts?: MapOpts): any;
 }
 
-// Default mapper options
-export interface MapperOptions {}
+// Mapper Options
+export interface MapOpts {}
 
-// Mapper options for bookshelf
-export interface BookshelfOptions extends MapperOptions {
-  query?: QueryObj;
-  pagination?: PagParams;
+//// BOOKSHELF INTERFACES
+
+// Bookshelf Options
+export interface BookOpts extends MapOpts {
+  // Nesting-related
   relations?: boolean | string[];
   includeRelations?: boolean | string[]; // TODO WARNING DEPRECATED. To be deleted on next major version
+  
+  // Links-related
+  pagination?: PagOpts;
+  query?: QueryOpts;
   disableLinks?: boolean
-}
-
-// Pagination fields
-export interface PagParams {
-  offset: number;
-  limit: number;
-  total?: number;
-  rowCount?: number;
-}
-
-// Query objects must be flat with string values
-export interface QueryObj {
-  [key: string]: string;
 }
