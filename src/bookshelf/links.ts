@@ -9,104 +9,91 @@ import {Data, Model, isModel, Collection, isCollection} from './extras';
 import * as I from '../interfaces.d';
 import * as utils from './utils';
 
-/**
- * Generates the top level links object.
- * @param baseUrl
- * @param type
- * @param query
- * @param pag
- * @returns any TODO LINKS OBJECT
- */
-export function buildTop(
-    baseUrl: string,
-    type: string,
-    pag?: I.PagParams,
-    query?: I.QueryObj)
-    : Serializer.ILinkObj {
+import { assign, omit, isEmpty } from 'lodash';
+import { pluralize } from 'inflection';
+import { stringify } from 'qs';
 
-  let obj: Serializer.ILinkObj = {
-    self: baseUrl + '/' + inflection.pluralize(type)
+import { LinkOpts } from "../links";
+import { LinkObj } from 'jsonapi-serializer2';
+
+/**
+ * Creates top level links object, for primary data and pagination links
+ */
+export function topLinks(opts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag } = opts;
+
+  let obj: LinkObj = {
+    self: baseUrl + '/' + pluralize(type)
   };
 
-  // Only build pagination if pagination data was passed.
+  // Build pagination if available
   if (pag) {
 
-      // Support Bookshelf's built-in paging parameters
-      if (pag.rowCount) pag.total = pag.rowCount;
-
-      // Add pagination if total records is greater than 0
-      // and total records is less than limit.
-      if(pag.total > 0 && pag.total > pag.limit) {
-        _.assign(obj, buildPagination(baseUrl, type, pag, query));
-      }
+    // Support Bookshelf's built-in paging parameters
+    if (pag.rowCount) pag.total = pag.rowCount;
+    
+    // Only add pagination links when more than 1 page
+    if (pag.total > 0 && pag.total > pag.limit) {
+      assign(obj, pagLinks(opts));
+    }
   }
-
+  
   return obj;
 }
 
 /**
- * Generates pagination links for a collection.
- * @param baseUrl
- * @param type
- * @param pag
- * @param query
- * @returns any TODO PAGINATION LINKS OBJECT
+ * Create links object, for pagination links
  */
-export function buildPagination(
-    baseUrl: string,
-    type: string,
-    pag: I.PagParams,
-    query: any = {})
-    : Serializer.ILinkObj {
+export function pagLinks(opts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag, query } = opts;
+  let { offset, limit, total } = pag;
+  
+  // All links are based on the resource type
+  let baseLink: string = baseUrl + '/' + pluralize(type);
+  
+  // Stringify the query string without page element
+  let queryStr: string = stringify(omit(query, 'page'), {encode: false});
 
-  let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
+  let obj: LinkObj = {} as LinkObj;
 
-  query = _.omit(query, 'page');
-  let queryStr: string = Qs.stringify(query, {encode: false});
-
-  let pagingLinks: any = {};
-
-  if (pag.offset > 0) {
-
-      pagingLinks.first = function(): string {
-
-        return baseLink +
-          '?page[limit]=' + pag.limit +
-          '&page[offset]=0' +
-          queryStr;
-
-      };
-
-      pagingLinks.prev = function(): string {
-
-        return baseLink +
-          '?page[limit]=' + pag.limit +
-          '&page[offset]=' + (pag.offset - pag.limit) +
-          queryStr;
-      };
-  }
-
-  if (pag.total && (pag.offset + pag.limit < pag.total)) {
-
-    pagingLinks.next = function(collection: Collection): string {
-
+  // Add leading pag links if not at the first page
+  if (offset > 0) {
+    obj.first = function() {
       return baseLink +
-        '?page[limit]=' + pag.limit +
-        '&page[offset]=' + (pag.offset + pag.limit) +
+        '?page[limit]=' + limit +
+        '&page[offset]=' + '0' +
         queryStr;
     };
-
-    pagingLinks.last = function(): string {
-
+    
+    obj.prev = function() {
       return baseLink +
-        '?page[limit]=' + pag.limit +
-        '&page[offset]=' + (pag.total - pag.limit) +
+        '?page[limit]=' + limit +
+        '&page[offset]=' + (offset - limit) +
         queryStr;
     };
   }
-
-  return !_.isEmpty(pagingLinks) ? pagingLinks : undefined;
+  
+  // Add trailing pag links if not at the last page
+  if (total && (offset + limit < total)) {
+    obj.next = function() {
+      return baseLink +
+        '?page[limit]=' + limit +
+        '&page[offset]=' + (offset + limit) +
+        queryStr;
+    };
+    
+    obj.last = function() {
+      // TODO FIX OVERLAP BETWEEN LAST AND NEXT ELEMENTS
+      return baseLink +
+        '?page[limit]=' + limit +
+        '&page[offset]=' + (total - limit) + 
+        queryStr;
+    }
+  }
+  
+  return !isEmpty(obj) ? obj : undefined;
 }
+
 
 /**
  * Generates the resource's url.
