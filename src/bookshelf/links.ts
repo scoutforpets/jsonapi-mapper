@@ -1,29 +1,21 @@
 'use strict';
 
-import * as _ from 'lodash';
-import * as inflection from 'inflection';
-import * as Qs from 'qs';
-import * as Serializer from 'jsonapi-serializer';
-
-import {Data, Model, isModel, Collection, isCollection} from './extras';
-import * as I from '../interfaces.d';
-import * as utils from './utils';
-
 import { assign, omit, isEmpty } from 'lodash';
-import { pluralize } from 'inflection';
+import { pluralize as plural } from 'inflection';
 import { stringify } from 'qs';
 
+import { Model } from './extras';
 import { LinkOpts } from "../links";
 import { LinkObj } from 'jsonapi-serializer2';
 
 /**
- * Creates top level links object, for primary data and pagination links
+ * Creates top level links object, for primary data and pagination links.
  */
 export function topLinks(opts: LinkOpts): LinkObj {
   let { baseUrl, type, pag } = opts;
 
   let obj: LinkObj = {
-    self: baseUrl + '/' + pluralize(type)
+    self: baseUrl + '/' + plural(type)
   };
 
   // Build pagination if available
@@ -42,14 +34,15 @@ export function topLinks(opts: LinkOpts): LinkObj {
 }
 
 /**
- * Create links object, for pagination links
+ * Create links object, for pagination links.
+ * Since its used only inside other functions in this model, its not exported
  */
-export function pagLinks(opts: LinkOpts): LinkObj {
+function pagLinks(opts: LinkOpts): LinkObj {
   let { baseUrl, type, pag, query } = opts;
   let { offset, limit, total } = pag;
   
   // All links are based on the resource type
-  let baseLink: string = baseUrl + '/' + pluralize(type);
+  let baseLink: string = baseUrl + '/' + plural(type);
   
   // Stringify the query string without page element
   let queryStr: string = stringify(omit(query, 'page'), {encode: false});
@@ -83,7 +76,7 @@ export function pagLinks(opts: LinkOpts): LinkObj {
     };
     
     obj.last = function() {
-      // TODO FIX OVERLAP BETWEEN LAST AND NEXT ELEMENTS
+      // TODO FIX: The last page can overlap with the next page
       return baseLink +
         '?page[limit]=' + limit +
         '&page[offset]=' + (total - limit) + 
@@ -94,72 +87,31 @@ export function pagLinks(opts: LinkOpts): LinkObj {
   return !isEmpty(obj) ? obj : undefined;
 }
 
-
 /**
- * Generates the resource's url.
- * @param baseUrl
- * @param modelType
- * @param query
- * @returns {{self: (function(any, any): string)}}
+ * Creates links object for a resource, as a related one if related type was specified.
  */
-export function buildSelf(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
-  return {
-    self: function(parent: Data, current: Data): string {
-
-      let type: string = relatedType || modelType;
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(type);
-
-      // If a model
-      if (isModel(current)) {
-        return link + '/' + current.id; // TODO ADD QUERY PARAMS AND PAGINATION
-      // If collection
-      } else if (isCollection(current)) {
-        return link;
+export function resourceLinks(opts: LinkOpts): LinkObj {
+  let { baseUrl, type, related } = opts;
+  let baseLink: string = baseUrl + '/' + plural(type);
+  
+  // Case when the resource is related
+  if (related) {
+    return {
+      self: function(model: Model) {
+        return baseLink + '/' + model.id + '/relationships/' + related;
+      },
+      related: function(model: Model) {
+        return baseLink + '/' + model.id + '/' + related;
       }
-    }
-  };
-}
-
-/**
- * Generates the relationship links inside the primary resource
- * @param baseUrl
- * @param modelType
- * @param relatedType
- * @param query
- * @returns {{self: (function(Data): string), related: (function(Data): string)}}
- */
-export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
-  return {
-    self: function(model: Data, related: Data): string {
-
-      let data: Data = model[modelType] || model;
-
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
-
-      // Primary data is expected to be a model
-      link += '/' + (<Model> data).id;
-
-      // Add relationship url component
-      link += '/relationships/' + relatedType;
-
-      return link;
-    },
-    related: function(model: Data, related: Data): string {
-
-      let data: Data = model[modelType] || model;
-
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
-
-      // Primary data is expected to be a model
-      link += '/' + (<Model> data).id;
-
-      // Add relationship url component
-      link += '/' + relatedType;
-
-      return link;
-    }
-  };
+    };
+        
+  // Simple case when the resource is primary
+  } else {
+    return {
+      // TODO FIX: Is not guaranteed to be a Model (could be a collection)
+      self: function(model: Model) {
+        return baseLink + '/' + model.id;
+      }
+    };
+  }
 }
