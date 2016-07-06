@@ -16,15 +16,15 @@ declare module 'jsonapi-serializer2' {
     next?: Link;
   }
 
-  export interface Options {
+  export interface SerialOpts {
     attributes?: string[];
     ref?: string;
     included?: boolean;
 
-    topLevelLinks?: ILinkObj;
-    dataLinks?: ILinkObj;
-    relationshipLinks?: ILinkObj;
-    includedLinks?: ILinkObj;
+    topLevelLinks?: LinkObj;
+    dataLinks?: LinkObj;
+    relationshipLinks?: LinkObj;
+    includedLinks?: LinkObj;
 
     relationshipMeta?: any;
     ignoreRelationshipData?: boolean;
@@ -40,10 +40,7 @@ declare module 'jsonapi-serializer2' {
   }
 
   export class Serializer {
-
-    constructor(type: string,
-                options: ISerializerOptions);
-
+    constructor(type: string, opts: SerialOpts);
     serialize(data: any);
   }
 }

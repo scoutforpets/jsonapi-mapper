@@ -16,7 +16,6 @@ export interface MapOpts {}
 export interface BookOpts extends MapOpts {
   // Nesting-related
   relations?: boolean | string[];
-  includeRelations?: boolean | string[]; // TODO WARNING DEPRECATED. To be deleted on next major version
   
   // Links-related
   pagination?: PagOpts;
