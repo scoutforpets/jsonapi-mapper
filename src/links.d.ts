@@ -23,5 +23,5 @@ export interface LinkOpts {
   type: string;
   related?: string;
   pag?: PagOpts;
-  query: QueryOpts;
+  query?: QueryOpts;
 }
