@@ -1047,7 +1047,7 @@ describe('Bookshelf relations', () => {
 
   });
 
-  fit('should support including nested has-many relationships', () => {
+  it('should support including nested has-many relationships', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
