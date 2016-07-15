@@ -1103,7 +1103,7 @@ describe('Bookshelf relations', () => {
           ],
           data: [{
               relationships: {
-                  'related-model': {
+                  'related-models': {
                       data: [
                         {
                             type: 'related-models',
