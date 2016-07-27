@@ -62,7 +62,13 @@ export default class Bookshelf implements I.Mapper {
         }
 
         // recurse to add nested relations
-        self.mapRelations(relModel, relName, bookshelfOptions, template[relName]);
+        if(relModel.models){
+          for(let model of relModel.models){
+            self.mapRelations(model, relName, bookshelfOptions, template[relName], excludeIdAndTypeColumns);
+          }
+        } else {           
+          self.mapRelations(relModel, relName, bookshelfOptions, template[relName], excludeIdAndTypeColumns);
+        }
     });
   }
 
