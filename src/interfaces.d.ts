@@ -2,7 +2,7 @@ import * as serializer from 'jsonapi-serializer';
 
 // Main interface that mappers must implement
 export interface Mapper {
-  map(data: any, type: string, mapperOptions?: MapperOptions): any;
+  map(data: any, type: string, mapperOptions?: MapperOptions, excludeIdAndTypeColumns?: boolean): any;
 }
 
 // Default mapper options
