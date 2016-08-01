@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-mapper",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/src/mapper.js",
   "scripts": {
@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "inflection": "1.10.0",
-    "jsonapi-serializer": "3.2.1",
+    "jsonapi-serializer": "github:scoutforpets/jsonapi-serializer#empty-relationships-fix",
     "lodash": "4.13.1",
     "qs": "6.2.0",
     "type-check": "^0.3.2"
