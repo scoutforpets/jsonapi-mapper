@@ -14,7 +14,7 @@ import { Information } from './utils';
  * Mapper class for Bookshelf sources
  */
 export default class Bookshelf implements Mapper {
-  
+
   /**
    * Standard constructor
    */
@@ -24,13 +24,12 @@ export default class Bookshelf implements Mapper {
    * Maps bookshelf data to a JSON-API 1.0 compliant object
    */
   map(data: Data, type: string, bookOpts: BookOpts = {relations: true}): any {
-    
-    let template: SerialOpts = {};
-    let linkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
-    let info: Information = { template, bookOpts, linkOpts };
 
-    utils.setTopLinks(info);
-    utils.processData(info, data, 'primary');
+    let linkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
+    let info: Information = { bookOpts, linkOpts };
+
+    let template: SerialOpts = utils.processData(info, data, 'primary');
+    utils.setTopLinks(info, template);
 
     // Override the template with the provided serializer options
     assign(template, this.serialOpts);

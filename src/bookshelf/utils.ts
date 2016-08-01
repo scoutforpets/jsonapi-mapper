@@ -31,8 +31,8 @@ type DataLevel = 'primary' | 'related';
 /**
  * Sets the top level links on the template
  */
-export function setTopLinks(info: Information) {
-  let { template, bookOpts, linkOpts } = info;
+export function setTopLinks(info: Information, template: SerialOpts) {
+  let { bookOpts, linkOpts } = info;
   if (!bookOpts.disableLinks) {
     template.topLevelLinks = topLinks(linkOpts);
   }
@@ -70,7 +70,7 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
       // TODO VERIFY ANY OTHER CHECKS NEEDED
 
       let name: string = relationName(bookOpts, relName);
-      let newLinkOpts: LinkOpts = assign(clone(linkOpts), { type: relName });
+      let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
 
       template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
       template.attributes.push(name);
@@ -85,7 +85,7 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
       // TODO VERIFY ANY OTHER CHECKS NEEDED
 
       let name: string = relationName(bookOpts, relName);
-      let newLinkOpts: LinkOpts = assign(clone(linkOpts), { type: relName });
+      let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
 
       template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
       template.attributes.push(name);
@@ -107,7 +107,7 @@ function getSample(data: Data): Model {
  * following filtering rules
  */
 function getAttrsList(data: Model): any {
-  let attrs = keys(data.attributes);
+  let attrs: string[] = keys(data.attributes);
 
   let restricted: RegExp[] = [
     /^id$/,
@@ -117,7 +117,7 @@ function getAttrsList(data: Model): any {
 
   // Only return attributes that doesn't match any pattern
   return attrs.filter((attr: string) => {
-    !restricted.some((pattern: RegExp) => attr.search(pattern) >= 0);
+    return !restricted.some((pattern: RegExp) => attr.search(pattern) >= 0);
   });
 }
 
@@ -128,7 +128,7 @@ function relationAllowed(bookOpts: BookOpts, relName: string) {
   let { relations } = bookOpts;
 
   return relations === true || (typeCheck('[String]', relations) &&
-    (relations as [String]).some((rel: string) => rel === relName));
+    (relations as string[]).some((rel: string) => rel === relName));
 }
 
 /**
