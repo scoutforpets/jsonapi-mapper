@@ -7,7 +7,8 @@
     "prepublish": "typings install && tsc",
     "postinstall": "typings install && tsc",
     "pretest": "tsc",
-    "test": "jasmine"
+    "test": "jasmine",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
