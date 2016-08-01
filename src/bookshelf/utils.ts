@@ -45,18 +45,18 @@ export function setTopLinks(info: Information) {
 export function processData(info: Information, data: Data, level: DataLevel): SerialOpts {
   let { bookOpts, linkOpts } = info;
   let sample: Model = getSample(data);
-  
+
   // There is nothing to process without sample
   if (!sample) return undefined;
-  
+
   let template: SerialOpts = {};
-  
+
   // Add reference on nested resources
   if (level === 'related') template.ref = 'id';
 
   // Add list of valid attributes
   template.attributes = getAttrsList(sample);
-  
+
   // Add links (self and related)
   // TODO MISSING RELATIONSHIP LINKS
   template.dataLinks = resourceLinks(linkOpts);
@@ -71,11 +71,11 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
       let name: string = relationName(bookOpts, relName);
       let newLinkOpts: LinkOpts = assign(clone(linkOpts), { type: relName });
-      
+
       template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
       template.attributes.push(name);
     });
-    
+
   // Serializer process for Collection relations
   } else {
     forOwn(data.models[0], (relData: Data, relName: string): void => {
@@ -98,11 +98,8 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
  */
 function getSample(data: Data): Model {
   if (!data) return undefined;
-  if (isModel(data)) {
-    return data;
-  } else {
-    return data.models[0];
-  }
+  if (isModel(data)) return data;
+  else return data.models[0];
 }
 
 /**
