@@ -9,7 +9,7 @@
 import { assign, clone, forOwn, keys } from 'lodash';
 import { typeCheck } from 'type-check';
 
-import { SerialOpts } from 'jsonapi-serializer2';
+import { SerialOpts } from 'jsonapi-serializer';
 import { BookOpts } from '../interfaces';
 import { LinkOpts } from '../links';
 import { topLinks, resourceLinks } from './links';

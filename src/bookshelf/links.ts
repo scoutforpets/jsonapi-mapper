@@ -6,7 +6,7 @@ import { stringify } from 'qs';
 
 import { Model } from './extras';
 import { LinkOpts } from "../links";
-import { LinkObj } from 'jsonapi-serializer2';
+import { LinkObj } from 'jsonapi-serializer';
 
 /**
  * Creates top level links object, for primary data and pagination links.
@@ -23,13 +23,13 @@ export function topLinks(opts: LinkOpts): LinkObj {
 
     // Support Bookshelf's built-in paging parameters
     if (pag.rowCount) pag.total = pag.rowCount;
-    
+
     // Only add pagination links when more than 1 page
     if (pag.total > 0 && pag.total > pag.limit) {
       assign(obj, pagLinks(opts));
     }
   }
-  
+
   return obj;
 }
 
@@ -40,10 +40,10 @@ export function topLinks(opts: LinkOpts): LinkObj {
 function pagLinks(opts: LinkOpts): LinkObj {
   let { baseUrl, type, pag, query } = opts;
   let { offset, limit, total } = pag;
-  
+
   // All links are based on the resource type
   let baseLink: string = baseUrl + '/' + plural(type);
-  
+
   // Stringify the query string without page element
   let queryStr: string = stringify(omit(query, 'page'), {encode: false});
 
@@ -57,7 +57,7 @@ function pagLinks(opts: LinkOpts): LinkObj {
         '&page[offset]=' + '0' +
         queryStr;
     };
-    
+
     obj.prev = function() {
       return baseLink +
         '?page[limit]=' + limit +
@@ -65,7 +65,7 @@ function pagLinks(opts: LinkOpts): LinkObj {
         queryStr;
     };
   }
-  
+
   // Add trailing pag links if not at the last page
   if (total && (offset + limit < total)) {
     obj.next = function() {
@@ -74,16 +74,16 @@ function pagLinks(opts: LinkOpts): LinkObj {
         '&page[offset]=' + (offset + limit) +
         queryStr;
     };
-    
+
     obj.last = function() {
       // TODO FIX: The last page can overlap with the next page
       return baseLink +
         '?page[limit]=' + limit +
-        '&page[offset]=' + (total - limit) + 
+        '&page[offset]=' + (total - limit) +
         queryStr;
     }
   }
-  
+
   return !isEmpty(obj) ? obj : undefined;
 }
 
@@ -93,7 +93,7 @@ function pagLinks(opts: LinkOpts): LinkObj {
 export function resourceLinks(opts: LinkOpts): LinkObj {
   let { baseUrl, type, related } = opts;
   let baseLink: string = baseUrl + '/' + plural(type);
-  
+
   // Case when the resource is related
   if (related) {
     return {
@@ -104,7 +104,7 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
         return baseLink + '/' + model.id + '/' + related;
       }
     };
-        
+
   // Simple case when the resource is primary
   } else {
     return {

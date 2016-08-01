@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import * as bs from 'bookshelf';
 import * as knex from 'knex';
 
-import * as Serializer from 'jsonapi-serializer';
 import * as Mapper from '../src/mapper';
 
 type Model = bs.Model<any>;

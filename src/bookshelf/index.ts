@@ -3,7 +3,7 @@
 //// TODO NEW IMPORTS
 
 import { assign } from 'lodash';
-import { SerialOpts, Serializer } from 'jsonapi-serializer2';
+import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { Mapper, BookOpts } from '../interfaces';
 import { Data } from "./extras";
 
