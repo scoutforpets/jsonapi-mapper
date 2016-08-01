@@ -91,22 +91,25 @@ function pagLinks(opts: LinkOpts): LinkObj {
  * Creates links object for a resource, as a related one if related type was specified.
  */
 export function resourceLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, related } = opts;
-  let baseLink: string = baseUrl + '/' + plural(type);
+  let { baseUrl, type, parent } = opts;
 
   // Case when the resource is related
-  if (related) {
+  if (parent) {
+    let baseLink: string = baseUrl + '/' + plural(parent);
+
     return {
       self: function(model: Model) {
-        return baseLink + '/' + model.id + '/relationships/' + related;
+        return baseLink + '/' + model.id + '/relationships/' + type;
       },
       related: function(model: Model) {
-        return baseLink + '/' + model.id + '/' + related;
+        return baseLink + '/' + model.id + '/' + type;
       }
     };
 
   // Simple case when the resource is primary
   } else {
+    let baseLink: string = baseUrl + '/' + plural(type);
+
     return {
       // TODO FIX: Is not guaranteed to be a Model (could be a collection)
       self: function(model: Model) {

@@ -58,8 +58,8 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   template.attributes = getAttrsList(sample);
 
   // Add links (self and related)
-  // TODO MISSING RELATIONSHIP LINKS
-  template.dataLinks = resourceLinks(linkOpts);
+  if (level === 'primary') template.dataLinks = resourceLinks(linkOpts);
+  else                     template.relationshipLinks = resourceLinks(linkOpts);
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relData: Data, relName: string): void => {
@@ -69,7 +69,10 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
     // TODO VERIFY ANY OTHER CHECKS NEEDED
 
     let name: string = relationName(bookOpts, relName);
-    let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
+    let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {
+      type: relName,
+      parent: linkOpts.type
+    });
 
     template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
     template.attributes.push(name);
