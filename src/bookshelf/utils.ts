@@ -12,7 +12,7 @@ import { typeCheck } from 'type-check';
 import { SerialOpts } from 'jsonapi-serializer';
 import { BookOpts } from '../interfaces';
 import { LinkOpts } from '../links';
-import { topLinks, resourceLinks } from './links';
+import { topLinks, resourceLinks, includedLinks } from './links';
 import { Data, Model, isModel} from './extras';
 
 /**
@@ -41,13 +41,14 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
   // Top level considerations
   if (level === 'primary') {
-    template.dataLinks = resourceLinks(linkOpts); // Link generation
+    template.dataLinks = resourceLinks(linkOpts); // Link generation in data
     template.topLevelLinks = topLinks(linkOpts);
 
   // Recursive level consideratons
   } else {
     template.ref = 'id'; // Add reference on nested resources
-    template.relationshipLinks = resourceLinks(linkOpts); // Link generation
+    template.relationshipLinks = resourceLinks(linkOpts); // Link generation in data
+    template.includedLinks = includedLinks(linkOpts); // Link generation in included
   }
 
   // Add list of valid attributes

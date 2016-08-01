@@ -89,6 +89,8 @@ function pagLinks(opts: LinkOpts): LinkObj {
 
 /**
  * Creates links object for a resource, as a related one if related type was specified.
+ * This function is both used for dataLinks and relationshipLinks
+ * TODO split in 2 separate functions
  */
 export function resourceLinks(opts: LinkOpts): LinkObj {
   let { baseUrl, type, parent } = opts;
@@ -116,5 +118,19 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
         return baseLink + '/' + model.id;
       }
     };
+  }
+}
+
+/**
+ * Creates links object for a related resource, to be used for the included's array
+ */
+export function includedLinks(opts: LinkOpts): LinkObj {
+  let { baseUrl, type } = opts;
+  let baseLink: string = baseUrl + '/' + plural(type);
+
+  return {
+    self: function(parent: Model, model: Model) {
+      return baseLink + '/' + model.id;
+    }
   }
 }
