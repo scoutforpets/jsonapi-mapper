@@ -758,7 +758,7 @@ describe('Bookshelf links', () => {
     expect(Object.keys(result.links)).not.toContain('last');
   });
 
-  it('does not serialize links when `disableLinks: true`', () => {
+  it('should not serialize links when `disableLinks: true`', () => {
 
       let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
       let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});

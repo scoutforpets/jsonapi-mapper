@@ -40,14 +40,18 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
   // Top level considerations
   if (level === 'primary') {
-    template.dataLinks = resourceLinks(linkOpts); // Link generation in data
-    template.topLevelLinks = topLinks(linkOpts);
+    if (!bookOpts.disableLinks) {
+      template.dataLinks = resourceLinks(linkOpts);
+      template.topLevelLinks = topLinks(linkOpts);
+    }
 
   // Recursive level consideratons
   } else {
     template.ref = 'id'; // Add reference on nested resources
-    template.relationshipLinks = resourceLinks(linkOpts); // Link generation in data
-    template.includedLinks = includedLinks(linkOpts); // Link generation in included
+    if (!bookOpts.disableLinks) {
+      template.relationshipLinks = resourceLinks(linkOpts);
+      template.includedLinks = includedLinks(linkOpts);
+    }
   }
 
   // Add list of valid attributes
@@ -108,8 +112,8 @@ function getAttrsList(data: Model): any {
 function relationAllowed(bookOpts: BookOpts, relName: string) {
   let { relations } = bookOpts;
 
-  return relations === true || (typeCheck('[String]', relations) &&
-    (relations as string[]).some((rel: string) => rel === relName));
+  return relations === undefined || relations === true ||
+    (typeCheck('[String]', relations) && (relations as string[]).some((rel: string) => rel === relName));
 }
 
 /**
