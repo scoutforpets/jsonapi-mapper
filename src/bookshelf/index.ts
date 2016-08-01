@@ -22,8 +22,11 @@ export default class Bookshelf implements Mapper {
 
   /**
    * Maps bookshelf data to a JSON-API 1.0 compliant object
+   *
+   * The `any` type data source is set for typing compatibility, but must be removed if possible
+   * TODO fix data any type
    */
-  map(data: Data, type: string, bookOpts: BookOpts = {relations: true}): any {
+  map(data: Data | any, type: string, bookOpts: BookOpts = {relations: true}): any {
 
     let linkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
     let info: Information = { bookOpts, linkOpts };

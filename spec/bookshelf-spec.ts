@@ -1209,28 +1209,6 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should still support the deprecated includeRelations option', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
-    (<any> model).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
-    (<any> model).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
-
-    let result: any = mapper.map(model, 'models', {includeRelations: ['related-two']});
-
-    let expected: any = {
-      included: [
-        {
-          id: '20',
-          type: 'related-twos',
-          attributes: {
-            attr2: 'value2'
-          }
-        }
-      ]
-    };
-
-    expect(_.matches(expected)(result)).toBe(true);
-  });
-
   it('should give an API to merge relations attributes', () => {
     pending('Not targeted for release 1.x');
   });
