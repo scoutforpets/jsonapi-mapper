@@ -61,36 +61,19 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   // TODO MISSING RELATIONSHIP LINKS
   template.dataLinks = resourceLinks(linkOpts);
 
-  // Serializer process for Model relations
-  if (isModel(data)) {
-    forOwn(data.relations, (relData: Data, relName: string): void => {
-      if (!relationAllowed(bookOpts, relName)) return;
+  // Nested relations (recursive) template generation
+  forOwn(sample.relations, (relData: Data, relName: string): void => {
+    if (!relationAllowed(bookOpts, relName)) return;
 
-      // TODO AVOID DUPLICATES WHY?
-      // TODO VERIFY ANY OTHER CHECKS NEEDED
+    // TODO AVOID DUPLICATES WHY?
+    // TODO VERIFY ANY OTHER CHECKS NEEDED
 
-      let name: string = relationName(bookOpts, relName);
-      let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
+    let name: string = relationName(bookOpts, relName);
+    let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
 
-      template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
-      template.attributes.push(name);
-    });
-
-  // Serializer process for Collection relations
-  } else {
-    forOwn(data.models[0], (relData: Data, relName: string): void => {
-      if (!relationAllowed(bookOpts, relName)) return;
-
-      // TODO AVOID DUPLICATES WHY?
-      // TODO VERIFY ANY OTHER CHECKS NEEDED
-
-      let name: string = relationName(bookOpts, relName);
-      let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), { type: relName });
-
-      template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
-      template.attributes.push(name);
-    });
-  }
+    template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
+    template.attributes.push(name);
+  });
 
   return template;
 }
