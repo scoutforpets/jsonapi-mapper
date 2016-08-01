@@ -37,7 +37,6 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
-  if (!sample) return template; // Without a sample, don't make a template
 
   // Top level considerations
   if (level === 'primary') {
@@ -76,11 +75,12 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
 /**
  * Get model sample from data to generate a template
+ * Notice this method is quite type-hacky and is meant for solving null issues
  */
 function getSample(data: Data): Model {
-  if (!data) return undefined;
+  if (!data) return {} as Model;
   if (isModel(data)) return data;
-  else return data.models[0];
+  else return data.models[0] || {} as Model;
 }
 
 /**
