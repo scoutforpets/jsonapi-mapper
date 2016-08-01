@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, keys } from 'lodash';
+import { assign, clone, forOwn, has, isNull, keys } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -149,17 +149,17 @@ export function toJSON(data: Data): any {
   let json: any = (data && data.toJSON()) || null;
 
   // Nothing to convert
-  if (_.isNull(json)) {
+  if (isNull(json)) {
     return json;
 
   // Model case
   } else if (isModel(data)) {
 
     // Assign the id for the model if it's not present already
-    if (!_.has(json, 'id')) { json.id = data.id; }
+    if (!has(json, 'id')) { json.id = data.id; }
 
     // Loop over model relations to call toJSON recursively on them
-    _.forOwn(data.relations, function (rel: Data, relName: string): void {
+    forOwn(data.relations, function (rel: Data, relName: string): void {
       json[relName] = toJSON(rel);
     });
 
