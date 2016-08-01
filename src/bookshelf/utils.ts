@@ -29,16 +29,6 @@ export interface Information {
 type DataLevel = 'primary' | 'related';
 
 /**
- * Sets the top level links on the template
- */
-export function setTopLinks(info: Information, template: SerialOpts) {
-  let { bookOpts, linkOpts } = info;
-  if (!bookOpts.disableLinks) {
-    template.topLevelLinks = topLinks(linkOpts);
-  }
-}
-
-/**
  * Recursively adds data-related properties to the
  * template to be sent to the serializer
  */
@@ -46,20 +36,22 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   let { bookOpts, linkOpts } = info;
   let sample: Model = getSample(data);
 
-  // There is nothing to process without sample
-  if (!sample) return undefined;
-
   let template: SerialOpts = {};
+  if (!sample) return template; // Without a sample, don't make a template
 
-  // Add reference on nested resources
-  if (level === 'related') template.ref = 'id';
+  // Top level considerations
+  if (level === 'primary') {
+    template.dataLinks = resourceLinks(linkOpts); // Link generation
+    template.topLevelLinks = topLinks(linkOpts);
+
+  // Recursive level consideratons
+  } else {
+    template.ref = 'id'; // Add reference on nested resources
+    template.relationshipLinks = resourceLinks(linkOpts); // Link generation
+  }
 
   // Add list of valid attributes
   template.attributes = getAttrsList(sample);
-
-  // Add links (self and related)
-  if (level === 'primary') template.dataLinks = resourceLinks(linkOpts);
-  else                     template.relationshipLinks = resourceLinks(linkOpts);
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relData: Data, relName: string): void => {
