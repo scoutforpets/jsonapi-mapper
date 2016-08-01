@@ -460,55 +460,55 @@ describe('Bookshelf links', () => {
   });
 
   it('should add related links for nested relationships', () => {
-      let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
-      let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
-      let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+    let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
 
-      (<any> model1).relations['related-model'] = model2;
-      (<any> model2).relations['nested-related-model'] = model3;
+    (<any> model1).relations['related-model'] = model2;
+    (<any> model2).relations['nested-related-model'] = model3;
 
-      let result: any = mapper.map(model1, 'models');
+    let result: any = mapper.map(model1, 'models');
 
-      let expected: any = {
-        included: [
-          {
-            id: '6',
-            type: 'related-models',
-            attributes: {
-              attr: 'value'
-            },
-            relationships: {
-                'nested-related-model': {
-                    data: {
-                        type: 'nested-related-models',
-                        id: '7'
-                    },
-                    links: {
-                        self: `${domain}/related-models/6/relationships/nested-related-model`,
-                        related: `${domain}/related-models/6/nested-related-model`
-                    }
-                }
+    let expected: any = {
+      data: {
+        relationships: {
+          'related-model': {
+            data: {
+              type: 'related-models',
+              id: '6'
             }
+          }
+        }
+      },
+      included: [
+        {
+          id: '6',
+          type: 'related-models',
+          attributes: {
+            attr: 'value'
           },
-          {
-            id: '7',
-            type: 'nested-related-models',
-            attributes: {
-              attr: 'value'
+          relationships: {
+            'nested-related-model': {
+              data: {
+                type: 'nested-related-models',
+                id: '7'
+              },
+              links: {
+                self: `${domain}/related-models/6/relationships/nested-related-model`,
+                related: `${domain}/related-models/6/nested-related-model`
+              }
             }
           }
-          ],
-          data: {
-              relationships: {
-                  'related-model': {
-                      data: {
-                          type: 'related-models',
-                          id: '6'
-                      }
-                  }
-              }
+        },
+        {
+          id: '7',
+          type: 'nested-related-models',
+          attributes: {
+            attr: 'value'
           }
-      };
+        }
+      ]
+    };
 
       expect(_.matches(expected)(result)).toBe(true);
 

@@ -100,11 +100,11 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
     let baseLink: string = baseUrl + '/' + plural(parent);
 
     return {
-      self: function(model: Model) {
-        return baseLink + '/' + model.id + '/relationships/' + type;
+      self: function(primary: any, current: any, parent: any) {
+        return baseLink + '/' + parent.id + '/relationships/' + type;
       },
-      related: function(model: Model) {
-        return baseLink + '/' + model.id + '/' + type;
+      related: function(primary: any, current: any, parent: any) {
+        return baseLink + '/' + parent.id + '/' + type;
       }
     };
 
@@ -114,8 +114,8 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
 
     return {
       // TODO FIX: Is not guaranteed to be a Model (could be a collection)
-      self: function(model: Model) {
-        return baseLink + '/' + model.id;
+      self: function(primary: any) {
+        return baseLink + '/' + primary.id;
       }
     };
   }
@@ -129,8 +129,8 @@ export function includedLinks(opts: LinkOpts): LinkObj {
   let baseLink: string = baseUrl + '/' + plural(type);
 
   return {
-    self: function(parent: Model, model: Model) {
-      return baseLink + '/' + model.id;
+    self: function(primary: Model, current: Model) {
+      return baseLink + '/' + current.id;
     }
   }
 }

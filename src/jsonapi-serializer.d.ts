@@ -1,7 +1,7 @@
 
 declare module 'jsonapi-serializer' {
 
-  type LinkFunc = (model: any, related?: any) => string;
+  type LinkFunc = (primary: any, related?: any, parent?: any) => string;
 
   type Link = string | LinkFunc;
 
