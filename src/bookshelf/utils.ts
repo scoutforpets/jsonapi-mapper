@@ -91,6 +91,8 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
       template.attributes.push(name);
     });
   }
+
+  return template;
 }
 
 /**
