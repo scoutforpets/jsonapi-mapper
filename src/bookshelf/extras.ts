@@ -11,7 +11,7 @@ import { Model as BModel, Collection as BCollection } from 'bookshelf';
  * Internal form of the relations property of bookshelf objects
  */
 export interface RelationsObject {
-  [relations: string]: Data;
+  [relationName: string]: Data;
 }
 
 /**
@@ -24,19 +24,21 @@ export interface Model extends BModel<any> {
 }
 
 /**
- * Bookshelf Model Type Guard
- * https://basarat.gitbooks.io/typescript/content/docs/types/typeGuard.html
- */
-export function isModel(data: Data): data is Model {
-  return data ? !isCollection(data) : false;
-}
-
-/**
  * Bookshelf Collection including some private properties
  */
 export interface Collection extends BCollection<any> {
   models: Model[];
   length: number;
+}
+
+export type Data = Model | Collection;
+
+/**
+ * Bookshelf Model Type Guard
+ * https://basarat.gitbooks.io/typescript/content/docs/types/typeGuard.html
+ */
+export function isModel(data: Data): data is Model {
+  return data ? !isCollection(data) : false;
 }
 
 /**
@@ -47,5 +49,3 @@ export function isCollection(data: Data): data is Collection {
   // Type recognition based on duck-typing
   return data ? (data as Collection).models !== undefined : false;
 }
-
-export type Data = Model | Collection;
