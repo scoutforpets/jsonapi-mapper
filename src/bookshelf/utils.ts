@@ -13,7 +13,7 @@ import { SerialOpts } from 'jsonapi-serializer';
 import { BookOpts } from '../interfaces';
 import { LinkOpts } from '../links';
 import { topLinks, resourceLinks, includedLinks } from './links';
-import { Data, Model, isModel} from './extras';
+import { Data, Model, isModel, isCollection } from './extras';
 
 /**
  * Main structure used through most utility and recurse functions
@@ -82,9 +82,13 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
  * Notice this method is quite type-hacky and is meant for solving null issues
  */
 function getSample(data: Data): Model {
-  if (!data) return {} as Model;
-  if (isModel(data)) return data;
-  else return data.models[0] || {} as Model;
+  if (isModel(data)) {
+    return data;
+  } else if (isCollection(data) && data.models.length > 0) {
+    return data.models[0];
+  } else {
+    return {} as Model;
+  }
 }
 
 /**
