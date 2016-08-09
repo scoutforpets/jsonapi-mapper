@@ -72,9 +72,9 @@ mapper#map(data, type, mapperOptions)
 - `data` _(object)_: the data object from Bookshelf (either a Model or a Collection) to be serialized.
 - `type` _(string)_: the type of the resource being returned. For example, if you passed in an `Appointment` model, your `type` might be `appointment`.
 - _(optional)_ `mapperOptions` _(object)_:
-  - _(optional)_ `relations` _(boolean | string[])_: flag to disable serializing related models on the response. Alternatively, you can provide a string array to indicate the specific relations you want to serialize. By default, all relations loaded on the model are serialized (true).
+  - _(optional)_ `relations` _(boolean | string[])_: flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide a string array to indicate the specific relations you want to serialize. Defaults to `true`.
   - _(optional)_ `includeRelations` _(boolean | string[])_ (deprecated): alias option of relations option.
-  - _(optional)_ `disableLinks` _(boolean)_: disables the generation of all links in the payload. This may be useful if the consuming system doesn't take advantage of links and you want to save on payload size and maybe a bit of performance. Defaults to `false`
+  - _(optional)_ `enableLinks` _(boolean)_: disables the generation of all links in the payload. This may be useful if the consuming system doesn't take advantage of links and you want to save on payload size and maybe a bit of performance. Defaults to `true`.
   - _(optional)_ `query` _(object)_: an object containing the original query parameters. these will be appended to `self` and pagination links. Developer Note: this is not fully implemented yet, but following releases will fix that.*
   - _(optional)_ `pagination` _(object)_: pagination-related parameters for building pagination links for collections.
     - _(required)_ `offset` _(integer)_

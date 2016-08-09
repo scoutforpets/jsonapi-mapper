@@ -34,13 +34,14 @@ type DataLevel = 'primary' | 'related';
  */
 export function processData(info: Information, data: Data, level: DataLevel): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
+  let { enableLinks = true }: BookOpts = bookOpts;
   let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
 
   // Top level considerations
   if (level === 'primary') {
-    if (!bookOpts.disableLinks) {
+    if (enableLinks) {
       template.dataLinks = resourceLinks(linkOpts);
       template.topLevelLinks = topLinks(linkOpts);
     }
@@ -48,7 +49,7 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   // Recursive level consideratons
   } else {
     template.ref = 'id'; // Add reference on nested resources
-    if (!bookOpts.disableLinks) {
+    if (enableLinks) {
       template.relationshipLinks = resourceLinks(linkOpts);
       template.includedLinks = includedLinks(linkOpts);
     }

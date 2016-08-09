@@ -754,7 +754,7 @@ describe('Bookshelf links', () => {
     expect(Object.keys(result.links)).not.toContain('last');
   });
 
-  it('should not serialize links when `disableLinks: true`', () => {
+  it('should not serialize links when `enableLinks: false`', () => {
 
       let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
       let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
@@ -766,7 +766,7 @@ describe('Bookshelf links', () => {
 
       let collection: Collection = bookshelf.Collection.forge<any>([model1]);
 
-      let result: any = mapper.map(collection, 'models', { disableLinks: true });
+      let result: any = mapper.map(collection, 'models', { enableLinks: false });
 
       expect(result.links).not.toBeDefined();
       expect(result.data[0].relationships['related-model'].links).not.toBeDefined();

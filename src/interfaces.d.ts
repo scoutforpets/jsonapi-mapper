@@ -9,7 +9,7 @@ export interface Mapper {
 
 // Mapper Options
 export interface MapOpts {
-  disableLinks?: boolean;
+  enableLinks?: boolean;
 }
 
 //// BOOKSHELF INTERFACES
