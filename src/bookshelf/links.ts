@@ -5,14 +5,14 @@ import { pluralize as plural } from 'inflection';
 import { stringify } from 'qs';
 
 import { Model } from './extras';
-import { LinkOpts } from "../links";
+import { LinkOpts, PagOpts } from '../links';
 import { LinkObj } from 'jsonapi-serializer';
 
 /**
  * Creates top level links object, for primary data and pagination links.
  */
 export function topLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, pag } = opts;
+  let { baseUrl, type, pag }: LinkOpts = opts;
 
   let obj: LinkObj = {
     self: baseUrl + '/' + plural(type)
@@ -22,7 +22,9 @@ export function topLinks(opts: LinkOpts): LinkObj {
   if (pag) {
 
     // Support Bookshelf's built-in paging parameters
-    if (pag.rowCount) pag.total = pag.rowCount;
+    if (pag.rowCount) {
+      pag.total = pag.rowCount;
+    }
 
     // Only add pagination links when more than 1 page
     if (pag.total > 0 && pag.total > pag.limit) {
@@ -38,8 +40,8 @@ export function topLinks(opts: LinkOpts): LinkObj {
  * Since its used only inside other functions in this model, its not exported
  */
 function pagLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, pag, query } = opts;
-  let { offset, limit, total } = pag;
+  let { baseUrl, type, pag, query }: LinkOpts = opts;
+  let { offset, limit, total }: PagOpts = pag;
 
   // All links are based on the resource type
   let baseLink: string = baseUrl + '/' + plural(type);
@@ -51,14 +53,14 @@ function pagLinks(opts: LinkOpts): LinkObj {
 
   // Add leading pag links if not at the first page
   if (offset > 0) {
-    obj.first = function() {
+    obj.first = () => {
       return baseLink +
         '?page[limit]=' + limit +
         '&page[offset]=' + '0' +
         queryStr;
     };
 
-    obj.prev = function() {
+    obj.prev = () => {
       return baseLink +
         '?page[limit]=' + limit +
         '&page[offset]=' + (offset - limit) +
@@ -68,20 +70,20 @@ function pagLinks(opts: LinkOpts): LinkObj {
 
   // Add trailing pag links if not at the last page
   if (total && (offset + limit < total)) {
-    obj.next = function() {
+    obj.next = () => {
       return baseLink +
         '?page[limit]=' + limit +
         '&page[offset]=' + (offset + limit) +
         queryStr;
     };
 
-    obj.last = function() {
+    obj.last = () => {
       // TODO FIX: The last page can overlap with the next page
       return baseLink +
         '?page[limit]=' + limit +
         '&page[offset]=' + (total - limit) +
         queryStr;
-    }
+    };
   }
 
   return !isEmpty(obj) ? obj : undefined;
@@ -93,17 +95,17 @@ function pagLinks(opts: LinkOpts): LinkObj {
  * TODO split in 2 separate functions
  */
 export function resourceLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, parent } = opts;
+  let { baseUrl, type, parent }: LinkOpts = opts;
 
   // Case when the resource is related
   if (parent) {
     let baseLink: string = baseUrl + '/' + plural(parent);
 
     return {
-      self: function(primary: any, current: any, parent: any) {
+      self: function(primary: any, current: any, parent: any): string {
         return baseLink + '/' + parent.id + '/relationships/' + type;
       },
-      related: function(primary: any, current: any, parent: any) {
+      related: function(primary: any, current: any, parent: any): string {
         return baseLink + '/' + parent.id + '/' + type;
       }
     };
@@ -114,7 +116,7 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
 
     return {
       // TODO FIX: Is not guaranteed to be a Model (could be a collection)
-      self: function(primary: any) {
+      self: function(primary: any): string {
         return baseLink + '/' + primary.id;
       }
     };
@@ -125,12 +127,12 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
  * Creates links object for a related resource, to be used for the included's array
  */
 export function includedLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type } = opts;
+  let { baseUrl, type }: LinkOpts = opts;
   let baseLink: string = baseUrl + '/' + plural(type);
 
   return {
-    self: function(primary: Model, current: Model) {
+    self: function(primary: Model, current: Model): string {
       return baseLink + '/' + current.id;
     }
-  }
+  };
 }

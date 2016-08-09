@@ -41,6 +41,6 @@ declare module 'jsonapi-serializer' {
 
   export class Serializer {
     constructor(type: string, opts: SerialOpts);
-    serialize(data: any);
+    serialize(data: any): any;
   }
 }

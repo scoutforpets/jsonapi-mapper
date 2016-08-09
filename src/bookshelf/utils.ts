@@ -19,8 +19,8 @@ import { Data, Model, isModel, isCollection } from './extras';
  * Main structure used through most utility and recurse functions
  */
 export interface Information {
-  bookOpts: BookOpts,
-  linkOpts: LinkOpts,
+  bookOpts: BookOpts;
+  linkOpts: LinkOpts;
 }
 
 /**
@@ -33,7 +33,7 @@ type DataLevel = 'primary' | 'related';
  * template to be sent to the serializer
  */
 export function processData(info: Information, data: Data, level: DataLevel): SerialOpts {
-  let { bookOpts, linkOpts } = info;
+  let { bookOpts, linkOpts }: Information = info;
   let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
@@ -59,7 +59,7 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relData: Data, relName: string): void => {
-    if (!relationAllowed(bookOpts, relName)) return;
+    if (!relationAllowed(bookOpts, relName)) { return; }
 
     // TODO AVOID DUPLICATES WHY?
     // TODO VERIFY ANY OTHER CHECKS NEEDED
@@ -101,7 +101,7 @@ function getAttrsList(data: Model): any {
   let restricted: RegExp[] = [
     /^id$/,
     /[_-]id$/,
-    /[_-]type$/,
+    /[_-]type$/
   ];
 
   // Only return attributes that doesn't match any pattern
@@ -113,8 +113,8 @@ function getAttrsList(data: Model): any {
 /**
  * Based on Bookshelf options, determine if a relation must be included
  */
-function relationAllowed(bookOpts: BookOpts, relName: string) {
-  let { relations } = bookOpts;
+function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
+  let { relations }: BookOpts = bookOpts;
 
   return relations === undefined || relations === true ||
     (typeCheck('[String]', relations) && (relations as string[]).some((rel: string) => rel === relName));

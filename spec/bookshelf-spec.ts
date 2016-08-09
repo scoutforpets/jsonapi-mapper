@@ -15,7 +15,7 @@ describe('Bookshelf Adapter', () => {
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
-    bookshelf = bs(knex((<knex.Config> {})));
+    bookshelf = bs(knex(({} as knex.Config)));
     mapper = new Mapper.Bookshelf(domain);
   });
 
@@ -47,11 +47,11 @@ describe('Bookshelf Adapter', () => {
   });
 
   it('should serialize a basic model with custom id attribute', () => {
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let model : any = CustomModel.forge({
+    let model: any = customModel.forge({
       email : 'foo@example.com',
       name: 'A test model',
       description: 'something to use as a test'
@@ -76,21 +76,20 @@ describe('Bookshelf Adapter', () => {
 
   it('should serialize related model with custom id attribute in relationships object', () => {
 
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let model : any = bookshelf.Model.forge({
+    let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
     });
 
-    (<any> model).relations['related-model'] = CustomModel.forge({
+    (model as any).relations['related-model'] = customModel.forge({
       email: 'foo@example.com',
       attr2: 'value2'
     });
-
 
     let result: any = mapper.map(model, 'models');
 
@@ -116,24 +115,22 @@ describe('Bookshelf Adapter', () => {
 
   it('should serialize related model with custom id attribute in included array', () => {
 
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let model : any = bookshelf.Model.forge({
+    let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
     });
 
-    (<any> model).relations['related-model'] = CustomModel.forge({
+    (model as any).relations['related-model'] = customModel.forge({
       email: 'foo@example.com',
       attr2: 'value2'
     });
 
-
     let result: any = mapper.map(model, 'models');
-
 
     let expected: any = {
       included: [
@@ -152,15 +149,15 @@ describe('Bookshelf Adapter', () => {
   });
 
   it('should serialize a collection with custom id attribute', () => {
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let CustomCollection : any = bookshelf.Collection.extend<any>({
-      model : CustomModel
-    })
+    let customCollection: any = bookshelf.Collection.extend<any>({
+      model : customModel
+    });
 
-    let model1 : any = CustomModel.forge({
+    let model1: any = customModel.forge({
       email : 'foo@example.com',
       name: 'A test model1',
       description: 'something to use as a test'
@@ -188,21 +185,21 @@ describe('Bookshelf Adapter', () => {
   });
 
   it('should serialize a collection with custom id attribute within a related model on relationships object', () => {
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let CustomCollection : any = bookshelf.Collection.extend<any>({
-      model : CustomModel
-    })
+    let customCollection: any = bookshelf.Collection.extend<any>({
+      model : customModel
+    });
 
-    let model : any = bookshelf.Model.forge({
+    let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
     });
 
-    (<any> model).relations['related-model'] = CustomModel.forge({
+    (model as any).relations['related-model'] = customModel.forge({
       email: 'foo@example.com',
       attr2: 'value2'
     });
@@ -238,21 +235,21 @@ describe('Bookshelf Adapter', () => {
   });
 
   it('should serialize a collection with custom id attribute within a related model on included array', () => {
-    let CustomModel: any = bookshelf.Model.extend<any>({
+    let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
 
-    let CustomCollection : any = bookshelf.Collection.extend<any>({
-      model : CustomModel
-    })
+    let customCollection: any = bookshelf.Collection.extend<any>({
+      model : customModel
+    });
 
-    let model : any = bookshelf.Model.forge({
+    let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
       description: 'something to use as a test'
     });
 
-    (<any> model).relations['related-model'] = CustomModel.forge({
+    (model as any).relations['related-model'] = customModel.forge({
       email: 'foo@example.com',
       attr2: 'value2'
     });
@@ -270,7 +267,7 @@ describe('Bookshelf Adapter', () => {
             email: 'foo@example.com',
             attr2: 'value2'
           },
-          links : { self : 'https://domain.com/related-models/foo@example.com' },
+          links : { self : 'https://domain.com/related-models/foo@example.com' }
         }
       ]
     };
@@ -387,7 +384,7 @@ describe('Bookshelf links', () => {
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
-    bookshelf = bs(knex((<knex.Config> {})));
+    bookshelf = bs(knex(({} as knex.Config)));
     mapper = new Mapper.Bookshelf(domain);
   });
 
@@ -434,7 +431,7 @@ describe('Bookshelf links', () => {
 
   it('should add related links', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
-    (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10'});
+    (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: '10'});
 
     let result: any = mapper.map(model, 'models');
 
@@ -464,8 +461,8 @@ describe('Bookshelf links', () => {
     let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
     let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
 
-    (<any> model1).relations['related-model'] = model2;
-    (<any> model2).relations['nested-related-model'] = model3;
+    (model1 as any).relations['related-model'] = model2;
+    (model2 as any).relations['nested-related-model'] = model3;
 
     let result: any = mapper.map(model1, 'models');
 
@@ -510,8 +507,7 @@ describe('Bookshelf links', () => {
       ]
     };
 
-      expect(_.matches(expected)(result)).toBe(true);
-
+    expect(_.matches(expected)(result)).toBe(true);
   });
 
   it('should add related links for nested relationships within a collection', () => {
@@ -519,8 +515,8 @@ describe('Bookshelf links', () => {
       let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
       let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
-      (<any> model1).relations['related-model'] = model2;
-      (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+      (model1 as any).relations['related-model'] = model2;
+      (model2 as any).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
           bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
           bookshelf.Model.forge<any>({id: '11', attr: 'value'})
       ]);
@@ -763,8 +759,8 @@ describe('Bookshelf links', () => {
       let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
       let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
-      (<any> model1).relations['related-model'] = model2;
-      (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+      (model1 as any).relations['related-model'] = model2;
+      (model2 as any).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
           bookshelf.Model.forge<any>({id: '10', attr: 'value'})
       ]);
 
@@ -787,7 +783,7 @@ describe('Bookshelf relations', () => {
   let domain: string = 'https://domain.com';
 
   beforeAll(() => {
-    bookshelf = bs(knex((<knex.Config> {})));
+    bookshelf = bs(knex(({} as knex.Config)));
     mapper = new Mapper.Bookshelf(domain);
   });
 
@@ -797,8 +793,8 @@ describe('Bookshelf relations', () => {
 
   it('should add relationships object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
-    (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
-    (<any> model).relations['related-model']
+    (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
+    (model as any).relations['related-model']
                  .relations['inner-related-model'] = bookshelf.Model.forge<any>({id: '20', attr3: 'value3'});
 
     let result: any = mapper.map(model, 'model');
@@ -851,7 +847,7 @@ describe('Bookshelf relations', () => {
 
   it('should put the single related object in the included array', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
-    (<any> model).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
+    (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
 
     let result: any = mapper.map(model, 'models');
 
@@ -877,7 +873,7 @@ describe('Bookshelf relations', () => {
 
     let expected: any = {
       data : []
-    }
+    };
 
     expect(_.matches(expected)(result)).toBe(true);
   });
@@ -885,19 +881,19 @@ describe('Bookshelf relations', () => {
   it('should put the array of related objects in the included array', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
 
-    (<any> model1).relations['related-models'] = bookshelf.Collection.forge<any>([
+    (model1 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
     let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
 
-    (<any> model2).relations['related-models'] = bookshelf.Collection.forge<any>([
+    (model2 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -941,19 +937,19 @@ describe('Bookshelf relations', () => {
   it('should put the array of related objects in the included array with different related', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
 
-    (<any> model1).relations['related1-models'] = bookshelf.Collection.forge<any>([
+    (model1 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
     let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
 
-    (<any> model2).relations['related2-models'] = bookshelf.Collection.forge<any>([
+    (model2 as any).relations['related2-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -1000,8 +996,8 @@ describe('Bookshelf relations', () => {
     let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
     let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
 
-    (<any> model1).relations['related-model'] = model2;
-    (<any> model2).relations['nested-related-model'] = model3;
+    (model1 as any).relations['related-model'] = model2;
+    (model2 as any).relations['nested-related-model'] = model3;
 
     let result: any = mapper.map(model1, 'models');
 
@@ -1051,8 +1047,8 @@ describe('Bookshelf relations', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
-    (<any> model1).relations['related-model'] = model2;
-    (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+    (model1 as any).relations['related-model'] = model2;
+    (model2 as any).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
         bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
         bookshelf.Model.forge<any>({id: '11', attr: 'value'})
     ]);
@@ -1115,16 +1111,16 @@ describe('Bookshelf relations', () => {
   it('should put the array of related objects in the included array with proper attributes even if relation is empty', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
 
-    (<any> model1).relations['related-models'] = bookshelf.Collection.forge<any>();
+    (model1 as any).relations['related-models'] = bookshelf.Collection.forge<any>();
 
     let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
 
-    (<any> model2).relations['related-models'] = bookshelf.Collection.forge<any>([
+    (model2 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1,model2]);
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -1153,7 +1149,7 @@ describe('Bookshelf relations', () => {
 
   it('should give an option to ignore relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
-    (<any> model).relations['related-models'] = bookshelf.Collection.forge<any>([
+    (model as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
@@ -1188,8 +1184,8 @@ describe('Bookshelf relations', () => {
 
   it('should give an option to choose which relations to add', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
-    (<any> model).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
-    (<any> model).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
     let result: any = mapper.map(model, 'models', {relations: ['related-two']});
 

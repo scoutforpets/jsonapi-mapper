@@ -5,7 +5,8 @@
 import { assign } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { Mapper, BookOpts } from '../interfaces';
-import { Data } from "./extras";
+import { Data } from './extras';
+import { LinkOpts } from '../links';
 
 import * as utils from './utils';
 import { Information } from './utils';
@@ -28,7 +29,7 @@ export default class Bookshelf implements Mapper {
    */
   map(data: Data | any, type: string, bookOpts: BookOpts = {relations: true}): any {
 
-    let linkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
+    let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
     let info: Information = { bookOpts, linkOpts };
 
     let template: SerialOpts = utils.processData(info, data, 'primary');
@@ -37,7 +38,7 @@ export default class Bookshelf implements Mapper {
     assign(template, this.serialOpts);
 
     // Return the data in JSON API format
-    let json : any = utils.toJSON(data);
+    let json: any = utils.toJSON(data);
     return new Serializer(type, template).serialize(json);
   }
 }
