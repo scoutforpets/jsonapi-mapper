@@ -10,10 +10,9 @@ import { assign, clone, forOwn, has, isNull, keys } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
-import { BookOpts } from '../interfaces';
 import { LinkOpts } from '../links';
 import { topLinks, resourceLinks, includedLinks } from './links';
-import { Data, Model, isModel, isCollection } from './extras';
+import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 
 /**
  * Main structure used through most utility and recurse functions

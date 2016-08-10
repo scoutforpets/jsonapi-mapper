@@ -9,17 +9,11 @@ export interface Mapper {
 
 // Mapper Options
 export interface MapOpts {
-  enableLinks?: boolean;
-}
-
-//// BOOKSHELF INTERFACES
-
-// Bookshelf Options
-export interface BookOpts extends MapOpts {
-  // Nesting-related
+  // Relations-related
   relations?: boolean | string[];
 
   // Links-related
+  enableLinks?: boolean;
   pagination?: PagOpts;
   query?: QueryOpts;
 }

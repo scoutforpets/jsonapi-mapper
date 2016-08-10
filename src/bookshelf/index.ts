@@ -4,8 +4,8 @@
 
 import { assign } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
-import { Mapper, BookOpts } from '../interfaces';
-import { Data } from './extras';
+import { Mapper } from '../interfaces';
+import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
 
 import * as utils from './utils';

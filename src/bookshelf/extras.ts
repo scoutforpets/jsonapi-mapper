@@ -6,6 +6,10 @@
 'use strict';
 
 import { Model as BModel, Collection as BCollection } from 'bookshelf';
+import { MapOpts } from '../interfaces';
+
+// Bookshelf Options
+export interface BookOpts extends MapOpts {}
 
 /**
  * Internal form of the relations property of bookshelf objects
