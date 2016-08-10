@@ -1,4 +1,5 @@
 import { PagOpts, QueryOpts } from './links';
+import { RelationTypeMap } from './relations';
 
 //// GENERAL INTERFACES FOR MAPPERS
 
@@ -11,6 +12,7 @@ export interface Mapper {
 export interface MapOpts {
   // Relations-related
   relations?: boolean | string[];
+  relationTypes?: RelationTypeMap;
 
   // Links-related
   enableLinks?: boolean;
