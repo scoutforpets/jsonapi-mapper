@@ -113,6 +113,57 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should inlcude a repeated model only once in the included array', () => {
+    let model: any = bookshelf.Model.forge({
+      id : 5,
+      name: 'A test model',
+      description: 'something to use as a test'
+    });
+
+    let related: any = bookshelf.Model.forge({
+      id: 4,
+      attr: 'first value'
+    });
+
+    (model as any).relations.relateds = bookshelf.Collection.forge<any>([related]);
+    (model as any).relations.related = related;
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        relationships: {
+          'related':  {
+            data: {
+                id: '4',
+                type: 'relateds'
+            }
+          },
+          'relateds':  {
+            data: [
+              {
+                id: '4',
+                type: 'relateds'
+              }
+            ]
+          }
+        }
+      },
+      included: [
+        {
+          id: '4',
+          type: 'relateds',
+          attributes: {
+            attr: 'first value'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(result.included.length).toBe(1);
+  });
+
   it('should serialize related model with custom id attribute in included array', () => {
 
     let customModel: any = bookshelf.Model.extend<any>({

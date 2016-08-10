@@ -61,7 +61,6 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
   forOwn(sample.relations, (relData: Data, relName: string): void => {
     if (!relationAllowed(bookOpts, relName)) { return; }
 
-    // TODO AVOID DUPLICATES WHY?
     // TODO VERIFY ANY OTHER CHECKS NEEDED
 
     let name: string = relationName(bookOpts, relName);
