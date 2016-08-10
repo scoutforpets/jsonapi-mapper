@@ -42,8 +42,8 @@
   ],
   "dependencies": {
     "inflection": "1.10.0",
-    "jsonapi-serializer": "github:scoutforpets/jsonapi-serializer#empty-relationships-fix",
-    "lodash": "^4.14.1",
+    "jsonapi-serializer": "^3.3.0",
+    "lodash": "^4.14.2",
     "qs": "^6.2.1",
     "type-check": "^0.3.2"
   },
