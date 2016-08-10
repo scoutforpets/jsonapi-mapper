@@ -18,12 +18,16 @@ export interface RelationsObject {
   [relationName: string]: Data;
 }
 
+export interface Attributes {
+  [attrName: string]: any;
+}
+
 /**
  * Bookshelf Model including some private properties
  */
 export interface Model extends BModel<any> {
   id: any;
-  attributes: any;
+  attributes: Attributes;
   relations: RelationsObject;
 }
 
