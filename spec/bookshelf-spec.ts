@@ -643,19 +643,15 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>(elements);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        total: total
-      }
+      pagination: { limit, offset, total }
     });
 
     let expected: any = {
       links: {
-        first: domain + '/models?page[limit]=' + limit + '&page[offset]=' + 0,
-        prev: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset - limit),
-        next: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (offset + limit),
-        last: domain + '/models?page[limit]=' + limit + '&page[offset]=' + (total - limit)
+        first: domain + '/models?page[limit]=10&page[offset]=0',
+        prev: domain + '/models?page[limit]=10&page[offset]=30',
+        next: domain + '/models?page[limit]=10&page[offset]=50',
+        last: domain + '/models?page[limit]=10&page[offset]=90'
       }
     };
 
@@ -694,11 +690,7 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>(elements);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        rowCount: total
-      }
+      pagination: { limit, offset, rowCount: total }
     });
 
     let expected: any = {
@@ -721,11 +713,7 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>([]);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        total: total
-      }
+      pagination: { limit, offset, total }
     });
 
     expect(result.links).toBeDefined();
@@ -743,11 +731,7 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>([]);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        total: total
-      }
+      pagination: { limit, offset, total }
     });
 
     expect(result.links).toBeDefined();
@@ -765,11 +749,7 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>([]);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        total: total
-      }
+      pagination: { limit, offset, total }
     });
 
     expect(result.links).toBeDefined();
@@ -791,11 +771,7 @@ describe('Bookshelf links', () => {
     let collection: Collection = bookshelf.Collection.forge<any>(elements);
 
     let result: any = mapper.map(collection, 'models', {
-      pagination: {
-        limit: limit,
-        offset: offset,
-        total: total
-      }
+      pagination: { limit, offset, total }
     });
 
     expect(result.links).toBeDefined();
@@ -803,6 +779,31 @@ describe('Bookshelf links', () => {
     expect(Object.keys(result.links)).not.toContain('first');
     expect(Object.keys(result.links)).not.toContain('next');
     expect(Object.keys(result.links)).not.toContain('last');
+  });
+
+  it('should not overlap last page with the penultimate page', () => {
+    let limit: number = 3;
+    let offset: number = 3;
+    let total: number = 10;
+
+    let elements: Model[] = _.range(10).map((num: number) => {
+      return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+    });
+
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = mapper.map(collection, 'models', {
+      pagination: { limit, offset, total }
+    });
+
+    let expected: any = {
+      links: {
+        next: domain + '/models?page[limit]=' + 3 + '&page[offset]=' + 6,
+        last: domain + '/models?page[limit]=' + 1 + '&page[offset]=' + 9
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
   });
 
   it('should not serialize links when `enableLinks: false`', () => {
