@@ -2,10 +2,10 @@
 
 import { assign, omit, isEmpty } from 'lodash';
 import { pluralize as plural } from 'inflection';
-import { stringify } from 'qs';
+import { stringify as queryParams } from 'qs';
 
 import { Model } from './extras';
-import { LinkOpts, PagOpts } from '../links';
+import { LinkOpts, PagOpts, QueryOpts } from '../links';
 import { LinkObj } from 'jsonapi-serializer';
 
 function urlConcat(...parts: string[]): string {
@@ -51,42 +51,40 @@ function pagLinks(linkOpts: LinkOpts): LinkObj {
   let baseLink: string = urlConcat(baseUrl, plural(type));
 
   // Stringify the query string without page element
-  let queryStr: string = stringify(omit(query, 'page'), {encode: false});
+  query = omit(query, ['page', 'page[limit]', 'page[offset]']) as QueryOpts;
+  baseLink = baseLink + '?' + queryParams(query, {encode: false});
 
   let obj: LinkObj = {} as LinkObj;
 
   // Add leading pag links if not at the first page
   if (offset > 0) {
     obj.first = () => {
-      return baseLink +
-        '?page[limit]=' + limit +
-        '&page[offset]=' + '0' +
-        queryStr;
+      let page: any = {page: {limit, offset: 0}};
+      return baseLink + queryParams(page, {encode: false});
     };
 
     obj.prev = () => {
-      return baseLink +
-        '?page[limit]=' + limit +
-        '&page[offset]=' + (offset - limit) +
-        queryStr;
+      let page: any = {page: {limit, offset: offset - limit}};
+      return baseLink + queryParams(page, {encode: false});
     };
   }
 
   // Add trailing pag links if not at the last page
   if (total && (offset + limit < total)) {
     obj.next = () => {
-      return baseLink +
-        '?page[limit]=' + limit +
-        '&page[offset]=' + (offset + limit) +
-        queryStr;
+      let page: any = {page: {limit, offset: offset + limit}};
+      return baseLink + queryParams(page, {encode: false});
     };
 
     obj.last = () => {
-      // TODO FIX: The last page can overlap with the next page
-      return baseLink +
-        '?page[limit]=' + limit +
-        '&page[offset]=' + (total - limit) +
-        queryStr;
+      // Avoiding overlapping with the penultimate page
+      let lastLimit: number = (total - (offset % limit)) % limit;
+      // If the limit fits perfectly in the total, reset it to the original
+      lastLimit = lastLimit === 0 ? limit : lastLimit;
+
+      let lastOffset: number = total - lastLimit;
+      let page: any = {page: {limit: lastLimit, offset: lastOffset }};
+      return baseLink + queryParams(page, {encode: false});
     };
   }
 
