@@ -1,178 +1,137 @@
 'use strict';
 
-import * as _ from 'lodash';
-import * as inflection from 'inflection';
-import * as Qs from 'qs';
-import * as Serializer from 'jsonapi-serializer';
+import { assign, omit, isEmpty } from 'lodash';
+import { pluralize as plural } from 'inflection';
+import { stringify as queryParams } from 'qs';
 
-import {Data, Model, isModel, Collection, isCollection} from './extras';
-import * as I from '../interfaces.d';
-import * as utils from './utils';
+import { Model } from './extras';
+import { LinkOpts, PagOpts, QueryOpts } from '../links';
+import { LinkObj } from 'jsonapi-serializer';
+
+function urlConcat(...parts: string[]): string {
+  return parts.join('/');
+}
 
 /**
- * Generates the top level links object.
- * @param baseUrl
- * @param type
- * @param query
- * @param pag
- * @returns any TODO LINKS OBJECT
+ * Creates top level links object, for primary data and pagination links.
  */
-export function buildTop(
-    baseUrl: string,
-    type: string,
-    pag?: I.PagParams,
-    query?: I.QueryObj)
-    : Serializer.ILinkObj {
+export function topLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag }: LinkOpts = linkOpts;
 
-  let obj: Serializer.ILinkObj = {
-    self: baseUrl + '/' + inflection.pluralize(type)
+  let obj: LinkObj = {
+    self: urlConcat(baseUrl, plural(type))
   };
 
-  // Only build pagination if pagination data was passed.
+  // Build pagination if available
   if (pag) {
 
-      // Support Bookshelf's built-in paging parameters
-      if (pag.rowCount) pag.total = pag.rowCount;
+    // Support Bookshelf's built-in paging parameters
+    if (pag.rowCount) {
+      pag.total = pag.rowCount;
+    }
 
-      // Add pagination if total records is greater than 0
-      // and total records is less than limit.
-      if(pag.total > 0 && pag.total > pag.limit) {
-        _.assign(obj, buildPagination(baseUrl, type, pag, query));
-      }
+    // Only add pagination links when more than 1 page
+    if (pag.total > 0 && pag.total > pag.limit) {
+      assign(obj, pagLinks(linkOpts));
+    }
   }
 
   return obj;
 }
 
 /**
- * Generates pagination links for a collection.
- * @param baseUrl
- * @param type
- * @param pag
- * @param query
- * @returns any TODO PAGINATION LINKS OBJECT
+ * Create links object, for pagination links.
+ * Since its used only inside other functions in this model, its not exported
  */
-export function buildPagination(
-    baseUrl: string,
-    type: string,
-    pag: I.PagParams,
-    query: any = {})
-    : Serializer.ILinkObj {
+function pagLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag, query }: LinkOpts = linkOpts;
+  let { offset, limit, total }: PagOpts = pag;
 
-  let baseLink: string = baseUrl + '/' + inflection.pluralize(type);
+  // All links are based on the resource type
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
-  query = _.omit(query, 'page');
-  let queryStr: string = Qs.stringify(query, {encode: false});
+  // Stringify the query string without page element
+  query = omit(query, ['page', 'page[limit]', 'page[offset]']) as QueryOpts;
+  baseLink = baseLink + '?' + queryParams(query, {encode: false});
 
-  let pagingLinks: any = {};
+  let obj: LinkObj = {} as LinkObj;
 
-  if (pag.offset > 0) {
-
-      pagingLinks.first = function(): string {
-
-        return baseLink +
-          '?page[limit]=' + pag.limit +
-          '&page[offset]=0' +
-          queryStr;
-
-      };
-
-      pagingLinks.prev = function(): string {
-
-        return baseLink +
-          '?page[limit]=' + pag.limit +
-          '&page[offset]=' + (pag.offset - pag.limit) +
-          queryStr;
-      };
-  }
-
-  if (pag.total && (pag.offset + pag.limit < pag.total)) {
-
-    pagingLinks.next = function(collection: Collection): string {
-
-      return baseLink +
-        '?page[limit]=' + pag.limit +
-        '&page[offset]=' + (pag.offset + pag.limit) +
-        queryStr;
+  // Add leading pag links if not at the first page
+  if (offset > 0) {
+    obj.first = () => {
+      let page: any = {page: {limit, offset: 0}};
+      return baseLink + queryParams(page, {encode: false});
     };
 
-    pagingLinks.last = function(): string {
-
-      return baseLink +
-        '?page[limit]=' + pag.limit +
-        '&page[offset]=' + (pag.total - pag.limit) +
-        queryStr;
+    obj.prev = () => {
+      let page: any = {page: {limit, offset: offset - limit}};
+      return baseLink + queryParams(page, {encode: false});
     };
   }
 
-  return !_.isEmpty(pagingLinks) ? pagingLinks : undefined;
+  // Add trailing pag links if not at the last page
+  if (total && (offset + limit < total)) {
+    obj.next = () => {
+      let page: any = {page: {limit, offset: offset + limit}};
+      return baseLink + queryParams(page, {encode: false});
+    };
+
+    obj.last = () => {
+      // Avoiding overlapping with the penultimate page
+      let lastLimit: number = (total - (offset % limit)) % limit;
+      // If the limit fits perfectly in the total, reset it to the original
+      lastLimit = lastLimit === 0 ? limit : lastLimit;
+
+      let lastOffset: number = total - lastLimit;
+      let page: any = {page: {limit: lastLimit, offset: lastOffset }};
+      return baseLink + queryParams(page, {encode: false});
+    };
+  }
+
+  return !isEmpty(obj) ? obj : undefined;
 }
 
 /**
- * Generates the resource's url.
- * @param baseUrl
- * @param modelType
- * @param query
- * @returns {{self: (function(any, any): string)}}
+ * Creates links object for a resource
  */
-export function buildSelf(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
+export function dataLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
+
   return {
-    self: function(parent: Data, current: Data): string {
-
-      let type: string = relatedType || modelType;
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(type);
-
-      // If a model
-      if (isModel(current)) {
-        return link + '/' + current.id; // TODO ADD QUERY PARAMS AND PAGINATION
-      // If collection
-      } else if (isCollection(current)) {
-        return link;
-      }
+    self: function(resource: Model): string {
+      return urlConcat(baseLink, resource.id);
     }
   };
 }
 
 /**
- * Generates the relationship links inside the primary resource
- * @param baseUrl
- * @param modelType
- * @param relatedType
- * @param query
- * @returns {{self: (function(Data): string), related: (function(Data): string)}}
+ * Creates links object for a relationship
  */
-export function buildRelationship(baseUrl: string, modelType: string, relatedType: string, query?: any): Serializer.ILinkObj {
+export function relationshipLinks(linkOpts: LinkOpts, related: string): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
+
   return {
-    self: function(model: Data, related: Data): string {
-
-      let data: Data = model[modelType] || model;
-
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
-
-      // Primary data is expected to be a model
-      link += '/' + (<Model> data).id;
-
-      // Add relationship url component
-      link += '/relationships/' + relatedType;
-
-      return link;
+    self: function(resource: any, current: any, parent: Model): string {
+      return urlConcat(baseLink, parent.id, 'relationships', related);
     },
-    related: function(model: Data, related: Data): string {
+    related: function(resource: any, current: any, parent: Model): string {
+      return urlConcat(baseLink, parent.id, related);
+    }
+  };
+}
 
-      let data: Data = model[modelType] || model;
+/**
+ * Creates links object for a related resource, to be used for the included's array
+ */
+export function includedLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
-      let link: string = baseUrl + '/' +
-        inflection.pluralize(modelType);
-
-      // Primary data is expected to be a model
-      link += '/' + (<Model> data).id;
-
-      // Add relationship url component
-      link += '/' + relatedType;
-
-      return link;
+  return {
+    self: function(primary: Model, current: Model): string {
+      return urlConcat(baseLink, current.id);
     }
   };
 }

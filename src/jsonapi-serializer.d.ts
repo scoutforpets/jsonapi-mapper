@@ -1,11 +1,11 @@
 
 declare module 'jsonapi-serializer' {
 
-  type LinkFunc = (model: any, related?: any) => string;
+  type LinkFunc = (primary: any, related?: any, parent?: any) => string;
 
   type Link = string | LinkFunc;
 
-  export interface ILinkObj {
+  export interface LinkObj {
     self?: Link;
     related?: Link;
 
@@ -16,15 +16,15 @@ declare module 'jsonapi-serializer' {
     next?: Link;
   }
 
-  export interface ISerializerOptions {
+  export interface SerialOpts {
     attributes?: string[];
     ref?: string;
     included?: boolean;
 
-    topLevelLinks?: ILinkObj;
-    dataLinks?: ILinkObj;
-    relationshipLinks?: ILinkObj;
-    includedLinks?: ILinkObj;
+    topLevelLinks?: LinkObj;
+    dataLinks?: LinkObj;
+    relationshipLinks?: LinkObj;
+    includedLinks?: LinkObj;
 
     relationshipMeta?: any;
     ignoreRelationshipData?: boolean;
@@ -40,10 +40,7 @@ declare module 'jsonapi-serializer' {
   }
 
   export class Serializer {
-
-    constructor(type: string,
-                options: ISerializerOptions);
-
-    serialize(data: any);
+    constructor(type: string, opts: SerialOpts);
+    serialize(data: any): any;
   }
 }

@@ -3,7 +3,6 @@
     "align": [
       true,
       "parameters",
-      "arguments",
       "statements"
     ],
     "ban": false,
@@ -12,7 +11,7 @@
       true,
       "check-space"
     ],
-    "curly": false,
+    "curly": true,
     "eofline": true,
     "forin": true,
     "indent": [
@@ -37,8 +36,9 @@
     "no-any": false,
     "no-arg": true,
     "no-bitwise": true,
+    "no-angle-bracket-type-assertion": true,
     "no-conditional-assignment": true,
-    "no-consecutive-blank-lines": false,
+    "no-consecutive-blank-lines": true,
     "no-console": [
       true,
       "debug",
@@ -48,7 +48,7 @@
       "trace"
     ],
     "no-construct": true,
-    "no-constructor-vars": true,
+    "no-constructor-vars": false,
     "no-debugger": true,
     "no-duplicate-key": true,
     "no-duplicate-variable": true,
@@ -99,6 +99,7 @@
       true,
       "call-signature",
       "parameter",
+      "arrow-parameter",
       "property-declaration",
       "variable-declaration",
       "member-variable-declaration"
@@ -111,6 +112,13 @@
         "parameter": "nospace",
         "property-declaration": "nospace",
         "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "space",
+        "index-signature": "space",
+        "parameter": "space",
+        "property-declaration": "space",
+        "variable-declaration": "space"
       }
     ],
     "use-strict": [
