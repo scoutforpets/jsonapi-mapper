@@ -986,6 +986,55 @@ describe('Bookshelf relations', () => {
 
   });
 
+  it('should put the array of related objects in the included array with same related', () => {
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+
+    (model1 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
+    ]);
+
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+
+    (model2 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'}),
+      bookshelf.Model.forge<any>({id: '12', attr2: 'value22'})
+    ]);
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related1-models',
+          attributes: {
+            attr2: 'value20'
+          }
+        },
+        {
+          id: '11',
+          type: 'related1-models',
+          attributes: {
+            attr2: 'value21'
+          }
+        },
+        {
+          id: '12',
+          type: 'related1-models',
+          attributes: {
+            attr2: 'value22'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
   it('should put the array of related objects in the included array with different related', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
 
@@ -1001,7 +1050,14 @@ describe('Bookshelf relations', () => {
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
+    let model3: Model = bookshelf.Model.forge<any>({id: '7', atrr: 'value'});
+
+    (model3 as any).relations['related2-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '13', attr2: 'value23'}),
+      bookshelf.Model.forge<any>({id: '14', attr2: 'value24'})
+    ]);
+
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2, model3]);
 
     let result: any = mapper.map(collection, 'models');
 
@@ -1033,6 +1089,13 @@ describe('Bookshelf relations', () => {
           type: 'related2-models',
           attributes: {
             attr2: 'value23'
+          }
+        },
+        {
+          id: '14',
+          type: 'related2-models',
+          attributes: {
+            attr2: 'value24'
           }
         }
       ]
