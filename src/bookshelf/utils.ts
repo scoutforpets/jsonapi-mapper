@@ -127,30 +127,22 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
  */
 export function toJSON(data: Data): any {
 
-  // TODO CHECK IF SUPERFLUOUS
-  let json: any = (data && data.toJSON()) || null;
+  let json: any = null;
 
-  // Nothing to convert
-  if (isNull(json)) {
-    return json;
-
-  // Model case
-  } else if (isModel(data)) {
+  if (isModel(data)) {
+    json = data.serialize({shallow: true}); // serialize without the relations
 
     // Assign the id for the model if it's not present already
     if (!has(json, 'id')) { json.id = data.id; }
 
     // Loop over model relations to call toJSON recursively on them
-    forOwn(data.relations, function (rel: Data, relName: string): void {
-      json[relName] = toJSON(rel);
+    forOwn(data.relations, function (relData: Data, relName: string): void {
+      json[relName] = toJSON(relData);
     });
 
-  // Collection case
-  } else {
+  } else if (isCollection(data)) {
     // Run a recursive toJSON on each model of the collection
-    for (let index: number = 0; index < data.length; ++index) {
-      json[index] = toJSON(data.models[index]);
-    }
+    json = data.map(toJSON);
   }
 
   return json;
