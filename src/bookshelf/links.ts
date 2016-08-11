@@ -92,8 +92,7 @@ function pagLinks(linkOpts: LinkOpts): LinkObj {
 }
 
 /**
- * Creates links object for a resource, as a related one if related type was specified.
- * This function is both used for dataLinks and relationshipLinks
+ * Creates links object for a resource
  */
 export function dataLinks(linkOpts: LinkOpts): LinkObj {
   let { baseUrl, type }: LinkOpts = linkOpts;
@@ -109,7 +108,6 @@ export function dataLinks(linkOpts: LinkOpts): LinkObj {
 
 /**
  * Creates links object for a relationship
- * This function is both used for dataLinks and relationshipLinks
  */
 export function relationshipLinks(linkOpts: LinkOpts, related: string): LinkObj {
   let { baseUrl, type }: LinkOpts = linkOpts;

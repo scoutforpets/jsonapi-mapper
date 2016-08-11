@@ -29,9 +29,13 @@ export default class Bookshelf implements Mapper {
    * The `any` type data source is set for typing compatibility, but must be removed if possible
    * TODO fix data any type
    */
-  map(data: Data | any, type: string, bookOpts: BookOpts = {relations: true}): any {
+  map(data: Data | any, type: string, bookOpts: BookOpts = {}): any {
 
     let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
+
+    // Set default values for the options
+    bookOpts = assign({relations: true, enableLinks: true}, bookOpts);
+
     let info: Information = { bookOpts, linkOpts };
 
     let template: SerialOpts = utils.processData(info, data);

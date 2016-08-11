@@ -1,6 +1,6 @@
 'use strict';
 
-import Bookshelf from './bookshelf/index';
+import Bookshelf from './bookshelf';
 
 export {
   Bookshelf

@@ -28,7 +28,7 @@ export interface Information {
  */
 export function processData(info: Information, data: Data): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks = true }: BookOpts = bookOpts;
+  let { enableLinks }: BookOpts = bookOpts;
 
   let template: SerialOpts = processResource(info, data);
 
@@ -46,7 +46,7 @@ export function processData(info: Information, data: Data): SerialOpts {
  */
 export function processResource(info: Information, data: Data): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks = true }: BookOpts = bookOpts;
+  let { enableLinks }: BookOpts = bookOpts;
   let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
@@ -116,8 +116,9 @@ function getAttrsList(data: Model): any {
 function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
 
-  return relations === undefined || relations === true ||
-    (typeCheck('[String]', relations) && (relations as string[]).some((rel: string) => rel === relName));
+  return relations === true ||
+    (typeCheck('[String]', relations) &&
+      (relations as string[]).some((rel: string) => rel === relName));
 }
 
 /**
