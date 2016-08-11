@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, has, isNull, keys, merge, reduce } from 'lodash';
+import { assign, clone, forOwn, has, keys, merge } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';

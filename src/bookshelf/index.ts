@@ -6,7 +6,7 @@ import { pluralize as plural } from 'inflection';
 import { Mapper } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
-import { RelationTypeOpt, RelationTypeMap, RelationTypeFunction } from '../relations';
+import { RelationTypeOpt, RelationTypeFunction } from '../relations';
 
 import { Information, processData, toJSON } from './utils';
 
