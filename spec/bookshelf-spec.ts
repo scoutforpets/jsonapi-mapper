@@ -1212,11 +1212,10 @@ describe('Bookshelf relations', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
-
-    (<any> model1).relations['related-models'] = bookshelf.Collection.forge<any>([model2]);
-    (<any> model2).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
-        bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
-        bookshelf.Model.forge<any>({id: '11', attr: 'value'})
+    (model1 as any).relations['related-models'] = bookshelf.Collection.forge<any>([model2]);
+    (model2 as any).relations['nested-related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr: 'value'}),
+      bookshelf.Model.forge<any>({id: '11', attr: 'value'})
     ]);
 
     let collection: Collection = bookshelf.Collection.forge<any>([model1]);
@@ -1224,57 +1223,62 @@ describe('Bookshelf relations', () => {
     let result: any = mapper.map(collection, 'models');
 
     let expected: any = {
-          included: [
-              {
-                  id: '6',
-                  type: 'related-models',
-                  attributes: {
-                      attr: 'value'
-                  },
-                  relationships: {
-                      'nested-related-models': {
-                          data: [{
-                              type: 'nested-related-models',
-                              id: '10'
-                          }, {
-                                  type: 'nested-related-models',
-                                  id: '11'
-                              }],
-                          links: {
-                              self: `${domain}/related-models/6/relationships/nested-related-models`,
-                              related: `${domain}/related-models/6/nested-related-models`
-                          }
-                      }
-                  }
-              },
-              {
+      included: [
+        {
+          id: '6',
+          type: 'related-models',
+          attributes: {
+            attr: 'value'
+          },
+          relationships: {
+            'nested-related-models': {
+              data: [
+                {
                   id: '10',
-                  type: 'nested-related-models',
-                  attributes: {
-                      attr: 'value'
-                  }
-              },
-              {
+                  type: 'nested-related-models'
+                },
+                {
                   id: '11',
-                  type: 'nested-related-models',
-                  attributes: {
-                      attr: 'value'
-                  }
+                  type: 'nested-related-models'
+                }
+              ],
+              links: {
+                self: `${domain}/related-models/6/relationships/nested-related-models`,
+                related: `${domain}/related-models/6/nested-related-models`
               }
-          ],
-          data: [{
-              relationships: {
-                  'related-models': {
-                      data: [
-                        {
-                            type: 'related-models',
-                            id: '6'
-                        }
-                      ]
-                  }
-              }
-          }]
-      };
+            }
+          }
+        },
+        {
+          id: '10',
+          type: 'nested-related-models',
+          attributes: {
+            attr: 'value'
+          }
+        },
+        {
+          id: '11',
+          type: 'nested-related-models',
+          attributes: {
+            attr: 'value'
+          }
+        }
+      ],
+      data: [
+        {
+          relationships: {
+            'related-models': {
+              data: [
+                {
+                  id: '6',
+                  type: 'related-models'
+                }
+              ]
+            }
+          }
+        }
+      ]
+    };
 
     expect(_.matches(expected)(result)).toBe(true);
   });
