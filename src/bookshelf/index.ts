@@ -4,9 +4,11 @@
 
 import { assign } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
+import { pluralize as plural } from 'inflection';
 import { Mapper } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
+import { RelationTypeOpt, RelationTypeMap, RelationTypeFunction } from '../relations';
 
 import * as utils from './utils';
 import { Information } from './utils';
@@ -34,8 +36,17 @@ export default class Bookshelf implements Mapper {
 
     let template: SerialOpts = utils.processData(info, data);
 
-    // Override the template with the provided serializer options
-    assign(template, this.serialOpts);
+    let relationTypes: RelationTypeOpt = bookOpts.relationTypes || {};
+    function typeForAttribute(attr: string): string {
+      if (typeof relationTypes === 'object') {
+        return relationTypes[attr] || plural(attr);
+      } else {
+        return (relationTypes as RelationTypeFunction)(attr) || plural(attr);
+      }
+    }
+
+    // Override the template with the provided serializer and type options
+    assign(template, this.serialOpts, { typeForAttribute });
 
     // Return the data in JSON API format
     let json: any = utils.toJSON(data);
