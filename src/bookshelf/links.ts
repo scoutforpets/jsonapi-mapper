@@ -8,14 +8,18 @@ import { Model } from './extras';
 import { LinkOpts, PagOpts } from '../links';
 import { LinkObj } from 'jsonapi-serializer';
 
+function urlConcat(...parts: string[]): string {
+  return parts.join('/');
+}
+
 /**
  * Creates top level links object, for primary data and pagination links.
  */
-export function topLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, pag }: LinkOpts = opts;
+export function topLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag }: LinkOpts = linkOpts;
 
   let obj: LinkObj = {
-    self: baseUrl + '/' + plural(type)
+    self: urlConcat(baseUrl, plural(type))
   };
 
   // Build pagination if available
@@ -28,7 +32,7 @@ export function topLinks(opts: LinkOpts): LinkObj {
 
     // Only add pagination links when more than 1 page
     if (pag.total > 0 && pag.total > pag.limit) {
-      assign(obj, pagLinks(opts));
+      assign(obj, pagLinks(linkOpts));
     }
   }
 
@@ -39,12 +43,12 @@ export function topLinks(opts: LinkOpts): LinkObj {
  * Create links object, for pagination links.
  * Since its used only inside other functions in this model, its not exported
  */
-function pagLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, pag, query }: LinkOpts = opts;
+function pagLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type, pag, query }: LinkOpts = linkOpts;
   let { offset, limit, total }: PagOpts = pag;
 
   // All links are based on the resource type
-  let baseLink: string = baseUrl + '/' + plural(type);
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
   // Stringify the query string without page element
   let queryStr: string = stringify(omit(query, 'page'), {encode: false});
@@ -94,30 +98,30 @@ function pagLinks(opts: LinkOpts): LinkObj {
  * This function is both used for dataLinks and relationshipLinks
  * TODO split in 2 separate functions
  */
-export function resourceLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type, parent }: LinkOpts = opts;
+export function resourceLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type, parent }: LinkOpts = linkOpts;
 
   // Case when the resource is related
   if (parent) {
-    let baseLink: string = baseUrl + '/' + plural(parent);
+    let baseLink: string = urlConcat(baseUrl, plural(parent));
 
     return {
       self: function(primary: any, current: any, parent: any): string {
-        return baseLink + '/' + parent.id + '/relationships/' + type;
+        return urlConcat(baseLink, parent.id, 'relationships', type);
       },
       related: function(primary: any, current: any, parent: any): string {
-        return baseLink + '/' + parent.id + '/' + type;
+        return urlConcat(baseLink, parent.id, type);
       }
     };
 
   // Simple case when the resource is primary
   } else {
-    let baseLink: string = baseUrl + '/' + plural(type);
+    let baseLink: string = urlConcat(baseUrl, plural(type));
 
     return {
       // TODO FIX: Is not guaranteed to be a Model (could be a collection)
       self: function(primary: any): string {
-        return baseLink + '/' + primary.id;
+        return urlConcat(baseLink, primary.id);
       }
     };
   }
@@ -126,13 +130,13 @@ export function resourceLinks(opts: LinkOpts): LinkObj {
 /**
  * Creates links object for a related resource, to be used for the included's array
  */
-export function includedLinks(opts: LinkOpts): LinkObj {
-  let { baseUrl, type }: LinkOpts = opts;
-  let baseLink: string = baseUrl + '/' + plural(type);
+export function includedLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
   return {
     self: function(primary: Model, current: Model): string {
-      return baseLink + '/' + current.id;
+      return urlConcat(baseLink, current.id);
     }
   };
 }
