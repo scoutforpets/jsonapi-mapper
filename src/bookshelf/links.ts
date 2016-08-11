@@ -99,8 +99,7 @@ export function dataLinks(linkOpts: LinkOpts): LinkObj {
   let baseLink: string = urlConcat(baseUrl, plural(type));
 
   return {
-    // FIXME: Is not guaranteed to be a Model (could be a collection)
-    self: function(resource: any): string {
+    self: function(resource: Model): string {
       return urlConcat(baseLink, resource.id);
     }
   };
@@ -114,10 +113,10 @@ export function relationshipLinks(linkOpts: LinkOpts, related: string): LinkObj 
   let baseLink: string = urlConcat(baseUrl, plural(type));
 
   return {
-    self: function(resource: any, current: any, parent: any): string {
+    self: function(resource: any, current: any, parent: Model): string {
       return urlConcat(baseLink, parent.id, 'relationships', related);
     },
-    related: function(resource: any, current: any, parent: any): string {
+    related: function(resource: any, current: any, parent: Model): string {
       return urlConcat(baseLink, parent.id, related);
     }
   };

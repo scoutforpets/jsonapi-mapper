@@ -461,6 +461,30 @@ describe('Bookshelf links', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should add top level links for a collection', () => {
+    let model1: Model = bookshelf.Model.forge<any>({id: '5'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6'});
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: [{
+        id: '5',
+        type: 'models'
+      },
+      {
+        id: '6',
+        type: 'models'
+      }],
+      links: {
+        self: domain + '/models'
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should add primary data links', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5'});
 
@@ -478,6 +502,33 @@ describe('Bookshelf links', () => {
 
     expect(_.matches(expected)(result)).toBe(true);
 
+  });
+
+  it('should add primary data links for a collection', () => {
+    let model1: Model = bookshelf.Model.forge<any>({id: '5'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6'});
+    let collection: Collection = bookshelf.Collection.forge<any>([model1, model2]);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: [{
+        id: '5',
+        type: 'models',
+        links: {
+          self: domain + '/models' + '/5'
+        }
+      },
+      {
+        id: '6',
+        type: 'models',
+        links: {
+          self: domain + '/models' + '/6'
+        }
+      }]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
   });
 
   it('should add related links', () => {
