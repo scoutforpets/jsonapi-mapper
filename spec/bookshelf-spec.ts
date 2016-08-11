@@ -1319,6 +1319,64 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should give an option to sepcify relation types with an object', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {relationTypes: {'related-one': 'inners', 'related-two': 'non-plural'}});
+
+    let expected: any = {
+      included: [
+        {
+          id: '10',
+          type: 'inners',
+          attributes: {
+            attr1: 'value1'
+          }
+        },
+        {
+          id: '20',
+          type: 'non-plural',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should give an option to sepcify relation types with a function', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {relationTypes: () => 'models'});
+
+    let expected: any = {
+      included: [
+        {
+          id: '10',
+          type: 'models',
+          attributes: {
+            attr1: 'value1'
+          }
+        },
+        {
+          id: '20',
+          type: 'models',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should give an API to merge relations attributes', () => {
     pending('Not targeted for release 1.x');
   });
