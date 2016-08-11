@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, has, isNull, keys } from 'lodash';
+import { assign, clone, forOwn, has, isNull, keys, merge, reduce } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -84,8 +84,8 @@ export function processResource(info: Information, data: Data): SerialOpts {
 function getSample(data: Data): Model {
   if (isModel(data)) {
     return data;
-  } else if (isCollection(data) && data.models.length > 0) {
-    return data.models[0];
+  } else if (isCollection(data)) {
+    return data.reduce(merge, {} as Model);
   } else {
     return {} as Model;
   }
@@ -118,14 +118,6 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
 
   return relations === undefined || relations === true ||
     (typeCheck('[String]', relations) && (relations as string[]).some((rel: string) => rel === relName));
-}
-
-/**
- * Based on Bookshelf options, determine the relation name
- */
-function relationName(bookOpts: BookOpts, relName: string) {
-  // TODO THIS METHOD EXISTS FOR A NEW FEATURE TO DEFINE CUSTOM RELATION NAMES
-  return relName;
 }
 
 /**
