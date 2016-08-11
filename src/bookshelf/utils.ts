@@ -27,8 +27,7 @@ export interface Information {
  * then handle resources recursively in processResource
  */
 export function processData(info: Information, data: Data): SerialOpts {
-  let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks }: BookOpts = bookOpts;
+  let { bookOpts: { enableLinks }, linkOpts }: Information = info;
 
   let template: SerialOpts = processResource(info, data);
 
@@ -57,8 +56,6 @@ export function processResource(info: Information, data: Data): SerialOpts {
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relData: Data, relName: string): void => {
     if (!relationAllowed(bookOpts, relName)) { return; }
-
-    // TODO VERIFY ANY OTHER CHECKS NEEDED
 
     let relLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {type: relName});
     let relTemplate: SerialOpts = processResource({bookOpts, linkOpts: relLinkOpts}, relData);

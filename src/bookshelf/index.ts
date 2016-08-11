@@ -1,7 +1,5 @@
 'use strict';
 
-//// TODO NEW IMPORTS
-
 import { assign } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { pluralize as plural } from 'inflection';
