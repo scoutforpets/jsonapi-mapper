@@ -32,7 +32,7 @@ export default class Bookshelf implements Mapper {
     let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
     let info: Information = { bookOpts, linkOpts };
 
-    let template: SerialOpts = utils.processData(info, data, 'primary');
+    let template: SerialOpts = utils.processData(info, data);
 
     // Override the template with the provided serializer options
     assign(template, this.serialOpts);

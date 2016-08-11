@@ -21,7 +21,6 @@ export interface PagOpts {
 export interface LinkOpts {
   baseUrl: string;
   type: string;
-  parent?: string;
   pag?: PagOpts;
   query?: QueryOpts;
 }

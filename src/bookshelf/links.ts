@@ -94,35 +94,35 @@ function pagLinks(linkOpts: LinkOpts): LinkObj {
 /**
  * Creates links object for a resource, as a related one if related type was specified.
  * This function is both used for dataLinks and relationshipLinks
- * TODO split in 2 separate functions
  */
-export function resourceLinks(linkOpts: LinkOpts): LinkObj {
-  let { baseUrl, type, parent }: LinkOpts = linkOpts;
+export function dataLinks(linkOpts: LinkOpts): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
-  // Case when the resource is related
-  if (parent) {
-    let baseLink: string = urlConcat(baseUrl, plural(parent));
+  return {
+    // FIXME: Is not guaranteed to be a Model (could be a collection)
+    self: function(resource: any): string {
+      return urlConcat(baseLink, resource.id);
+    }
+  };
+}
 
-    return {
-      self: function(primary: any, current: any, parent: any): string {
-        return urlConcat(baseLink, parent.id, 'relationships', type);
-      },
-      related: function(primary: any, current: any, parent: any): string {
-        return urlConcat(baseLink, parent.id, type);
-      }
-    };
+/**
+ * Creates links object for a relationship
+ * This function is both used for dataLinks and relationshipLinks
+ */
+export function relationshipLinks(linkOpts: LinkOpts, related: string): LinkObj {
+  let { baseUrl, type }: LinkOpts = linkOpts;
+  let baseLink: string = urlConcat(baseUrl, plural(type));
 
-  // Simple case when the resource is primary
-  } else {
-    let baseLink: string = urlConcat(baseUrl, plural(type));
-
-    return {
-      // TODO FIX: Is not guaranteed to be a Model (could be a collection)
-      self: function(primary: any): string {
-        return urlConcat(baseLink, primary.id);
-      }
-    };
-  }
+  return {
+    self: function(resource: any, current: any, parent: any): string {
+      return urlConcat(baseLink, parent.id, 'relationships', related);
+    },
+    related: function(resource: any, current: any, parent: any): string {
+      return urlConcat(baseLink, parent.id, related);
+    }
+  };
 }
 
 /**

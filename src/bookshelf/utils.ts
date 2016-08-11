@@ -11,11 +11,11 @@ import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
-import { topLinks, resourceLinks, includedLinks } from './links';
+import { topLinks, dataLinks, relationshipLinks, includedLinks } from './links';
 import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 
 /**
- * Main structure used through most utility and recurse functions
+ * Main structure used through most utility and recursive functions
  */
 export interface Information {
   bookOpts: BookOpts;
@@ -23,36 +23,33 @@ export interface Information {
 }
 
 /**
- * Flag to indicate if processing is recursive or not
+ * Start the data processing with top level information,
+ * then handle resources recursively in processResource
  */
-type DataLevel = 'primary' | 'related';
+export function processData(info: Information, data: Data): SerialOpts {
+  let { bookOpts, linkOpts }: Information = info;
+  let { enableLinks = true }: BookOpts = bookOpts;
+
+  let template: SerialOpts = processResource(info, data);
+
+  if (enableLinks) {
+    template.dataLinks = dataLinks(linkOpts);
+    template.topLevelLinks = topLinks(linkOpts);
+  }
+
+  return template;
+}
 
 /**
  * Recursively adds data-related properties to the
  * template to be sent to the serializer
  */
-export function processData(info: Information, data: Data, level: DataLevel): SerialOpts {
+export function processResource(info: Information, data: Data): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
   let { enableLinks = true }: BookOpts = bookOpts;
   let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
-
-  // Top level considerations
-  if (level === 'primary') {
-    if (enableLinks) {
-      template.dataLinks = resourceLinks(linkOpts);
-      template.topLevelLinks = topLinks(linkOpts);
-    }
-
-  // Recursive level consideratons
-  } else {
-    template.ref = 'id'; // Add reference on nested resources
-    if (enableLinks) {
-      template.relationshipLinks = resourceLinks(linkOpts);
-      template.includedLinks = includedLinks(linkOpts);
-    }
-  }
 
   // Add list of valid attributes
   template.attributes = getAttrsList(sample);
@@ -63,14 +60,18 @@ export function processData(info: Information, data: Data, level: DataLevel): Se
 
     // TODO VERIFY ANY OTHER CHECKS NEEDED
 
-    let name: string = relationName(bookOpts, relName);
-    let newLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {
-      type: relName,
-      parent: linkOpts.type
-    });
+    let relLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {type: relName});
+    let relTemplate: SerialOpts = processResource({bookOpts, linkOpts: relLinkOpts}, relData);
+    relTemplate.ref = 'id'; // Add reference in nested resources
 
-    template[name] = processData({ bookOpts, linkOpts: newLinkOpts}, relData, 'related');
-    template.attributes.push(name);
+    // Related links
+    if (enableLinks) {
+      relTemplate.relationshipLinks = relationshipLinks(linkOpts, relName);
+      relTemplate.includedLinks = includedLinks(relLinkOpts);
+    }
+
+    template[relName] = relTemplate;
+    template.attributes.push(relName);
   });
 
   return template;
@@ -103,7 +104,7 @@ function getAttrsList(data: Model): any {
     /[_-]type$/
   ];
 
-  // Only return attributes that doesn't match any pattern
+  // Only return attributes that don't match any pattern
   return attrs.filter((attr: string) => {
     return !restricted.some((pattern: RegExp) => attr.search(pattern) >= 0);
   });
