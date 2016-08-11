@@ -34,7 +34,7 @@ export default class Bookshelf implements I.Mapper {
    * @param bookshelfOptions
    * @param template
    */
-  mapRelations(model: Model, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions): void {
+  mapRelations(model: Model, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, template?: ISerializerOptions, excludeIdAndTypeColumns = false): void {
 
     let self: this = this;
 
@@ -62,7 +62,13 @@ export default class Bookshelf implements I.Mapper {
         }
 
         // recurse to add nested relations
-        self.mapRelations(relModel, relName, bookshelfOptions, template[relName]);
+        if(relModel.models){
+          for(let model of relModel.models){
+            self.mapRelations(model, relName, bookshelfOptions, template[relName], excludeIdAndTypeColumns);
+          }
+        } else {           
+          self.mapRelations(relModel, relName, bookshelfOptions, template[relName], excludeIdAndTypeColumns);
+        }
     });
   }
 
@@ -73,7 +79,7 @@ export default class Bookshelf implements I.Mapper {
    * @param bookshelfOptions
    * @returns {"jsonapi-serializer".Serializer}
    */
-  map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}): any {
+  map(data: any, type: string, bookshelfOptions: I.BookshelfOptions = {relations: true}, excludeIdAndTypeColumns = false): any {
     // TODO ADD meta property of serializerOptions TO template
 
     let self: this = this;
@@ -95,7 +101,7 @@ export default class Bookshelf implements I.Mapper {
 
       // Add relations (only if permitted)
       if (bookshelfOptions.relations) {
-        self.mapRelations(data, type, bookshelfOptions, template);
+        self.mapRelations(data, type, bookshelfOptions, template, excludeIdAndTypeColumns);
       }
 
       // Serializer process for a Collection
@@ -112,7 +118,7 @@ export default class Bookshelf implements I.Mapper {
         if (bookshelfOptions.includeRelations) bookshelfOptions.relations = bookshelfOptions.includeRelations;
 
         data.forEach((model) => {
-          self.mapRelations(model, type, bookshelfOptions, template);
+          self.mapRelations(model, type, bookshelfOptions, template, excludeIdAndTypeColumns);
         });
 
       }

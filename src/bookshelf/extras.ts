@@ -11,6 +11,7 @@ export interface Model extends BModel<any> {
   id: any; // TODO IMPROVE REAL TYPE
   attributes: any;
   relations:  RelationsObject;
+  models: any;
 }
 
 /**
