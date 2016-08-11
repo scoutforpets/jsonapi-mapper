@@ -10,8 +10,7 @@ import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
 import { RelationTypeOpt, RelationTypeMap, RelationTypeFunction } from '../relations';
 
-import * as utils from './utils';
-import { Information } from './utils';
+import { Information, processData, toJSON } from './utils';
 
 /**
  * Mapper class for Bookshelf sources
@@ -38,7 +37,7 @@ export default class Bookshelf implements Mapper {
 
     let info: Information = { bookOpts, linkOpts };
 
-    let template: SerialOpts = utils.processData(info, data);
+    let template: SerialOpts = processData(info, data);
 
     let relationTypes: RelationTypeOpt = bookOpts.relationTypes || {};
     function typeForAttribute(attr: string): string {
@@ -53,7 +52,7 @@ export default class Bookshelf implements Mapper {
     assign(template, this.serialOpts, { typeForAttribute });
 
     // Return the data in JSON API format
-    let json: any = utils.toJSON(data);
+    let json: any = toJSON(data);
     return new Serializer(type, template).serialize(json);
   }
 }
