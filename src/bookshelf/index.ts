@@ -2,7 +2,6 @@
 
 import { assign } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
-import { pluralize as plural } from 'inflection';
 import { Mapper } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
@@ -39,15 +38,17 @@ export default class Bookshelf implements Mapper {
 
     let relationTypes: RelationTypeOpt = bookOpts.relationTypes || {};
     function typeForAttribute(attr: string): string {
+      // if typeForAttribute returns undefined, the serializer
+      // omits the result and handles pluralization
       if (typeof relationTypes === 'object') {
-        return relationTypes[attr] || plural(attr);
+        return relationTypes[attr];
       } else {
-        return (relationTypes as RelationTypeFunction)(attr) || plural(attr);
+        return (relationTypes as RelationTypeFunction)(attr);
       }
     }
 
-    // Override the template with the provided serializer and type options
-    assign(template, this.serialOpts, { typeForAttribute });
+    // Override the template with the provided serializer options
+    assign(template, { typeForAttribute }, this.serialOpts);
 
     // Return the data in JSON API format
     let json: any = toJSON(data);

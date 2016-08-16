@@ -1492,3 +1492,44 @@ describe('Bookshelf relations', () => {
   });
 
 });
+
+describe('Serializer options', () => {
+  let bookshelf: bs;
+  let mapper: Mapper.Bookshelf;
+  let domain: string = 'https://domain.com';
+
+  beforeAll(() => {
+    bookshelf = bs(knex(({} as knex.Config)));
+  });
+
+  it('should not overwrite typeForAttribute function passed to serializer', () => {
+    mapper = new Mapper.Bookshelf(domain, {typeForAttribute: () => 'type'});
+
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let result: any = mapper.map(model, 'model');
+
+    let expected: any = {
+      data: {
+        type: 'type'
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should not overwrite pluralizeType option passed to serializer', () => {
+    mapper = new Mapper.Bookshelf(domain, {pluralizeType: false});
+
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let result: any = mapper.map(model, 'model');
+
+    let expected: any = {
+      data: {
+        type: 'model'
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+});
