@@ -204,10 +204,6 @@ describe('Bookshelf Adapter', () => {
       idAttribute : 'email'
     });
 
-    let customCollection: any = bookshelf.Collection.extend<any>({
-      model : customModel
-    });
-
     let model1: any = customModel.forge({
       email : 'foo@example.com',
       name: 'A test model1',
@@ -240,10 +236,6 @@ describe('Bookshelf Adapter', () => {
       idAttribute : 'email'
     });
 
-    let customCollection: any = bookshelf.Collection.extend<any>({
-      model : customModel
-    });
-
     let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
@@ -268,13 +260,13 @@ describe('Bookshelf Adapter', () => {
             name: 'A test model',
             description: 'something to use as a test'
           },
-          links : { self : 'https://domain.com/models/5' },
+          links : { self : domain + '/models/5' },
           relationships : {
             'related-model' : {
               data: { id : 'foo@example.com', type : 'related-models' },
               links : {
-                self : 'https://domain.com/models/5/relationships/related-model',
-                related : 'https://domain.com/models/5/related-model'
+                self : domain + '/models/5/relationships/related-model',
+                related : domain + '/models/5/related-model'
               }
             }
           }
@@ -288,10 +280,6 @@ describe('Bookshelf Adapter', () => {
   it('should serialize a collection with custom id attribute within a related model on included array', () => {
     let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
-    });
-
-    let customCollection: any = bookshelf.Collection.extend<any>({
-      model : customModel
     });
 
     let model: any = bookshelf.Model.forge({
@@ -318,7 +306,7 @@ describe('Bookshelf Adapter', () => {
             email: 'foo@example.com',
             attr2: 'value2'
           },
-          links : { self : 'https://domain.com/related-models/foo@example.com' }
+          links : { self : domain + '/related-models/foo@example.com' }
         }
       ]
     };
@@ -710,10 +698,6 @@ describe('Bookshelf links', () => {
   });
 
   it('should not add pagination links if no pagination data is passed', () => {
-    let limit: number = 10;
-    let offset: number = 40;
-    let total: number = 100;
-
     let elements: Model[] = _.range(10).map((num: number) => {
       return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
     });
