@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, has, keys, merge } from 'lodash';
+import { assign, clone, forOwn, has, keys, mapValues, merge } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -24,12 +24,12 @@ export interface Information {
 
 /**
  * Start the data processing with top level information,
- * then handle resources recursively in processResource
+ * then handle resources recursively in processSample
  */
 export function processData(info: Information, data: Data): SerialOpts {
   let { bookOpts: { enableLinks }, linkOpts }: Information = info;
 
-  let template: SerialOpts = processResource(info, data);
+  let template: SerialOpts = processSample(info, sample(data));
 
   if (enableLinks) {
     template.dataLinks = dataLinks(linkOpts);
@@ -43,10 +43,9 @@ export function processData(info: Information, data: Data): SerialOpts {
  * Recursively adds data-related properties to the
  * template to be sent to the serializer
  */
-export function processResource(info: Information, data: Data): SerialOpts {
+function processSample(info: Information, sample: Model): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
   let { enableLinks }: BookOpts = bookOpts;
-  let sample: Model = getSample(data);
 
   let template: SerialOpts = {};
 
@@ -54,11 +53,11 @@ export function processResource(info: Information, data: Data): SerialOpts {
   template.attributes = getAttrsList(sample);
 
   // Nested relations (recursive) template generation
-  forOwn(sample.relations, (relData: Data, relName: string): void => {
+  forOwn(sample.relations, (relSample: Model, relName: string): void => {
     if (!relationAllowed(bookOpts, relName)) { return; }
 
     let relLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {type: relName});
-    let relTemplate: SerialOpts = processResource({bookOpts, linkOpts: relLinkOpts}, relData);
+    let relTemplate: SerialOpts = processSample({bookOpts, linkOpts: relLinkOpts}, relSample);
     relTemplate.ref = 'id'; // Add reference in nested resources
 
     // Related links
@@ -75,17 +74,29 @@ export function processResource(info: Information, data: Data): SerialOpts {
 }
 
 /**
- * Get model sample from data to generate a template
- * Notice this method is quite type-hacky and is meant for solving null issues
+ * Convert any data into a model representing
+ * a complete sample to be used in the template generation
  */
-function getSample(data: Data): Model {
+function sample(data: Data): Model {
   if (isModel(data)) {
-    return data;
+    const cloned: Model = clone(data);
+    cloned.relations = mapValues(data.relations, sample);
+    return cloned;
   } else if (isCollection(data)) {
-    return data.reduce(merge, {} as Model);
+    return data.reduce(mergeModel, {} as Model);
   } else {
     return {} as Model;
   }
+}
+
+/**
+ * Merge two models into a representation of both
+ */
+function mergeModel(main: Model, toMerge: Model): Model {
+  const sampled: Model = sample(toMerge);
+  main.attributes = merge(main.attributes, sampled.attributes);
+  main.relations = merge(main.relations, sampled.relations);
+  return main;
 }
 
 /**
