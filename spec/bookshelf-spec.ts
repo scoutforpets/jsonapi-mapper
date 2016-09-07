@@ -864,7 +864,6 @@ describe('Bookshelf links', () => {
 });
 
 describe('Bookshelf relations', () => {
-
   let bookshelf: bs;
   let mapper: Mapper.Bookshelf;
   let domain: string = 'https://domain.com';
@@ -1487,10 +1486,41 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should merge for the template correctly', () => {
+    let elements: Model[] = _.range(3).map((num: number) => {
+      let model: Model = bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+      (model as any).relations.rels = bookshelf.Collection.forge<any>([]);
+      return model;
+    });
+
+    (elements[0].related('rels') as Collection).add(bookshelf.Model.forge<any>({id: 3, attr: 'value'}));
+    let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+    let result: any = mapper.map(collection, 'models');
+
+    let expected: any = {
+      data: [ {
+          type: 'models',
+          id: '0',
+          relationships: {
+            rels: {
+              data: [ { type: 'rels', id: '3' } ]
+            }
+          }
+      } ],
+      included: [ {
+          type: 'rels',
+          id: '3',
+          attributes: { attr: 'value' }
+      } ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should give an API to merge relations attributes', () => {
     pending('Not targeted for release 1.x');
   });
-
 });
 
 describe('Serializer options', () => {
