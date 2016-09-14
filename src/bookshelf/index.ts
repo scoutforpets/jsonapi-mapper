@@ -30,7 +30,7 @@ export default class Bookshelf implements Mapper {
     let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
 
     // Set default values for the options
-    bookOpts = assign({relations: true, enableLinks: true}, bookOpts);
+    bookOpts = assign({relations: { included: true }, enableLinks: true}, bookOpts);
 
     let info: Information = { bookOpts, linkOpts };
 
