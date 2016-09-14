@@ -69,9 +69,7 @@ function processSample(info: Information, sample: Model): SerialOpts {
     }
 
     // Include links as compound document
-    if (!included) {
-        relTemplate.included = false;
-    }
+    relTemplate.included = included;
 
     template[relName] = relTemplate;
     template.attributes.push(relName);
@@ -134,7 +132,7 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
 
   return relations === true ||
          relations instanceof Object ||
-         (fields instanceof Object && (fields as string[]).some((rel: string) => rel === relName));
+         (fields instanceof Array && fields.some((rel: string) => rel === relName));
 }
 
 /**
