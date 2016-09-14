@@ -49,7 +49,7 @@
   "devDependencies": {
     "bookshelf": "^0.10.0",
     "knex": "^0.11.9",
-    "jasmine": "^2.4.1",
+    "jasmine": "~2.4.1",
     "typescript": "^1.8.10",
     "typings": "^1.3.2"
   }
