@@ -144,8 +144,7 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
  */
 function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
-  let { fields }: RelationOpts = relations;
-  let { included }: RelationOpts = relations;
+  let { fields, included }: RelationOpts = relations;
 
   if (fields instanceof Array && included instanceof Array) {
       // If specific relations are specified, ensure that the included relations
