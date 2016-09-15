@@ -6,8 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, has, keys, mapValues, merge } from 'lodash';
-import { typeCheck } from 'type-check';
+import { assign, clone, includes, intersection, isNil, forOwn, has, keys, mapValues, merge } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -46,8 +45,7 @@ export function processData(info: Information, data: Data): SerialOpts {
  */
 function processSample(info: Information, sample: Model): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks, relations }: BookOpts = bookOpts;
-  let { included }: RelationOpts = relations;
+  let { enableLinks }: BookOpts = bookOpts;
 
   let template: SerialOpts = {};
 
@@ -69,7 +67,9 @@ function processSample(info: Information, sample: Model): SerialOpts {
     }
 
     // Include links as compound document
-    relTemplate.included = included;
+    if (!includeAllowed(bookOpts, relName)) {
+        relTemplate.included = false;
+    }
 
     template[relName] = relTemplate;
     template.attributes.push(relName);
@@ -128,11 +128,41 @@ function getAttrsList(data: Model): any {
  */
 function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
-  let { fields }: RelationOpts = relations;
 
-  return relations === true ||
-         relations instanceof Object ||
-         (fields instanceof Array && fields.some((rel: string) => rel === relName));
+  if (typeof relations === 'boolean') {
+    return relations;
+  } else {
+    let { fields }: RelationOpts = relations;
+    return isNil(fields) || includes(fields, relName);
+  }
+}
+
+/**
+ * Based on Bookshelf options, determine if a relation must be included
+ */
+function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
+  let { relations }: BookOpts = bookOpts;
+
+  if (typeof relations === 'boolean') {
+    return relations;
+  } else {
+    let { fields, included }: RelationOpts = relations;
+
+    if (typeof included === 'boolean') {
+      return included;
+    } else {
+      // If included is an array, only allow relations that are in that array
+      let allowed: string[] = included;
+
+      if (! isNil(fields)) {
+        // If fields specified, ensure that the included relations
+        // are listed as one of the relations to be serialized
+        allowed = intersection(fields, included);
+      }
+
+      return includes(allowed, relName);
+    }
+  }
 }
 
 /**

@@ -1414,8 +1414,40 @@ describe('Bookshelf relations', () => {
     let result: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: true }});
     let result2: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: false }});
 
+    let expected: any =
+        {
+          id: '20',
+          type: 'related-twos',
+          attributes: {
+            attr2: 'value2'
+          }
+        };
+
+    expect(result.included.length).toEqual(1);
+    expect(_.matches(expected)(result.included[0])).toBe(true);
+
+    expect(_.has(result2, 'data.relationships.related-two')).toBe(true);
+    expect(_.has(result2, 'included')).toBe(false);
+  });
+
+  it('should give an option to choose which relations to include', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {relations: { included: true }});
+    let result2: any = mapper.map(model, 'models', { relations: { included: ['related-two']}});
+    let result3: any = mapper.map(model, 'models', { relations: { fields: ['related-one'], included: ['related-one', 'related-two']}});
+
     let expected: any = {
       included: [
+          {
+            id: '10',
+            type: 'related-ones',
+            attributes: {
+              attr1: 'value1'
+            }
+        },
         {
           id: '20',
           type: 'related-twos',
@@ -1428,8 +1460,11 @@ describe('Bookshelf relations', () => {
 
     expect(_.matches(expected)(result)).toBe(true);
 
-    expect(_.has(result2, 'data.relationships.related-two')).toBe(true);
-    expect(_.has(result2, 'included')).toBe(false);
+    expect(_.find(result2.included, { type: 'related-ones'})).not.toBeDefined();
+    expect(_.find(result2.included, { type: 'related-twos'})).toBeDefined();
+
+    expect(_.find(result3.included, { type: 'related-twos'})).not.toBeDefined();
+    expect(_.find(result3.included, { type: 'related-ones'})).toBeDefined();
   });
 
   it('should give an option to sepcify relation types with an object', () => {

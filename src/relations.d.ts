@@ -15,7 +15,10 @@ export type RelationTypeFunction = (attribute: string) => string;
  */
 export type RelationTypeOpt = RelationTypeMap | RelationTypeFunction;
 
+/**
+ * Relationship options
+ */
 export interface RelationOpts {
-    included?: boolean,
-    fields?: string[]
+    included: boolean | string[];
+    fields?: string[];
 }
