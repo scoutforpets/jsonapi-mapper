@@ -113,7 +113,7 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should inlcude a repeated model only once in the included array', () => {
+  it('should include a repeated model only once in the included array', () => {
     let model: any = bookshelf.Model.forge({
       id : 5,
       name: 'A test model',
@@ -1378,7 +1378,7 @@ describe('Bookshelf relations', () => {
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
-    let result1: any = mapper.map(model, 'models', {relations: true});
+    let result1: any = mapper.map(model, 'models', {relations: { included: true }});
     let result2: any = mapper.map(model, 'models', {relations: false});
 
     let expected1: any = {
@@ -1411,7 +1411,8 @@ describe('Bookshelf relations', () => {
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
-    let result: any = mapper.map(model, 'models', {relations: ['related-two']});
+    let result: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: true }});
+    let result2: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: false }});
 
     let expected: any = {
       included: [
@@ -1426,6 +1427,9 @@ describe('Bookshelf relations', () => {
     };
 
     expect(_.matches(expected)(result)).toBe(true);
+
+    expect(_.has(result2, 'data.relationships.related-two')).toBe(true);
+    expect(_.has(result2, 'included')).toBe(false);
   });
 
   it('should give an option to sepcify relation types with an object', () => {
@@ -1520,6 +1524,46 @@ describe('Bookshelf relations', () => {
 
   it('should give an API to merge relations attributes', () => {
     pending('Not targeted for release 1.x');
+  });
+
+  it('should give an option to include relations', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
+    ]);
+
+    let result1: any = mapper.map(model, 'models', {relations: { included: true }});
+    let result2: any = mapper.map(model, 'models', {relations: { included: false }});
+    let result3: any = mapper.map(model, 'models', {relations: false});
+
+    let expected1: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value20'
+          }
+        },
+        {
+          id: '11',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value21'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected1)(result1)).toBe(true);
+    expect(_.has(result1, 'data.relationships.related-models')).toBe(true);
+
+    expect(_.has(result2, 'data.relationships.related-models')).toBe(true);
+    expect(_.has(result2, 'included')).toBe(false);
+
+    expect(_.has(result3, 'data.relationships.related-models')).toBe(false);
+    expect(_.has(result3, 'included')).toBe(false);
   });
 });
 

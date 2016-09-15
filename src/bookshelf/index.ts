@@ -1,6 +1,6 @@
 'use strict';
 
-import { assign } from 'lodash';
+import { assign, defaultsDeep } from 'lodash';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { Mapper } from '../interfaces';
 import { Data, BookOpts } from './extras';
@@ -30,7 +30,7 @@ export default class Bookshelf implements Mapper {
     let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
 
     // Set default values for the options
-    bookOpts = assign({relations: true, enableLinks: true}, bookOpts);
+    defaultsDeep(bookOpts, {relations: { included: true }, enableLinks: true})
 
     let info: Information = { bookOpts, linkOpts };
 

@@ -11,6 +11,7 @@ import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
+import { RelationOpts } from '../relations';
 import { topLinks, dataLinks, relationshipLinks, includedLinks } from './links';
 import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 
@@ -45,7 +46,8 @@ export function processData(info: Information, data: Data): SerialOpts {
  */
 function processSample(info: Information, sample: Model): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks }: BookOpts = bookOpts;
+  let { enableLinks, relations }: BookOpts = bookOpts;
+  let { included }: RelationOpts = relations;
 
   let template: SerialOpts = {};
 
@@ -65,6 +67,9 @@ function processSample(info: Information, sample: Model): SerialOpts {
       relTemplate.relationshipLinks = relationshipLinks(linkOpts, relName);
       relTemplate.includedLinks = includedLinks(relLinkOpts);
     }
+
+    // Include links as compound document
+    relTemplate.included = included;
 
     template[relName] = relTemplate;
     template.attributes.push(relName);
@@ -123,10 +128,11 @@ function getAttrsList(data: Model): any {
  */
 function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
+  let { fields }: RelationOpts = relations;
 
   return relations === true ||
-    (typeCheck('[String]', relations) &&
-      (relations as string[]).some((rel: string) => rel === relName));
+         relations instanceof Object ||
+         (fields instanceof Array && fields.some((rel: string) => rel === relName));
 }
 
 /**

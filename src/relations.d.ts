@@ -14,3 +14,8 @@ export type RelationTypeFunction = (attribute: string) => string;
  * The relationTypes option can be a function or an object
  */
 export type RelationTypeOpt = RelationTypeMap | RelationTypeFunction;
+
+export interface RelationOpts {
+    included?: boolean,
+    fields?: string[]
+}
