@@ -133,7 +133,7 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { fields }: RelationOpts = relations;
 
   if (fields instanceof Array) {
-      return fields.some((rel: string) => rel === relName);
+      return includes(fields, relName);
   } else if (relations !== false) {
       return true;
   }
