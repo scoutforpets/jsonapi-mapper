@@ -69,7 +69,9 @@ function processSample(info: Information, sample: Model): SerialOpts {
     }
 
     // Include links as compound document
-    relTemplate.included = included;
+    if (!includeAllowed(bookOpts, relName)) {
+        relTemplate.included = false;
+    }
 
     template[relName] = relTemplate;
     template.attributes.push(relName);
@@ -133,6 +135,20 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   if (fields instanceof Array) {
       return fields.some((rel: string) => rel === relName);
   } else if (relations !== false) {
+      return true;
+  }
+}
+
+/**
+ * Based on Bookshelf options, determine if a relation must be included
+ */
+function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
+  let { relations }: BookOpts = bookOpts;
+  let { included }: RelationOpts = relations;
+
+  if (included instanceof Array) {
+      return included.some((rel: string) => rel === relName);
+  } else if (included !== false) {
       return true;
   }
 }

@@ -1432,6 +1432,39 @@ describe('Bookshelf relations', () => {
     expect(_.has(result2, 'included')).toBe(false);
   });
 
+  it('should give an option to choose which relations to include', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {relations: { included: true }});
+    let result2: any = mapper.map(model, 'models', { relations: { included: ['related-two']}});
+
+    let expected: any = {
+      included: [
+          {
+            id: '10',
+            type: 'related-ones',
+            attributes: {
+              attr1: 'value1'
+            }
+        },
+        {
+          id: '20',
+          type: 'related-twos',
+          attributes: {
+            attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+    expect(_.find(result2.included, { type: 'related-ones'})).not.toBeDefined();
+    expect(_.find(result2.included, { type: 'related-twos'})).toBeDefined();
+  });
+
   it('should give an option to sepcify relation types with an object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
