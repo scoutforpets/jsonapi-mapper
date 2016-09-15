@@ -6,8 +6,7 @@
 
 'use strict';
 
-import { assign, clone, includes, intersection, forOwn, has, keys, mapValues, merge } from 'lodash';
-import { typeCheck } from 'type-check';
+import { assign, clone, includes, intersection, isNil, forOwn, has, keys, mapValues, merge } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -46,8 +45,7 @@ export function processData(info: Information, data: Data): SerialOpts {
  */
 function processSample(info: Information, sample: Model): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks, relations }: BookOpts = bookOpts;
-  let { included }: RelationOpts = relations;
+  let { enableLinks }: BookOpts = bookOpts;
 
   let template: SerialOpts = {};
 
@@ -130,12 +128,12 @@ function getAttrsList(data: Model): any {
  */
 function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
-  let { fields }: RelationOpts = relations;
 
-  if (fields instanceof Array) {
-      return includes(fields, relName);
-  } else if (relations !== false) {
-      return true;
+  if (typeof relations === 'boolean') {
+    return relations;
+  } else {
+    let { fields }: RelationOpts = relations;
+    return isNil(fields) || includes(fields, relName);
   }
 }
 
@@ -144,20 +142,26 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
  */
 function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
-  let { fields, included }: RelationOpts = relations;
 
-  if (fields instanceof Array && included instanceof Array) {
-      // If specific relations are specified, ensure that the included relations
-      // are listed as one of the relations to be serialized.
-      let allowed: any = intersection(fields, included);
+  if (typeof relations === 'boolean') {
+    return relations;
+  } else {
+    let { fields, included }: RelationOpts = relations;
+
+    if (typeof included === 'boolean') {
+      return included;
+    } else {
+      // If included is an array, only allow relations that are in that array
+      let allowed: string[] = included;
+
+      if (! isNil(fields)) {
+        // If fields specified, ensure that the included relations
+        // are listed as one of the relations to be serialized
+        allowed = intersection(fields, included);
+      }
+
       return includes(allowed, relName);
-  }
-  else if (included instanceof Array) {
-      // If included is an array, only allow relations that are in that array.
-      return includes(included, relName);
-  } else if (included !== false) {
-      // If included isn't false, allow all relations to be included
-      return true;
+    }
   }
 }
 
