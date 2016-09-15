@@ -130,9 +130,11 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
   let { fields }: RelationOpts = relations;
 
-  return relations === true ||
-         relations instanceof Object ||
-         (fields instanceof Array && fields.some((rel: string) => rel === relName));
+  if (fields instanceof Array) {
+      return fields.some((rel: string) => rel === relName);
+  } else if (relations !== false) {
+      return true;
+  }
 }
 
 /**
