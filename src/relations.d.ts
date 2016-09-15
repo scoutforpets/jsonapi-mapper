@@ -19,6 +19,6 @@ export type RelationTypeOpt = RelationTypeMap | RelationTypeFunction;
  * Relationship options
  */
 export interface RelationOpts {
-    included?: boolean | string[],
-    fields?: string[]
+    included: boolean | string[];
+    fields?: string[];
 }
