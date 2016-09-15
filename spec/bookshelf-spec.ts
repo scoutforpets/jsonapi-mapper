@@ -1414,25 +1414,23 @@ describe('Bookshelf relations', () => {
     let result: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: true }});
     let result2: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: false }});
 
-    let expected: any = {
-      included: [
+    let expected: any =
         {
           id: '20',
           type: 'related-twos',
           attributes: {
             attr2: 'value2'
           }
-        }
-      ]
-    };
+        };
 
-    expect(_.matches(expected)(result)).toBe(true);
+    expect(result.included.length).toEqual(1);
+    expect(_.matches(expected)(result.included[0])).toBe(true);
 
     expect(_.has(result2, 'data.relationships.related-two')).toBe(true);
     expect(_.has(result2, 'included')).toBe(false);
   });
 
-  it('should give an option to sepcify relation types with an object', () => {
+  it('should give an option to specify relation types with an object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
@@ -1461,7 +1459,7 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should give an option to sepcify relation types with a function', () => {
+  it('should give an option to specify relation types with a function', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
