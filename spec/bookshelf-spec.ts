@@ -1439,6 +1439,7 @@ describe('Bookshelf relations', () => {
 
     let result: any = mapper.map(model, 'models', {relations: { included: true }});
     let result2: any = mapper.map(model, 'models', { relations: { included: ['related-two']}});
+    let result3: any = mapper.map(model, 'models', { relations: { fields: ['related-one'], included: ['related-one', 'related-two']}});
 
     let expected: any = {
       included: [
@@ -1463,6 +1464,9 @@ describe('Bookshelf relations', () => {
 
     expect(_.find(result2.included, { type: 'related-ones'})).not.toBeDefined();
     expect(_.find(result2.included, { type: 'related-twos'})).toBeDefined();
+
+    expect(_.find(result3.included, { type: 'related-twos'})).not.toBeDefined();
+    expect(_.find(result3.included, { type: 'related-ones'})).toBeDefined();
   });
 
   it('should give an option to sepcify relation types with an object', () => {

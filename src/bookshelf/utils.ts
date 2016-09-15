@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, forOwn, has, keys, mapValues, merge } from 'lodash';
+import { assign, clone, includes, intersection, forOwn, has, keys, mapValues, merge } from 'lodash';
 import { typeCheck } from 'type-check';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -144,11 +144,20 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
  */
 function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
   let { relations }: BookOpts = bookOpts;
+  let { fields }: RelationOpts = relations;
   let { included }: RelationOpts = relations;
 
-  if (included instanceof Array) {
-      return included.some((rel: string) => rel === relName);
+  if (fields instanceof Array && included instanceof Array) {
+      // If specific relations are specified, ensure that the included relations
+      // are listed as one of the relations to be serialized.
+      let allowed: any = intersection(fields, included);
+      return includes(allowed, relName);
+  }
+  else if (included instanceof Array) {
+      // If included is an array, only allow relations that are in that array.
+      return includes(included, relName);
   } else if (included !== false) {
+      // If included isn't false, allow all relations to be included
       return true;
   }
 }
