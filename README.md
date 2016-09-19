@@ -73,8 +73,8 @@ mapper#map(data, type, mapperOptions)
 - `type` _(string)_: The type of the resource being returned. For example, if you passed in an `Appointment` model, your `type` might be `appointment`.
 - _(optional)_ `mapperOptions` _(object)_:
   - _(optional)_ `relations` _(boolean | object)_: Flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide an object containing the following options:
-    - `included` _(boolean | array)_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included. 
-    - `fields` _array_ - an array of relation names that should be included in the response.
+    - `included` _(boolean | string[])_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included.
+    - `fields` _string[]_ - an array of relation names that should be included in the response.
   - _(optional)_ `relationTypes` _(object | function)_: To specify any relation whose type should not be a pluralization of it's name. If the type to use returned is a _falsy_ value for a relation name, that name is automatically pluralized. Pluralizes all relation names and passed type by default.
     - _object option_: Objects should have the structure `{'relationName': 'typeToUse'}` (e.g. `{'best-friend': 'people'}`).
     - _function option_: Functions should expect a `string` as input (the relation name) and output a `string` (the type to use) (e.g. `(x) => x + '_resources'`).
