@@ -326,29 +326,25 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result2)).toBe(true);
   });
 
-  it('should not add the id to the attributes', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5'});
-    let result: any = mapper.map(model, 'models');
-
-    expect(_.has(result, 'data.attributes.id')).toBe(false);
-  });
-
-  it('should ignore any *_id attribute on the attributes', () => {
+  it('should omit attributes that match regexes passed by the user', () => {
     let model: Model = bookshelf.Model.forge<any>({
       id: '4',
       attr: 'value',
-      'related_id': 123,
-      'another_id': '456'
+      paid: true,
+      'related-id': 123,
+      'another_id': '456',
+      'someId': '890'
     });
 
-    let result: any = mapper.map(model, 'models');
+    let result: any = mapper.map(model, 'models', { omitAttrs: [/^id$/, /[_-]id$/, /Id$/] });
 
     let expected: any = {
       data: {
         id: '4',
         type: 'models',
         attributes: {
-          attr: 'value'
+          attr: 'value',
+          paid: true
         }
       }
     };
@@ -357,21 +353,25 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
 
-  it('should ignore any *_type attribute on the attributes', () => {
+  it('should omit attributes that exactly equal strings passed by the user', () => {
     let model: Model = bookshelf.Model.forge<any>({
       id: '4',
       attr: 'value',
-      'related_type': 'normal'
+      'to-omit': true,
+      'not-to-omit': false,
+      ids : [4, 5, 6]
     });
 
-    let result: any = mapper.map(model, 'models');
+    let result: any = mapper.map(model, 'models', { omitAttrs: ['id', 'to-omit'] });
 
     let expected: any = {
       data: {
         id: '4',
         type: 'models',
         attributes: {
-          attr: 'value'
+          attr: 'value',
+          'not-to-omit': false,
+          ids : [4, 5, 6]
         }
       }
     };
@@ -1414,14 +1414,13 @@ describe('Bookshelf relations', () => {
     let result: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: true }});
     let result2: any = mapper.map(model, 'models', {relations: { fields: ['related-two'], included: false }});
 
-    let expected: any =
-        {
-          id: '20',
-          type: 'related-twos',
-          attributes: {
-            attr2: 'value2'
-          }
-        };
+    let expected: any = {
+      id: '20',
+      type: 'related-twos',
+      attributes: {
+        attr2: 'value2'
+      }
+    };
 
     expect(result.included.length).toEqual(1);
     expect(_.matches(expected)(result.included[0])).toBe(true);
