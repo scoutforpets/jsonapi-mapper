@@ -18,4 +18,7 @@ export interface MapOpts {
   enableLinks?: boolean;
   pagination?: PagOpts;
   query?: QueryOpts;
+
+  // Attr-related
+  attrsWhitelist?: string[]
 }

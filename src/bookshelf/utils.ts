@@ -50,7 +50,7 @@ function processSample(info: Information, sample: Model): SerialOpts {
   let template: SerialOpts = {};
 
   // Add list of valid attributes
-  template.attributes = getAttrsList(sample);
+  template.attributes = getAttrsList(sample, bookOpts);
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relSample: Model, relName: string): void => {
@@ -108,17 +108,24 @@ function mergeModel(main: Model, toMerge: Model): Model {
  * Retrieve model's attribute names
  * following filtering rules
  */
-function getAttrsList(data: Model): any {
+function getAttrsList(data: Model, bookOpts: BookOpts): any {
   let attrs: string[] = keys(data.attributes);
+  let { attrsWhitelist } = bookOpts;
 
   let restricted: RegExp[] = [
-    /^id$/,
-    /[_-]id$/,
-    /[_-]type$/
+    /^id$/,         // covers `id`
+    /Id$/,          // covers camelCase: `modelId`
+    /[_-]id$/,     // covers snake_case or dash-case: `model_id` or `model-id`
+    /Type$/,       // covers camelCase: `modelType`
+    /[_-]type$/    // covers snake_case or dash-case: `model_type` or `model-type`
   ];
 
   // Only return attributes that don't match any pattern
   return attrs.filter((attr: string) => {
+    // Automatically return attrs that are in the whitelist
+    if (includes(attrsWhitelist, attr)) return true;
+
+    // Ignore attrs that aren't in the whitelist and are restricted
     return !restricted.some((pattern: RegExp) => attr.search(pattern) >= 0);
   });
 }

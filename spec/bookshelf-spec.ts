@@ -333,12 +333,13 @@ describe('Bookshelf Adapter', () => {
     expect(_.has(result, 'data.attributes.id')).toBe(false);
   });
 
-  it('should ignore any *_id attribute on the attributes', () => {
+  it('should ignore any snakeCase, underscore_case or dash-case `id` attribute on the attributes', () => {
     let model: Model = bookshelf.Model.forge<any>({
       id: '4',
       attr: 'value',
-      'related_id': 123,
-      'another_id': '456'
+      related_id: 123,
+      relatedId: 123,
+      'related-id': 123
     });
 
     let result: any = mapper.map(model, 'models');
@@ -357,11 +358,13 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
 
-  it('should ignore any *_type attribute on the attributes', () => {
+  it('should ignore any snakeCase, underscore_case or dash-case `type` attribute on the attributes', () => {
     let model: Model = bookshelf.Model.forge<any>({
       id: '4',
       attr: 'value',
-      'related_type': 'normal'
+      related_type: 'normal',
+      relatedType: 'normal',
+      'related-type': 'normal'
     });
 
     let result: any = mapper.map(model, 'models');
@@ -372,6 +375,31 @@ describe('Bookshelf Adapter', () => {
         type: 'models',
         attributes: {
           attr: 'value'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
+  it('should allow any attrs in the whitelist', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '4',
+      attr: 'value',
+      related_type: 'normal',
+      relatedType: 'normal'
+    });
+
+    let result: any = mapper.map(model, 'models', { attrsWhitelist: ['related_type']});
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          attr: 'value',
+          'related-type': 'normal'
         }
       }
     };
