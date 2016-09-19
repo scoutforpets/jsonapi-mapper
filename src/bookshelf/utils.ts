@@ -6,7 +6,8 @@
 
 'use strict';
 
-import { assign, clone, includes, intersection, isNil, forOwn, has, keys, mapValues, merge } from 'lodash';
+import { assign, clone, differenceWith, includes, intersection, isNil,
+         escapeRegExp, forOwn, has, keys, mapValues, merge } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -50,7 +51,7 @@ function processSample(info: Information, sample: Model): SerialOpts {
   let template: SerialOpts = {};
 
   // Add list of valid attributes
-  template.attributes = getAttrsList(sample);
+  template.attributes = getAttrsList(sample, bookOpts);
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relSample: Model, relName: string): void => {
@@ -108,19 +109,24 @@ function mergeModel(main: Model, toMerge: Model): Model {
  * Retrieve model's attribute names
  * following filtering rules
  */
-function getAttrsList(data: Model): any {
+function getAttrsList(data: Model, bookOpts: BookOpts): any {
   let attrs: string[] = keys(data.attributes);
+  let { omitAttrs }: BookOpts = bookOpts;
 
-  let restricted: RegExp[] = [
-    /^id$/,
-    /[_-]id$/,
-    /[_-]type$/
-  ];
+  // Only return attributes that don't match any pattern passed by the user
+  return differenceWith(attrs, omitAttrs,
+    (attr: string, omit: (RegExp | string)) => {
+      let reg: RegExp;
 
-  // Only return attributes that don't match any pattern
-  return attrs.filter((attr: string) => {
-    return !restricted.some((pattern: RegExp) => attr.search(pattern) >= 0);
-  });
+      if (typeof omit === 'string') {
+        reg = RegExp(`^${escapeRegExp(omit)}$`);
+      } else {
+        reg = omit;
+      }
+
+      return reg.test(attr);
+    }
+  );
 }
 
 /**
