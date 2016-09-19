@@ -73,7 +73,7 @@ mapper#map(data, type, mapperOptions)
 - `type` _(string)_: The type of the resource being returned. For example, if you passed in an `Appointment` model, your `type` might be `appointment`.
 - _(optional)_ `mapperOptions` _(object)_:
   - _(optional)_ `relations` _(boolean | object)_: Flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide an object containing the following options:
-    - `included` _(boolean | array)_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included. 
+    - `included` _(boolean | array)_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included.
     - `fields` _array_ - an array of relation names that should be included in the response.
   - _(optional)_ `relationTypes` _(object | function)_: To specify any relation whose type should not be a pluralization of it's name. If the type to use returned is a _falsy_ value for a relation name, that name is automatically pluralized. Pluralizes all relation names and passed type by default.
     - _object option_: Objects should have the structure `{'relationName': 'typeToUse'}` (e.g. `{'best-friend': 'people'}`).
@@ -84,6 +84,7 @@ mapper#map(data, type, mapperOptions)
     - _(required)_ `offset` _(integer)_
     - _(required)_ `limit` _(integer)_
     - _(optional)_ `total` or `rowCount` _(integer)_
+  - _(optional)_ `attrWhitelist` _(string[])_: in accordance with the JSON API spec, the mapper automatically filters out any foreign keys from the primary payload. We currently match on `id`, `-id`, `_id`, `modelId` (camelCase), `-type`, `_type` and `Type` (camelCase). If you need to have an attribute that matches one of the aforementioned patterns pass through, you can add it to the whitelist.
 
 # How can I contribute?
 The project is very open to collaboration from the public, especially on providing the groundwork for other ORM's (like [Sequelize](http://docs.sequelizejs.com/) or [Mongoose](http://mongoosejs.com/)). Just open a PR!
