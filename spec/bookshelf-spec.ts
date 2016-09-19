@@ -1097,7 +1097,7 @@ describe('Bookshelf relations', () => {
 
   });
 
-  it('should put the array of related objects in the included array with different related', () => {
+  xit('should put the array of related objects in the included array with different related', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
 
     (model1 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
