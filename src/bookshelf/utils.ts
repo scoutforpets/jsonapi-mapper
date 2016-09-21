@@ -6,8 +6,8 @@
 
 'use strict';
 
-import { assign, clone, differenceWith, includes, intersection, isNil,
-         escapeRegExp, forOwn, has, keys, mapValues, merge } from 'lodash';
+import { assign, clone, cloneDeep, differenceWith, includes, intersection, isNil,
+         escapeRegExp, forOwn, has, keys, mapValues, merge, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -86,10 +86,13 @@ function processSample(info: Information, sample: Model): SerialOpts {
 function sample(data: Data): Model {
   if (isModel(data)) {
     const cloned: Model = clone(data);
+    cloned.attributes = cloneDeep(data.attributes);
     cloned.relations = mapValues(data.relations, sample);
     return cloned;
   } else if (isCollection(data)) {
-    return data.reduce(mergeModel, {} as Model);
+    const first: Model = data.head();
+    const rest: Model[] = data.tail();
+    return reduce(rest, mergeModel, sample(first));
   } else {
     return {} as Model;
   }
