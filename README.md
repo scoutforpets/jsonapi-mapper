@@ -78,6 +78,7 @@ mapper#map(data, type, mapperOptions)
   - _(optional)_ `relationTypes` _(object | function)_: To specify any relation whose type should not be a pluralization of it's name. If the type to use returned is a _falsy_ value for a relation name, that name is automatically pluralized. Pluralizes all relation names and passed type by default.
     - _object option_: Objects should have the structure `{'relationName': 'typeToUse'}` (e.g. `{'best-friend': 'people'}`).
     - _function option_: Functions should expect a `string` as input (the relation name) and output a `string` (the type to use) (e.g. `(x) => x + '_resources'`).
+  - _(optional)_ `omitAttrs` _(RegExp | string)[]_: List of model attributes to omit from the resulting payload. A typical example would be the `id` attribute.
   - _(optional)_ `enableLinks` _(boolean)_: Flag to enable (`true`) or disable (`false`) the generation of links in the payload. This may be useful if the consuming system doesn't take advantage of links and you want to save on payload size and maybe a bit of performance. Defaults to `true`.
   - _(optional)_ `query` _(object)_: An object containing the original query parameters. These will be appended to `self` and pagination links. Developer Note: This is not fully implemented yet, but following releases will fix that.
   - _(optional)_ `pagination` _(object)_: Pagination-related parameters for building pagination links for collections.
