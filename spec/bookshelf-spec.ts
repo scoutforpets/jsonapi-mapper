@@ -64,7 +64,6 @@ describe('Bookshelf Adapter', () => {
         id : 'foo@example.com',
         type: 'models',
         attributes: {
-          email : 'foo@example.com',
           name: 'A test model',
           description: 'something to use as a test'
         }
@@ -189,7 +188,6 @@ describe('Bookshelf Adapter', () => {
           id: 'foo@example.com',
           type: 'related-models',
           attributes: {
-            email: 'foo@example.com',
             attr2: 'value2'
           }
         }
@@ -220,7 +218,6 @@ describe('Bookshelf Adapter', () => {
           id : 'foo@example.com',
           type: 'models',
           attributes: {
-            email : 'foo@example.com',
             name: 'A test model1',
             description: 'something to use as a test'
           }
@@ -303,7 +300,6 @@ describe('Bookshelf Adapter', () => {
           type: 'related-models',
           id : 'foo@example.com',
           attributes: {
-            email: 'foo@example.com',
             attr2: 'value2'
           },
           links : { self : domain + '/related-models/foo@example.com' }
@@ -324,6 +320,34 @@ describe('Bookshelf Adapter', () => {
 
     expect(_.matches(expected)(result1)).toBe(true);
     expect(_.matches(expected)(result2)).toBe(true);
+  });
+
+  it('should omit the model idAttribute from the attributes', () => {
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let model: any = customModel.forge({
+      email : 'foo@example.com',
+      name: 'A test model',
+      description: 'something to use as a test'
+    });
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        id : 'foo@example.com',
+        type: 'models',
+        attributes: {
+          name: 'A test model',
+          description: 'something to use as a test'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.has(result.data.attributes, 'email')).toBe(false);
   });
 
   it('should omit attributes that match regexes passed by the user', () => {

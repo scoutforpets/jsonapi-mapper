@@ -116,6 +116,11 @@ function getAttrsList(data: Model, bookOpts: BookOpts): any {
   let attrs: string[] = keys(data.attributes);
   let { omitAttrs }: BookOpts = bookOpts;
 
+  // include the idAttribute in the list of attributes to omit
+  if (! isNil(data.idAttribute)) {
+    omitAttrs.push(data.idAttribute);
+  }
+
   // Only return attributes that don't match any pattern passed by the user
   return differenceWith(attrs, omitAttrs,
     (attr: string, omit: (RegExp | string)) => {
