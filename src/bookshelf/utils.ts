@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, cloneDeep, differenceWith, get, includes, intersection, isNil, isEmpty,
+import { assign, clone, cloneDeep, differenceWith, get, includes, intersection, isArray, isNil, isEmpty,
          escapeRegExp, forEach, forOwn, has, keys, mapValues, merge, pick, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -84,14 +84,16 @@ function processSample(info: Information, sample: Model): SerialOpts {
   return template;
 }
 
-function relationshipMeta(relation: Model, models: Array<Model>) {
-    return reduce(models, (result: Array<Object>, rel: Model): Array<Object> => {
-        if (rel.pivot) {
-            result.push(rel.pivot);
-        }
+function relationshipMeta(relation, models) {
+    if (isArray(models)) {
+        return reduce(models, (result: Array<Object>, rel: Model): Array<Object> => {
+            if (rel.pivot) {
+                result.push(rel.pivot);
+            }
 
-        return result;
-    }, []);
+            return result;
+        }, []);
+    }
 }
 
 /**
