@@ -1687,7 +1687,7 @@ describe('Serializer options', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should not overwrite pluralizeType option passed to serializer', () => {
+  it('should overwrite pluralizeType option passed to serializer', () => {
     mapper = new Mapper.Bookshelf(domain, {pluralizeType: false});
 
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
@@ -1695,7 +1695,7 @@ describe('Serializer options', () => {
 
     let expected: any = {
       data: {
-        type: 'model'
+        type: 'models'
       }
     };
 
