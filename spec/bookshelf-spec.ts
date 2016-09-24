@@ -1556,6 +1556,36 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should give an option to modify attribute properties with a function', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {keyForAttr: _.toUpper});
+
+    let expected: any = {
+      data: {
+        attributes: {
+          ATTR: 'value'
+        }
+      },
+      included: [
+        {
+          attributes: {
+            ATTR1: 'value1'
+          }
+        },
+        {
+          attributes: {
+            ATTR2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should merge for the template correctly', () => {
     let elements: Model[] = _.range(3).map((num: number) => {
       let model: Model = bookshelf.Model.forge<any>({id: num, attr: 'value' + num});

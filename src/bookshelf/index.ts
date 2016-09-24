@@ -1,6 +1,6 @@
 'use strict';
 
-import { assign, defaultsDeep } from 'lodash';
+import { assign, defaultsDeep, identity } from 'lodash';
 import { pluralize as plural } from 'inflection';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { Mapper } from '../interfaces';
@@ -31,17 +31,18 @@ export default class Bookshelf implements Mapper {
 
     // Set default values for the options
     defaultsDeep(bookOpts, {
-      relations: { included: true },
-      enableLinks: true,
       omitAttrs: [],
-      typeForModel: (attr: string) => plural(attr)
+      keyForAttr: identity,
+      relations: true,
+      typeForModel: (attr: string) => plural(attr),
+      enableLinks: true
     });
 
     let info: Information = { bookOpts, linkOpts };
 
     let template: SerialOpts = processData(info, data);
 
-    let { typeForModel }: BookOpts = bookOpts;
+    let { typeForModel, keyForAttr }: BookOpts = bookOpts;
     let typeForAttribute: (attr: string) => string;
 
     if (typeof typeForModel === 'function') {
@@ -52,7 +53,7 @@ export default class Bookshelf implements Mapper {
     }
 
     // Override the template with the provided serializer options
-    assign(template, { typeForAttribute }, this.serialOpts);
+    assign(template, { typeForAttribute, keyForAttribute: keyForAttr }, this.serialOpts);
 
     // Return the data in JSON API format
     let json: any = toJSON(data);

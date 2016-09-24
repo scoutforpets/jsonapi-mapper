@@ -12,6 +12,7 @@ export interface Mapper {
 export interface MapOpts {
   // Attributes-related
   omitAttrs?: (RegExp | string)[];
+  keyForAttr?: (attr: string) => string;
 
   // Relations-related
   relations?: boolean | RelationOpts;
