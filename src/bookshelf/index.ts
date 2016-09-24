@@ -1,11 +1,11 @@
 'use strict';
 
 import { assign, defaultsDeep } from 'lodash';
+import { pluralize as plural } from 'inflection';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
 import { Mapper } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
-import { RelationTypeOpt, RelationTypeFunction } from '../relations';
 
 import { Information, processData, toJSON } from './utils';
 
@@ -30,21 +30,25 @@ export default class Bookshelf implements Mapper {
     let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
 
     // Set default values for the options
-    defaultsDeep(bookOpts, {relations: { included: true }, enableLinks: true, omitAttrs: []});
+    defaultsDeep(bookOpts, {
+      relations: { included: true },
+      enableLinks: true,
+      omitAttrs: [],
+      typeForModel: (attr: string) => plural(attr)
+    });
 
     let info: Information = { bookOpts, linkOpts };
 
     let template: SerialOpts = processData(info, data);
 
-    let relationTypes: RelationTypeOpt = bookOpts.relationTypes || {};
-    function typeForAttribute(attr: string): string {
-      // if typeForAttribute returns undefined, the serializer
-      // omits the result and handles pluralization
-      if (typeof relationTypes === 'object') {
-        return relationTypes[attr];
-      } else {
-        return (relationTypes as RelationTypeFunction)(attr);
-      }
+    let { typeForModel }: BookOpts = bookOpts;
+    let typeForAttribute: (attr: string) => string;
+
+    if (typeof typeForModel === 'function') {
+      typeForAttribute = typeForModel as ((attr: string) => string); // XXX remove `as ...` in typescript 2
+    } else {
+      // if the typeForModel object returns a falsy value, pluralize the attribute
+      typeForAttribute = (attr: string) =>  typeForModel[attr] || plural(attr);
     }
 
     // Override the template with the provided serializer options

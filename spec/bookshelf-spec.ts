@@ -1494,8 +1494,9 @@ describe('Bookshelf relations', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+    (model as any).relations['related-three'] = bookshelf.Model.forge<any>({id: '30', attr3: 'value3'});
 
-    let result: any = mapper.map(model, 'models', {relationTypes: {'related-one': 'inners', 'related-two': 'non-plural'}});
+    let result: any = mapper.map(model, 'models', {typeForModel: {'related-one': 'inners', 'related-two': 'non-plural'}});
 
     let expected: any = {
       included: [
@@ -1512,6 +1513,13 @@ describe('Bookshelf relations', () => {
           attributes: {
             attr2: 'value2'
           }
+        },
+        {
+          id: '30',
+          type: 'related-threes',
+          attributes: {
+            attr3: 'value3'
+          }
         }
       ]
     };
@@ -1524,7 +1532,7 @@ describe('Bookshelf relations', () => {
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
-    let result: any = mapper.map(model, 'models', {relationTypes: () => 'models'});
+    let result: any = mapper.map(model, 'models', {typeForModel: () => 'models'});
 
     let expected: any = {
       included: [

@@ -15,7 +15,7 @@ export interface MapOpts {
 
   // Relations-related
   relations?: boolean | RelationOpts;
-  relationTypes?: RelationTypeOpt;
+  typeForModel?: RelationTypeOpt;
 
   // Links-related
   enableLinks?: boolean;
