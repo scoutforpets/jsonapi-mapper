@@ -1490,7 +1490,7 @@ describe('Bookshelf relations', () => {
     expect(_.find(result3.included, { type: 'related-ones'})).toBeDefined();
   });
 
-  it('should give an option to sepcify relation types with an object', () => {
+  it('should specify an option to format specific types using an object', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
@@ -1527,7 +1527,7 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should give an option to sepcify relation types with a function', () => {
+  it('should specify an option to format the type using a function', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
