@@ -77,9 +77,9 @@ mapper#map(data, type, mapperOptions)
   - _(optional)_ `relations` _(boolean | object)_: Flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide an object containing the following options:
     - `included` _(boolean | string[])_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included.
     - `fields` _string[]_ - an array of relation names that should be included in the response.
-  - _(optional)_ `typeForModel` _(object | function)_: To customize the type of a relation. If the value returned is _falsy_, then it's automatically pluralized.
+  - _(optional)_ `typeForModel` _(object | function)_: To customize the type of a relation. If the value returned is _falsy_, then it's automatically pluralized. This function **also affects** the type passed as the second parameter of the `map` function.
     - _object_: The object should have the structure `{"<relation-name>": "<type-to-use>"}` (e.g. `{"best-friend": "people"}`).
-    - _function (string => string)_: The function is passed as input the relation name (`string`) and output the type for that relation (`string`) (e.g. `(x) => x + '_resources'`).
+    - _function (string => string)_: The function is passed as input the relation name (`string`) and output the type for that relation (`string`) (e.g. `(x) => x + '-resources'`).
   - _(optional)_ `enableLinks` _(boolean)_: Flag to enable (`true`) or disable (`false`) the generation of links in the payload. This may be useful if the consuming system doesn't take advantage of links and you want to save on payload size and maybe a bit of performance. Defaults to `true`.
   - _(optional)_ `query` _(object)_: An object containing the original query parameters. These will be appended to `self` and pagination links. Developer Note: This is not fully implemented yet, but following releases will fix that.
   - _(optional)_ `pagination` _(object)_: Pagination-related parameters for building pagination links for collections.
