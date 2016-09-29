@@ -956,7 +956,7 @@ describe('Bookshelf relations', () => {
   });
 
   it('should put the single related object in the included array', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});
 
     let result: any = mapper.map(model, 'models');
@@ -989,14 +989,14 @@ describe('Bookshelf relations', () => {
   });
 
   it('should put the array of related objects in the included array', () => {
-    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
 
     (model1 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
-    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
     (model2 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
@@ -1045,14 +1045,14 @@ describe('Bookshelf relations', () => {
   });
 
   it('should put the array of related objects in the included array with same related', () => {
-    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
 
     (model1 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
-    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
     (model2 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'}),
@@ -1094,21 +1094,21 @@ describe('Bookshelf relations', () => {
   });
 
   it('should put the array of related objects in the included array with different related', () => {
-    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
 
     (model1 as any).relations['related1-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
     ]);
 
-    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
     (model2 as any).relations['related2-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'})
     ]);
 
-    let model3: Model = bookshelf.Model.forge<any>({id: '7', atrr: 'value'});
+    let model3: Model = bookshelf.Model.forge<any>({id: '7', attr: 'value'});
 
     (model3 as any).relations['related2-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '13', attr2: 'value23'}),
@@ -1357,11 +1357,11 @@ describe('Bookshelf relations', () => {
   });
 
   it('should put the array of related objects in the included array with proper attributes even if relation is empty', () => {
-    let model1: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
 
     (model1 as any).relations['related-models'] = bookshelf.Collection.forge<any>();
 
-    let model2: Model = bookshelf.Model.forge<any>({id: '6', atrr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
 
     (model2 as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '12', attr2: 'value22'}),
@@ -1396,7 +1396,7 @@ describe('Bookshelf relations', () => {
   });
 
   it('should give an option to ignore relations', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
@@ -1431,7 +1431,7 @@ describe('Bookshelf relations', () => {
   });
 
   it('should give an option to choose which relations to add', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
@@ -1454,7 +1454,7 @@ describe('Bookshelf relations', () => {
   });
 
   it('should give an option to choose which relations to include', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
@@ -1490,14 +1490,18 @@ describe('Bookshelf relations', () => {
     expect(_.find(result3.included, { type: 'related-ones'})).toBeDefined();
   });
 
-  it('should give an option to sepcify relation types with an object', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+  it('should specify an option to format specific types using an object', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+    (model as any).relations['related-three'] = bookshelf.Model.forge<any>({id: '30', attr3: 'value3'});
 
-    let result: any = mapper.map(model, 'models', {relationTypes: {'related-one': 'inners', 'related-two': 'non-plural'}});
+    let result: any = mapper.map(model, 'resource', {typeForModel: {'related-one': 'inners', 'related-two': 'non-plural'}});
 
     let expected: any = {
+      data: {
+        type: 'resources'
+      },
       included: [
         {
           id: '10',
@@ -1512,6 +1516,13 @@ describe('Bookshelf relations', () => {
           attributes: {
             attr2: 'value2'
           }
+        },
+        {
+          id: '30',
+          type: 'related-threes',
+          attributes: {
+            attr3: 'value3'
+          }
         }
       ]
     };
@@ -1519,14 +1530,17 @@ describe('Bookshelf relations', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should give an option to sepcify relation types with a function', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+  it('should specify an option to format the type using a function', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
     (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
 
-    let result: any = mapper.map(model, 'models', {relationTypes: () => 'models'});
+    let result: any = mapper.map(model, 'resource', {typeForModel: () => 'models'});
 
     let expected: any = {
+      data: {
+        type: 'models'
+      },
       included: [
         {
           id: '10',
@@ -1540,6 +1554,36 @@ describe('Bookshelf relations', () => {
           type: 'models',
           attributes: {
             attr2: 'value2'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
+  it('should give an option to modify attribute properties with a function', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    (model as any).relations['related-one'] = bookshelf.Model.forge<any>({id: '10', attr1: 'value1'});
+    (model as any).relations['related-two'] = bookshelf.Model.forge<any>({id: '20', attr2: 'value2'});
+
+    let result: any = mapper.map(model, 'models', {keyForAttr: _.toUpper});
+
+    let expected: any = {
+      data: {
+        attributes: {
+          ATTR: 'value'
+        }
+      },
+      included: [
+        {
+          attributes: {
+            ATTR1: 'value1'
+          }
+        },
+        {
+          attributes: {
+            ATTR2: 'value2'
           }
         }
       ]
@@ -1585,7 +1629,7 @@ describe('Bookshelf relations', () => {
   });
 
   it('should give an option to include relations', () => {
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-models'] = bookshelf.Collection.forge<any>([
       bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
       bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
@@ -1637,7 +1681,7 @@ describe('Serializer options', () => {
   it('should not overwrite typeForAttribute function passed to serializer', () => {
     mapper = new Mapper.Bookshelf(domain, {typeForAttribute: () => 'type'});
 
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     let result: any = mapper.map(model, 'model');
 
     let expected: any = {
@@ -1649,15 +1693,15 @@ describe('Serializer options', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
-  it('should not overwrite pluralizeType option passed to serializer', () => {
+  it('should overwrite pluralizeType option passed to serializer', () => {
     mapper = new Mapper.Bookshelf(domain, {pluralizeType: false});
 
-    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     let result: any = mapper.map(model, 'model');
 
     let expected: any = {
       data: {
-        type: 'model'
+        type: 'models'
       }
     };
 

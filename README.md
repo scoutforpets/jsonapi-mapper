@@ -72,13 +72,14 @@ mapper#map(data, type, mapperOptions)
 - `data` _(object)_: The data object from Bookshelf (either a Model or a Collection) to be serialized.
 - `type` _(string)_: The type of the resource being returned. For example, if you passed in an `Appointment` model, your `type` might be `appointment`.
 - _(optional)_ `mapperOptions` _(object)_:
+  - _(optional)_ `omitAttrs` _(RegExp | string)[]_: List of model attributes to omit from the resulting payload. For example, you may wish to exclude any foreign keys (as recommended by the JSON API-spec). Note: the model's `idAttribute` is automatically excluded by default.
+  - _(optional)_ `keyForAttr` _(function (string => string))_: Function to customize the attributes keys. The function is passed as input the attribute key (`string`) and output the new attribute key (`string`).
   - _(optional)_ `relations` _(boolean | object)_: Flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide an object containing the following options:
     - `included` _(boolean | string[])_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included.
     - `fields` _string[]_ - an array of relation names that should be included in the response.
-  - _(optional)_ `relationTypes` _(object | function)_: To specify any relation whose type should not be a pluralization of it's name. If the type to use returned is a _falsy_ value for a relation name, that name is automatically pluralized. Pluralizes all relation names and passed type by default.
-    - _object option_: Objects should have the structure `{'relationName': 'typeToUse'}` (e.g. `{'best-friend': 'people'}`).
-    - _function option_: Functions should expect a `string` as input (the relation name) and output a `string` (the type to use) (e.g. `(x) => x + '_resources'`).
-  - _(optional)_ `omitAttrs` _(RegExp | string)[]_: List of model attributes to omit from the resulting payload. For example, you may wish to exclude any foreign keys (as recommended by the JSON API-spec). Note: the model's `idAttribute` is automatically excluded by default.
+  - _(optional)_ `typeForModel` _(object | function)_: To customize the type of a relation. If the value returned is _falsy_, then it's automatically pluralized. This function **also affects** the type passed as the second parameter of the `map` function.
+    - _object_: The object should have the structure `{"<relation-name>": "<type-to-use>"}` (e.g. `{"best-friend": "people"}`).
+    - _function (string => string)_: The function is passed as input the relation name (`string`) and output the type for that relation (`string`) (e.g. `(x) => x + '-resources'`).
   - _(optional)_ `enableLinks` _(boolean)_: Flag to enable (`true`) or disable (`false`) the generation of links in the payload. This may be useful if the consuming system doesn't take advantage of links and you want to save on payload size and maybe a bit of performance. Defaults to `true`.
   - _(optional)_ `query` _(object)_: An object containing the original query parameters. These will be appended to `self` and pagination links. Developer Note: This is not fully implemented yet, but following releases will fix that.
   - _(optional)_ `pagination` _(object)_: Pagination-related parameters for building pagination links for collections.
