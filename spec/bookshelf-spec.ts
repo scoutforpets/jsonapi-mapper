@@ -955,6 +955,47 @@ describe('Bookshelf relations', () => {
 
   });
 
+  it('should add relationships object with meta data for belongsTO', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value1'});
+
+    let relation1: Model = bookshelf.Model.forge<any>({id: '10', attr: 'value2'});
+    (relation1 as any).pivot = bookshelf.Model.forge<any>({id: '10', attr: 'test'});
+
+    let relation2: Model = bookshelf.Model.forge<any>({id: '11', attr: 'value3'});
+    (model as any).relations['related-model'] = bookshelf.Collection.forge<any>([relation1, relation2]);
+
+    let result: any = mapper.map(model, 'model', { relations: { included: false }});
+
+    let expected: any = {
+      data: {
+        id: '5',
+        type: 'models',
+        attributes: {
+          attr: 'value1'
+        },
+        relationships: {
+          'related-model': {
+            data: [{
+              id: '10',
+              type: 'related-models'
+            }, {
+              id: '11',
+              type: 'related-models'
+            }],
+            meta: {
+                data: [
+                    { id: '10', attr: 'test' }
+                ]
+            }
+          }
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
   it('should put the single related object in the included array', () => {
     let model: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
     (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: '10', attr2: 'value2'});

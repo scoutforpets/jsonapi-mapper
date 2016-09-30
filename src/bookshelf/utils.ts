@@ -6,8 +6,8 @@
 
 'use strict';
 
-import { assign, clone, cloneDeep, differenceWith, includes, intersection, isNil,
-         escapeRegExp, forOwn, has, keys, mapValues, merge, reduce } from 'lodash';
+import { assign, clone, cloneDeep, differenceWith, get, includes, intersection, isArray, isNil, isEmpty,
+         escapeRegExp, forEach, forOwn, has, keys, mapValues, merge, pick, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -21,6 +21,7 @@ import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 export interface Information {
   bookOpts: BookOpts;
   linkOpts: LinkOpts;
+  serialOpts?: SerialOpts
 }
 
 /**
@@ -28,7 +29,7 @@ export interface Information {
  * then handle resources recursively in processSample
  */
 export function processData(info: Information, data: Data): SerialOpts {
-  let { bookOpts: { enableLinks }, linkOpts }: Information = info;
+  let { bookOpts: { enableLinks }, linkOpts, serialOpts }: Information = info;
 
   let template: SerialOpts = processSample(info, sample(data));
 
@@ -40,12 +41,13 @@ export function processData(info: Information, data: Data): SerialOpts {
   return template;
 }
 
+
 /**
  * Recursively adds data-related properties to the
  * template to be sent to the serializer
  */
 function processSample(info: Information, sample: Model): SerialOpts {
-  let { bookOpts, linkOpts }: Information = info;
+  let { bookOpts, linkOpts, serialOpts }: Information = info;
   let { enableLinks }: BookOpts = bookOpts;
 
   let template: SerialOpts = {};
@@ -72,11 +74,26 @@ function processSample(info: Information, sample: Model): SerialOpts {
         relTemplate.included = false;
     }
 
+    // Add a relation meta function that will add pivot data if it exists
+    relTemplate.relationshipMeta = { data: get(serialOpts, 'relationshipMeta') || relationshipMeta };
+
     template[relName] = relTemplate;
     template.attributes.push(relName);
   });
 
   return template;
+}
+
+function relationshipMeta(relation, models) {
+    if (isArray(models)) {
+        return reduce(models, (result: Array<Object>, rel: Model): Array<Object> => {
+            if (rel.pivot) {
+                result.push(rel.pivot);
+            }
+
+            return result;
+        }, []);
+    }
 }
 
 /**
@@ -183,7 +200,7 @@ function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
  * Convert a bookshelf model or collection to
  * json adding the id attribute if missing
  */
-export function toJSON(data: Data): any {
+export function toJSON(data: Data, bookOpts: BookOpts): any {
 
   let json: any = null;
 
@@ -194,13 +211,32 @@ export function toJSON(data: Data): any {
     if (!has(json, 'id')) { json.id = data.id; }
 
     // Loop over model relations to call toJSON recursively on them
-    forOwn(data.relations, function (relData: Data, relName: string): void {
-      json[relName] = toJSON(relData);
+    forOwn(data.relations, function (relData: any, relName: string): void {
+
+      // When a Bookshelf Model is serialized with `{ shallow: true }`, the `pivot` data is not not passed along and therefore,
+      // a function passed to the serializer will not have the necessary data to create any meta data.
+      // That said, we need to pass along the pivot data when serializing the model to JSON.
+      forEach(relData.models, (rel: Model) => {
+
+          if (rel.pivot) {
+              // Run the pivot data through the omit attrs function to remove anything unwanted.
+              // NOTE: Bookshelf returns the pivot table keys by default so `omitAttrs` is a good idea here.
+              let attrs: Object = pick(rel.pivot.attributes, getAttrsList(rel.pivot, bookOpts));
+
+              // If there are attrs that don't meet the `omitAttrs` criteria, then
+              // add those attrs plus the model id to the pivot payload
+              if (!isEmpty(attrs)) {
+                  rel.attributes['pivot'] = assign(attrs, { [rel.idAttribute]: rel.id });
+              }
+          }
+      });
+
+      json[relName] = toJSON(relData, bookOpts);
     });
 
   } else if (isCollection(data)) {
     // Run a recursive toJSON on each model of the collection
-    json = data.map(toJSON);
+    json = data.map((model) => toJSON(model, bookOpts));
   }
 
   return json;

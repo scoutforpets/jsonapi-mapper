@@ -38,7 +38,7 @@ export default class Bookshelf implements Mapper {
       enableLinks: true
     });
 
-    let info: Information = { bookOpts, linkOpts };
+    let info: Information = { bookOpts, linkOpts, serialOpts: this.serialOpts };
 
     let template: SerialOpts = processData(info, data);
 
@@ -56,7 +56,7 @@ export default class Bookshelf implements Mapper {
     assign(template, { typeForAttribute, keyForAttribute: keyForAttr }, this.serialOpts);
 
     // Return the data in JSON API format
-    let json: any = toJSON(data);
+    let json: any = toJSON(data, bookOpts);
     return new Serializer(type, template).serialize(json);
   }
 }

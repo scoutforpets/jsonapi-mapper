@@ -28,6 +28,7 @@ export interface Attributes {
 export interface Model extends BModel<any> {
   id: any;
   attributes: Attributes;
+  pivot: Model;
   relations: RelationsObject;
 }
 
