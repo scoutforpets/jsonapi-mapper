@@ -1709,3 +1709,102 @@ describe('Serializer options', () => {
   });
 
 });
+
+describe('Issues', () => {
+  let bookshelf: bs;
+  let mapper: Mapper.Bookshelf;
+  let domain: string = 'https://domain.com';
+
+  beforeAll(() => {
+    bookshelf = bs(knex(({} as knex.Config)));
+    mapper = new Mapper.Bookshelf(domain);
+  });
+
+  afterAll((done: Function) => {
+    bookshelf.knex.destroy(done);
+  });
+
+  it('#77', () => {
+    let collection1: Collection = bookshelf.Collection.forge<any>(_.times(4, (i: number) =>
+      bookshelf.Model.forge<any>({id: i + 1, name: `name${i + 1}`})
+    ));
+
+    collection1.at(0).set('bar_id', 1);
+    collection1.at(0).relations.bar = bookshelf.Model.forge<any>({id: 1});
+
+    collection1.at(3).set('bar_id', 2);
+    collection1.at(3).relations.bar = bookshelf.Model.forge<any>({id: 2});
+
+    let result1: any = mapper.map(collection1, 'models');
+
+    let collection2: Collection = bookshelf.Collection.forge<any>(_.times(3, (i: number) =>
+      collection1.at(i)
+    ));
+    let result2: any = mapper.map(collection2, 'models');
+
+    let expected1: any = {
+      data: [
+        {
+          type: 'models',
+          id: '1',
+          relationships: {
+            bar: {
+              data: {
+                type: 'bars',
+                id: '1'
+              }
+            }
+          }
+        },
+        {
+          type: 'models',
+          id: '2'
+        },
+        {
+          type: 'models',
+          id: '3'
+        },
+        {
+          type: 'models',
+          id: '4',
+          relationships: {
+              bar: {
+              data: {
+                type: 'bars',
+                id: '2'
+              }
+            }
+          }
+        }
+      ]
+    };
+
+    let expected2: any = {
+      data: [
+        {
+          type: 'models',
+          id: '1',
+          relationships: {
+            bar: {
+              data: {
+                type: 'bars',
+                id: '1'
+              }
+            }
+          }
+        },
+        {
+          type: 'models',
+          id: '2'
+        },
+        {
+          type: 'models',
+          id: '3'
+        }
+      ]
+    };
+
+    expect(_.matches(expected1)(result1)).toBe(true);
+    expect(_.matches(expected2)(result2)).toBe(true);
+  });
+});
