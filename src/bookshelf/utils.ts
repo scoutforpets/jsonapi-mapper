@@ -7,7 +7,7 @@
 'use strict';
 
 import { assign, clone, cloneDeep, differenceWith, includes, intersection, isNil,
-         escapeRegExp, forOwn, has, keys, mapValues, merge, reduce } from 'lodash';
+         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -44,7 +44,7 @@ export function processData(info: Information, data: Data): SerialOpts {
  * Recursively adds data-related properties to the
  * template to be sent to the serializer
  */
-function processSample(info: Information, sample: Model): SerialOpts {
+function processSample(info: Information, sample: Sample): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
   let { enableLinks }: BookOpts = bookOpts;
 
@@ -54,7 +54,7 @@ function processSample(info: Information, sample: Model): SerialOpts {
   template.attributes = getAttrsList(sample, bookOpts);
 
   // Nested relations (recursive) template generation
-  forOwn(sample.relations, (relSample: Model, relName: string): void => {
+  forOwn(sample.relations, (relSample: Sample, relName: string): void => {
     if (!relationAllowed(bookOpts, relName)) { return; }
 
     let relLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {type: relName});
@@ -80,29 +80,40 @@ function processSample(info: Information, sample: Model): SerialOpts {
 }
 
 /**
+ * Representation of a sample, a model with only models in the relations,
+ * no collections
+ */
+interface Sample extends Model {
+  relations: {
+    [relationName: string]: Sample
+  };
+}
+
+/**
  * Convert any data into a model representing
  * a complete sample to be used in the template generation
  */
-function sample(data: Data): Model {
+function sample(data: Data): Sample {
   if (isModel(data)) {
-    const cloned: Model = clone(data);
-    cloned.attributes = cloneDeep(data.attributes);
-    cloned.relations = mapValues(data.relations, sample);
-    return cloned;
+    // override type because we will ovewrite relations
+    const sampled: Sample = omit<Sample, Model>(clone(data), ['relations', 'attributes']);
+    sampled.attributes = cloneDeep(data.attributes);
+    sampled.relations = mapValues(data.relations, sample);
+    return sampled;
   } else if (isCollection(data)) {
     const first: Model = data.head();
     const rest: Model[] = data.tail();
-    return reduce(rest, mergeModel, sample(first));
+    return reduce(rest, mergeSample, sample(first));
   } else {
-    return {} as Model;
+    return {} as Sample;
   }
 }
 
 /**
  * Merge two models into a representation of both
  */
-function mergeModel(main: Model, toMerge: Model): Model {
-  const sampled: Model = sample(toMerge);
+function mergeSample(main: Sample, toMerge: Model): Sample {
+  const sampled: Sample = sample(toMerge);
   main.attributes = merge(main.attributes, sampled.attributes);
   main.relations = merge(main.relations, sampled.relations);
   return main;
