@@ -1726,17 +1726,14 @@ describe('Issues', () => {
 
   it('#77', () => {
     let model1: Model = bookshelf.Model.forge<any>({id: 1, name: 'name1', bar_id: 1});
-    let model2: Model = bookshelf.Model.forge<any>({id: 1, name: 'name1', bar_id: null});
+    let model2: Model = bookshelf.Model.forge<any>({id: 2, name: 'name2', bar_id: null});
     let model3: Model = bookshelf.Model.forge<any>({id: 3, name: 'name3', bar_id: null});
     let model4: Model = bookshelf.Model.forge<any>({id: 4, name: 'name4', bar_id: 2});
 
     (model1 as any).relations.bar = bookshelf.Model.forge<any>({id: 1, attr: 'attr1'});
     (model4 as any).relations.bar = bookshelf.Model.forge<any>({id: 2, attr: 'attr2'});
 
-    let collection1: Collection = bookshelf.Collection.forge<any>([
-      model1, model2, model3, model4
-    ]);
-
+    let collection1: Collection = bookshelf.Collection.forge<any>([ model1, model2, model3, model4 ]);
     let result1: any = mapper.map(collection1, 'models');
     let expected1: any = {
       included: [
@@ -1746,9 +1743,7 @@ describe('Issues', () => {
     };
     expect(_.matches(expected1)(result1)).toBe(true);
 
-    let collection2: Collection = bookshelf.Collection.forge<any>([
-      model1, model2
-    ]);
+    let collection2: Collection = bookshelf.Collection.forge<any>([ model1, model2 ]);
     let result2: any = mapper.map(collection2, 'models');
     let expected2: any = {
       included: [
@@ -1757,9 +1752,7 @@ describe('Issues', () => {
     };
     expect(_.matches(expected2)(result2)).toBe(true);
 
-    let collection3: Collection = bookshelf.Collection.forge<any>([
-      model2, model1
-    ]);
+    let collection3: Collection = bookshelf.Collection.forge<any>([ model2, model1 ]);
     let result3: any = mapper.map(collection3, 'models');
     let expected3: any = {
       included: [
