@@ -1725,41 +1725,91 @@ describe('Issues', () => {
   });
 
   it('#77', () => {
-    let model1: Model = bookshelf.Model.forge<any>({id: 1, name: 'name1', bar_id: 1});
-    let model2: Model = bookshelf.Model.forge<any>({id: 2, name: 'name2', bar_id: null});
-    let model3: Model = bookshelf.Model.forge<any>({id: 3, name: 'name3', bar_id: null});
-    let model4: Model = bookshelf.Model.forge<any>({id: 4, name: 'name4', bar_id: 2});
 
-    (model1 as any).relations.bar = bookshelf.Model.forge<any>({id: 1, attr: 'attr1'});
-    (model4 as any).relations.bar = bookshelf.Model.forge<any>({id: 2, attr: 'attr2'});
+    // model with full relations
 
-    let collection1: Collection = bookshelf.Collection.forge<any>([ model1, model2, model3, model4 ]);
-    let result1: any = mapper.map(collection1, 'models');
+    let model1: Model = bookshelf.Model.forge<any>({
+      "id": 14428,
+      "foo_id": 2973,
+      "bar_id": 59,
+      "name": "Bla #14428",
+      "created_at": null,
+      "updated_at": null,
+      "deleted_at": null
+    });
+
+    (model1 as any).relations.foo = bookshelf.Model.forge<any>({
+      "id": 2973,
+      "name": "Foo #2973",
+      "created_at": null,
+      "updated_at": null,
+      "deleted_at": null
+    });
+
+    (model1 as any).relations.bar = bookshelf.Model.forge<any>({
+      "id": 59,
+      "foo_id": 2973,
+      "name": "Bar #59",
+      "created_at": null,
+      "updated_at": null,
+      "deleted_at": null
+    });
+
+    // model with one relation bar_id = null
+
+    let model2: Model = bookshelf.Model.forge<any>({
+      "id": 14417,
+      "foo_id": 2973,
+      "bar_id": null,
+      "name": "Bla #14417",
+      "created_at": null,
+      "updated_at": null,
+      "deleted_at": null
+    });
+
+    (model2 as any).relations.foo = bookshelf.Model.forge<any>({
+      "id": 2973,
+      "name": "Foo #2973",
+      "created_at": null,
+      "updated_at": null,
+      "deleted_at": null
+    });
+
+    (model2 as any).relations.bar = bookshelf.Model.forge<any>({});
+
+    // model1, model2 -> fails
+    let collection1: Collection = bookshelf.Collection.forge<any>([model1, model2]);
+
+    let result1: any = mapper.map(collection1, 'model');
+
     let expected1: any = {
-      included: [
-        { id: '1', type: 'bars' },
-        { id: '2', type: 'bars' }
-      ]
+      included: [{
+        type: 'foos',
+        id: '2973'
+      }, {
+        type: 'bars',
+        id: '59'
+      }]
     };
+
     expect(_.matches(expected1)(result1)).toBe(true);
 
-    let collection2: Collection = bookshelf.Collection.forge<any>([ model1, model2 ]);
-    let result2: any = mapper.map(collection2, 'models');
-    let expected2: any = {
-      included: [
-        { id: '1', type: 'bars' }
-      ]
-    };
-    expect(_.matches(expected2)(result2)).toBe(true);
+    // model2, model1 -> works
+    let collection2: Collection = bookshelf.Collection.forge<any>([model2, model1]);
 
-    let collection3: Collection = bookshelf.Collection.forge<any>([ model2, model1 ]);
-    let result3: any = mapper.map(collection3, 'models');
-    let expected3: any = {
-      included: [
-        { id: '1', type: 'bars' }
-      ]
+    let result2: any = mapper.map(collection2, 'model');
+
+    let expected2: any = {
+      included: [{
+        type: 'foos',
+        id: '2973'
+      }, {
+        type: 'bars',
+        id: '59'
+      }]
     };
-    expect(_.matches(expected3)(result3)).toBe(true);
+
+    expect(_.matches(expected2)(result2)).toBe(true);
 
   });
 });
