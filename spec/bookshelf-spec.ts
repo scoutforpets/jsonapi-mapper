@@ -1693,6 +1693,23 @@ describe('Serializer options', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should not overwrite keyForAttribute function passed to serializer', () => {
+    mapper = new Mapper.Bookshelf(domain, {keyForAttribute: _.kebabCase});
+
+    let model: Model = bookshelf.Model.forge<any>({id: '5', oneAttr: 'value'});
+    let result: any = mapper.map(model, 'model');
+
+    let expected: any = {
+      data: {
+        attributes: {
+          'one-attr': 'value'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should overwrite pluralizeType option passed to serializer', () => {
     mapper = new Mapper.Bookshelf(domain, {pluralizeType: false});
 
