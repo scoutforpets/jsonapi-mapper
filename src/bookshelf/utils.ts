@@ -199,7 +199,7 @@ export function toJSON(data: Data): any {
   let json: any = null;
 
   if (isModel(data)) {
-    json = data.serialize({shallow: true}); // serialize without the relations
+    json = data.toJSON({shallow: true}); // serialize without the relations
 
     // Assign the id for the model if it's not present already
     if (!has(json, 'id')) { json.id = data.id; }
