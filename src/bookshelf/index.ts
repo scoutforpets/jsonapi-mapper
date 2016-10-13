@@ -46,7 +46,7 @@ export default class Bookshelf implements Mapper {
     let typeForAttribute: (attr: string) => string;
 
     if (typeof typeForModel === 'function') {
-      typeForAttribute = typeForModel as ((attr: string) => string); // XXX remove `as ...` in typescript 2
+      typeForAttribute = typeForModel;
     } else {
       // if the typeForModel object returns a falsy value, pluralize the attribute
       typeForAttribute = (attr: string) =>  typeForModel[attr] || plural(attr);
