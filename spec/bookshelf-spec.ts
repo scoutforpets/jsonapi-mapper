@@ -1727,6 +1727,132 @@ describe('Serializer options', () => {
 
 });
 
+describe('Plugins', () => {
+  let bookshelf: bs;
+  let mapper: Mapper.Bookshelf;
+  let domain: string = 'https://domain.com';
+
+  beforeAll(() => {
+    bookshelf = bs(knex(({} as knex.Config)));
+    bookshelf.plugin('visibility');
+    mapper = new Mapper.Bookshelf(domain);
+  });
+
+  afterAll((done: Function) => {
+    bookshelf.knex.destroy(done);
+  });
+
+  describe('Visibility', () => {
+
+    it('should respect the visible property', () => {
+      let topModel: any = bookshelf.Model.extend<any>({
+        visible : ['first_name', 'last_name']
+      });
+      let relModel: any = bookshelf.Model.extend<any>({
+        visible : ['description']
+      });
+
+      let model: Model = topModel.forge({
+        id: 1,
+        first_name: 'Joe',
+        last_name: 'Doe',
+        email: 'joe@example.com'
+      });
+      (model as any).relations.foo = relModel.forge({
+        id: 2,
+        description: "Joe's foo",
+        secret: "Pls don't tell anyone"
+      });
+
+      let collection: Collection = bookshelf.Collection.forge<any>([ model ]);
+      let result: any = mapper.map(collection, 'model');
+      let expected: any = {
+        data: [{
+          type: 'models',
+          id: '1',
+          attributes: {
+            first_name: 'Joe',
+            last_name: 'Doe'
+          },
+          relationships: {
+            foo: {
+              data: {
+                type: 'foos',
+                id: '2'
+              }
+            }
+          }
+        }],
+        included: [{
+          type: 'foos',
+          id: '2',
+          attributes: {
+            description: "Joe's foo"
+          }
+        }]
+      };
+
+      expect(_.isMatch(result, expected)).toBe(true);
+      expect(_.keys(result.data[0].attributes)).toEqual(['first_name', 'last_name']);
+      expect(_.keys(result.included[0].attributes)).toEqual(['description']);
+    });
+
+    it('should respect the hidden property', () => {
+      let topModel: any = bookshelf.Model.extend<any>({
+        hidden : ['email']
+      });
+      let relModel: any = bookshelf.Model.extend<any>({
+        hidden : ['secret']
+      });
+
+      let model: Model = topModel.forge({
+        id: 1,
+        first_name: 'Joe',
+        last_name: 'Doe',
+        email: 'joe@example.com'
+      });
+      (model as any).relations.foo = relModel.forge({
+        id: 2,
+        description: "Joe's foo",
+        secret: "Pls don't tell anyone"
+      });
+
+      let collection: Collection = bookshelf.Collection.forge<any>([ model ]);
+      let result: any = mapper.map(collection, 'model');
+      let expected: any = {
+        data: [{
+          type: 'models',
+          id: '1',
+          attributes: {
+            first_name: 'Joe',
+            last_name: 'Doe'
+          },
+          relationships: {
+            foo: {
+              data: {
+                type: 'foos',
+                id: '2'
+              }
+            }
+          }
+        }],
+        included: [{
+          type: 'foos',
+          id: '2',
+          attributes: {
+            description: "Joe's foo"
+          }
+        }]
+      };
+
+      expect(_.isMatch(result, expected)).toBe(true);
+      expect(_.keys(result.data[0].attributes)).toEqual(['first_name', 'last_name']);
+      expect(_.keys(result.included[0].attributes)).toEqual(['description']);
+    });
+
+  });
+});
+
 describe('Issues', () => {
   let bookshelf: bs;
   let mapper: Mapper.Bookshelf;
