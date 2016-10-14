@@ -1947,4 +1947,49 @@ describe('Issues', () => {
     expect(_.matches(expected2)(result2)).toBe(true);
 
   });
+
+  it('#81', () => {
+
+    let user: Model = bookshelf.Model.forge<any>({
+      id: 1,
+      email: 'email@gmail.com',
+      first_name: 'Ad',
+      last_name: 'Oner',
+      org_id: 1,
+      connect_type: '',
+      created_at: '2016-07-04T10:48:27.000Z',
+      updated_at: '2016-10-09T19:10:38.000Z'
+    });
+    (user as any).relations.organization = bookshelf.Model.forge<any>({
+      'id': 1,
+      phone: '',
+      company_name: 'MyCompany',
+      created_at: '2016-07-04T10:46:53.000Z',
+      updated_at: '2016-07-04T10:46:53.000Z'
+    });
+
+    let result: any = mapper.map(user, 'user');
+    let expected: any = {
+      data: {
+        type: 'users',
+        id: '1',
+        relationships: {
+          organization: {
+            data: {
+              type: 'organizations',
+              id: '1'
+            }
+          }
+        }
+      },
+      included: [{
+        type: 'organizations',
+        id: '1'
+      }]
+    };
+
+    expect(_.isMatch(result, expected)).toBe(true);
+
+  });
+
 });
