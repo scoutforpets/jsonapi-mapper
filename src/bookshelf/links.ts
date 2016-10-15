@@ -43,10 +43,14 @@ export function topLinks(linkOpts: LinkOpts): LinkObj {
  * Create links object, for pagination links.
  * Since its used only inside other functions in this model, its not exported
  */
-function pagLinks(linkOpts: LinkOpts): LinkObj {
-  let { baseUrl, type, pag, query }: LinkOpts = linkOpts;
-  let { offset, limit, total }: PagOpts = pag;
+function pagLinks(linkOpts: LinkOpts): LinkObj | undefined {
+  let { baseUrl, type, pag, query = {} }: LinkOpts = linkOpts;
 
+  if (pag === undefined) {
+    return undefined;
+  }
+
+  let { offset, limit, total }: PagOpts = pag;
   // All links are based on the resource type
   let baseLink: string = urlConcat(baseUrl, plural(type));
 

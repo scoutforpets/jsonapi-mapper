@@ -3,7 +3,7 @@
 import { assign, defaultsDeep, identity } from 'lodash';
 import { pluralize as plural } from 'inflection';
 import { SerialOpts, Serializer } from 'jsonapi-serializer';
-import { Mapper } from '../interfaces';
+import { Mapper, MapOpts } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';
 
@@ -25,38 +25,40 @@ export default class Bookshelf implements Mapper {
    * The `any` type data source is set for typing compatibility, but must be removed if possible
    * TODO fix data any type
    */
-  map(data: Data | any, type: string, bookOpts: BookOpts = {}): any {
-
-    let linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: bookOpts.pagination };
+  map(data: Data | any, type: string, mapOpts: MapOpts = {}): any {
 
     // Set default values for the options
-    defaultsDeep(bookOpts, {
-      omitAttrs: [],
-      keyForAttr: identity,
-      relations: true,
-      typeForModel: (attr: string) => plural(attr),
-      enableLinks: true
-    });
+    const {
+      omitAttrs = [],
+      keyForAttr = identity,
+      relations = true,
+      typeForModel = (attr: string) => plural(attr),
+      enableLinks = true,
+      pagination,
+      query
+    }: MapOpts = mapOpts;
 
-    let info: Information = { bookOpts, linkOpts };
+    const bookOpts: BookOpts = {
+      omitAttrs, keyForAttr,
+      relations, typeForModel,
+      enableLinks, pagination, query
+    };
 
-    let template: SerialOpts = processData(info, data);
+    const linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: pagination };
 
-    let { typeForModel, keyForAttr }: BookOpts = bookOpts;
-    let typeForAttribute: (attr: string) => string;
+    const info: Information = { bookOpts, linkOpts };
+    const template: SerialOpts = processData(info, data);
 
-    if (typeof typeForModel === 'function') {
-      typeForAttribute = typeForModel;
-    } else {
-      // if the typeForModel object returns a falsy value, pluralize the attribute
-      typeForAttribute = (attr: string) =>  typeForModel[attr] || plural(attr);
-    }
+    const typeForAttribute: (attr: string) => string =
+      typeof typeForModel === 'function'
+        ? typeForModel as ((attr: string) => string)
+        : (attr: string) =>  typeForModel[attr] || plural(attr);  // pluralize when falsy
 
     // Override the template with the provided serializer options
     assign(template, { typeForAttribute, keyForAttribute: keyForAttr }, this.serialOpts);
 
     // Return the data in JSON API format
-    let json: any = toJSON(data);
+    const json: any = toJSON(data);
     return new Serializer(type, template).serialize(json);
   }
 }
