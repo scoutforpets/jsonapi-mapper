@@ -51,7 +51,7 @@ export default class Bookshelf implements Mapper {
 
     const typeForAttribute: (attr: string) => string =
       typeof typeForModel === 'function'
-        ? typeForModel as ((attr: string) => string)
+        ? typeForModel
         : (attr: string) =>  typeForModel[attr] || plural(attr);  // pluralize when falsy
 
     // Override the template with the provided serializer options
