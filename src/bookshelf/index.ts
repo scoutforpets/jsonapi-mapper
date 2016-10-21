@@ -31,7 +31,6 @@ export default class Bookshelf implements Mapper {
 
     // Set default values for the options
     defaultsDeep(bookOpts, {
-      omitAttrs: [],
       keyForAttr: identity,
       relations: true,
       typeForModel: (attr: string) => plural(attr),

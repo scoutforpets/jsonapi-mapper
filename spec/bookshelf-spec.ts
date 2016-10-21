@@ -404,6 +404,31 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
 
+  it('should stop omitting attributes that would be omitted', () => {
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let model: Model = customModel.forge({
+      email: 'email@example.com'
+    });
+
+    let result: any = mapper.map(model, 'models', { omitAttrs: [] });
+
+    let expected: any = {
+      data: {
+        id: 'email@example.com',
+        type: 'models',
+        attributes: {
+          email: 'email@example.com'
+        }
+      }
+    };
+
+    expect(_.isMatch(result, expected)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
   it('should serialize an empty collection', () => {
     let collection: Collection = bookshelf.Collection.forge<any>();
 
