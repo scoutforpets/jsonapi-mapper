@@ -404,6 +404,31 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
   });
 
+  it('should stop omitting attributes that would be omitted', () => {
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : 'email'
+    });
+
+    let model: Model = customModel.forge({
+      email: 'email@example.com'
+    });
+
+    let result: any = mapper.map(model, 'models', { omitAttrs: [] });
+
+    let expected: any = {
+      data: {
+        id: 'email@example.com',
+        type: 'models',
+        attributes: {
+          email: 'email@example.com'
+        }
+      }
+    };
+
+    expect(_.isMatch(result, expected)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
   it('should serialize an empty collection', () => {
     let collection: Collection = bookshelf.Collection.forge<any>();
 
@@ -1947,4 +1972,49 @@ describe('Issues', () => {
     expect(_.matches(expected2)(result2)).toBe(true);
 
   });
+
+  it('#81', () => {
+
+    let user: Model = bookshelf.Model.forge<any>({
+      id: 1,
+      email: 'email@gmail.com',
+      first_name: 'Ad',
+      last_name: 'Oner',
+      org_id: 1,
+      connect_type: '',
+      created_at: '2016-07-04T10:48:27.000Z',
+      updated_at: '2016-10-09T19:10:38.000Z'
+    });
+    (user as any).relations.organization = bookshelf.Model.forge<any>({
+      'id': 1,
+      phone: '',
+      company_name: 'MyCompany',
+      created_at: '2016-07-04T10:46:53.000Z',
+      updated_at: '2016-07-04T10:46:53.000Z'
+    });
+
+    let result: any = mapper.map(user, 'user');
+    let expected: any = {
+      data: {
+        type: 'users',
+        id: '1',
+        relationships: {
+          organization: {
+            data: {
+              type: 'organizations',
+              id: '1'
+            }
+          }
+        }
+      },
+      included: [{
+        type: 'organizations',
+        id: '1'
+      }]
+    };
+
+    expect(_.isMatch(result, expected)).toBe(true);
+
+  });
+
 });

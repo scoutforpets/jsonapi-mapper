@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, cloneDeep, differenceWith, includes, intersection, isNil,
+import { assign, clone, cloneDeep, differenceWith, includes, intersection,
          escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -125,12 +125,7 @@ function mergeSample(main: Sample, toMerge: Model): Sample {
  */
 function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
   let attrs: string[] = keys(data.attributes);
-  let { omitAttrs }: BookOpts = bookOpts;
-
-  // include the idAttribute in the list of attributes to omit
-  if (! isNil(data.idAttribute)) {
-    omitAttrs.push(data.idAttribute);
-  }
+  let { omitAttrs = [data.idAttribute] }: BookOpts = bookOpts;
 
   // Only return attributes that don't match any pattern passed by the user
   return differenceWith(attrs, omitAttrs,

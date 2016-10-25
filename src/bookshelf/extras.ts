@@ -12,7 +12,6 @@ import { RelationTypeOpt, RelationOpts } from '../relations';
 // Bookshelf Options
 export interface BookOpts extends MapOpts {
   // Attributes-related
-  omitAttrs: (RegExp | string)[];
   keyForAttr: (attr: string) => string;
 
   // Relations-related

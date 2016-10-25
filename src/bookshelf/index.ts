@@ -29,7 +29,7 @@ export default class Bookshelf implements Mapper {
 
     // Set default values for the options
     const {
-      omitAttrs = [],
+      omitAttrs,
       keyForAttr = identity,
       relations = true,
       typeForModel = (attr: string) => plural(attr),
