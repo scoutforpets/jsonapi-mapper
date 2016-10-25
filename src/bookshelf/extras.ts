@@ -7,9 +7,20 @@
 
 import { Model as BModel, Collection as BCollection } from 'bookshelf';
 import { MapOpts } from '../interfaces';
+import { RelationTypeOpt, RelationOpts } from '../relations';
 
 // Bookshelf Options
-export interface BookOpts extends MapOpts {}
+export interface BookOpts extends MapOpts {
+  // Attributes-related
+  keyForAttr: (attr: string) => string;
+
+  // Relations-related
+  relations: boolean | RelationOpts;
+  typeForModel: RelationTypeOpt;
+
+  // Links-related
+  enableLinks: boolean;
+}
 
 /**
  * Internal form of the relations property of bookshelf objects

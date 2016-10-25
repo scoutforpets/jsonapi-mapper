@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { assign, clone, cloneDeep, differenceWith, includes, intersection, isNil,
+import { assign, clone, cloneDeep, differenceWith, includes, intersection,
          escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
@@ -48,16 +48,16 @@ function processSample(info: Information, sample: Sample): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
   let { enableLinks }: BookOpts = bookOpts;
 
-  let template: SerialOpts = {};
-
-  // Add list of valid attributes
-  template.attributes = getAttrsList(sample, bookOpts);
+  let template: SerialOpts = {
+    // Add list of valid attributes
+    attributes: getAttrsList(sample, bookOpts)
+  };
 
   // Nested relations (recursive) template generation
   forOwn(sample.relations, (relSample: Sample, relName: string): void => {
     if (!relationAllowed(bookOpts, relName)) { return; }
 
-    let relLinkOpts: LinkOpts = assign<LinkOpts, any, LinkOpts>(clone(linkOpts), {type: relName});
+    let relLinkOpts: LinkOpts = assign(clone(linkOpts), {type: relName});
     let relTemplate: SerialOpts = processSample({bookOpts, linkOpts: relLinkOpts}, relSample);
     relTemplate.ref = 'id'; // Add reference in nested resources
 
@@ -73,7 +73,7 @@ function processSample(info: Information, sample: Sample): SerialOpts {
     }
 
     template[relName] = relTemplate;
-    template.attributes.push(relName);
+    (template.attributes as string[]).push(relName);
   });
 
   return template;
@@ -123,7 +123,7 @@ function mergeSample(main: Sample, toMerge: Model): Sample {
  * Retrieve model's attribute names
  * following filtering rules
  */
-function getAttrsList(data: Model, bookOpts: BookOpts): any {
+function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
   let attrs: string[] = keys(data.attributes);
   let { omitAttrs = [data.idAttribute] }: BookOpts = bookOpts;
 
@@ -153,7 +153,7 @@ function relationAllowed(bookOpts: BookOpts, relName: string): boolean {
     return relations;
   } else {
     let { fields }: RelationOpts = relations;
-    return isNil(fields) || includes(fields, relName);
+    return ! fields || includes(fields, relName);
   }
 }
 
@@ -174,7 +174,7 @@ function includeAllowed(bookOpts: BookOpts, relName: string): boolean {
       // If included is an array, only allow relations that are in that array
       let allowed: string[] = included;
 
-      if (! isNil(fields)) {
+      if (fields) {
         // If fields specified, ensure that the included relations
         // are listed as one of the relations to be serialized
         allowed = intersection(fields, included);

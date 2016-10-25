@@ -413,7 +413,8 @@ describe('Bookshelf Adapter', () => {
       email: 'email@example.com'
     });
 
-    let result: any = mapper.map(model, 'models', { omitAttrs: [] });
+    let result1: any = mapper.map(model, 'models', { omitAttrs: [] });
+    let result2: any = mapper.map(model, 'models', { omitAttrs: null });
 
     let expected: any = {
       data: {
@@ -425,8 +426,10 @@ describe('Bookshelf Adapter', () => {
       }
     };
 
-    expect(_.isMatch(result, expected)).toBe(true);
-    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+    expect(_.isMatch(result1, expected)).toBe(true);
+    expect(_.isMatch(result2, expected)).toBe(true);
+    expect(_.isEqual(result1.data.attributes, expected.data.attributes)).toBe(true);
+    expect(_.isEqual(result2.data.attributes, expected.data.attributes)).toBe(true);
   });
 
   it('should serialize an empty collection', () => {

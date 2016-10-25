@@ -9,10 +9,8 @@
   },
   "globalDependencies": {
     "inflection": "registry:dt/inflection#1.5.0+20160316155526",
+    "lodash": "registry:dt/lodash#4.14.0+20161004174455",
     "qs": "registry:dt/qs#6.2.0+20160707010053",
     "type-check": "registry:dt/type-check#0.3.1+20160317120654"
-  },
-  "dependencies": {
-    "lodash": "registry:npm/lodash#4.0.0+20160723033700"
   }
 }
