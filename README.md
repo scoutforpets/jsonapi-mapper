@@ -32,6 +32,9 @@ var mapper = new Mapper.Bookshelf('https://api.hotapp.com');
 return mapper.map(myData, 'appointment');
 ```
 
+## How can I contribute?
+God bless you if you're reading this! Check out our [Contributing page](https://github.com/scoutforpets/jsonapi-mapper/blob/master/CONTRIBUTING.md)
+
 ## Migrating from OhMyJSONAPI
 The migration process is painless:
 - Remove `oh-my-jsonapi` from your project.
