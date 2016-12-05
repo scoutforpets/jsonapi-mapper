@@ -7,7 +7,7 @@
 'use strict';
 
 import { assign, clone, cloneDeep, differenceWith, includes, intersection,
-         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
+         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce, pick } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
@@ -124,7 +124,14 @@ function mergeSample(main: Sample, toMerge: Model): Sample {
  * following filtering rules
  */
 function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
-  let attrs: string[] = keys(data.attributes);
+  let attrs: string[];
+
+  if (bookOpts.attributes) {
+    attrs = keys(pick(data.attributes, bookOpts.attributes));
+  } else {
+    attrs = keys(data.attributes);
+  }
+
   let { omitAttrs = [data.idAttribute] }: BookOpts = bookOpts;
 
   // Only return attributes that don't match any pattern passed by the user

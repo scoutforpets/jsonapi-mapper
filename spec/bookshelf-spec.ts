@@ -432,6 +432,33 @@ describe('Bookshelf Adapter', () => {
     expect(_.isEqual(result2.data.attributes, expected.data.attributes)).toBe(true);
   });
 
+  it('should only include attributes that match names passed by the user', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '4',
+      attr: 'value',
+      paid: true,
+      'related-id': 123,
+      'another_id': '456',
+      'someId': '890'
+    });
+
+    let result: any = mapper.map(model, 'models', { attributes: [ 'attr', 'paid' ] });
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          attr: 'value',
+          paid: true
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
   it('should serialize an empty collection', () => {
     let collection: Collection = bookshelf.Collection.forge<any>();
 
