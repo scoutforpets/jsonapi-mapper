@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "lib": ["es6"],
     "module": "commonjs",
     "outDir": "es5",
     "sourceMap": true,
