@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as bs from 'bookshelf';
 import * as knex from 'knex';
 
-import * as Mapper from '../src/mapper';
+import * as Mapper from '../src';
 
 type Model = bs.Model<any>;
 type Collection = bs.Collection<any>;

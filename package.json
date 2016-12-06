@@ -2,8 +2,8 @@
   "name": "jsonapi-mapper",
   "version": "1.0.0-beta.10",
   "description": "JSON API-Compliant Serialization for your ORM",
-  "main": "es5/src/mapper.js",
-  "types": "es5/src/mapper.d.ts",
+  "main": "es5/src/index.js",
+  "types": "es5/src/index.d.ts",
   "scripts": {
     "prepublish": "tsc",
     "pretest": "tsc",
