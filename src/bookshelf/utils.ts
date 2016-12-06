@@ -7,9 +7,8 @@
 import { assign, clone, cloneDeep, differenceWith, includes, intersection,
          escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 
-import { SerialOpts } from '../jsonapi-serializer';
-import { LinkOpts } from '../links';
-import { RelationOpts } from '../relations';
+import { LinkOpts, RelationOpts } from '../interfaces';
+import { SerialOpts } from '../serializer';
 import { topLinks, dataLinks, relationshipLinks, includedLinks } from './links';
 import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 
@@ -93,7 +92,7 @@ interface Sample extends Model {
  */
 function sample(data: Data): Sample {
   if (isModel(data)) {
-    // override type because we will ovewrite relations
+    // override type because we will overwrite relations
     const sampled: Sample = omit<Sample, Model>(clone(data), ['relations', 'attributes']);
     sampled.attributes = cloneDeep(data.attributes);
     sampled.relations = mapValues(data.relations, sample);

@@ -7,6 +7,5 @@ export {
   // Sequelize
 }
 
-// Export TS types for TS consumers
 export * from './interfaces';
-export * from './jsonapi-serializer';
+export * from './serializer';

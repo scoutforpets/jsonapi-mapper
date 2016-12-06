@@ -4,8 +4,7 @@
  */
 
 import { Model as BModel, Collection as BCollection } from 'bookshelf';
-import { MapOpts } from '../interfaces';
-import { RelationTypeOpt, RelationOpts } from '../relations';
+import { MapOpts, RelationTypeOpt, RelationOpts } from '../interfaces';
 
 // Bookshelf Options
 export interface BookOpts extends MapOpts {
