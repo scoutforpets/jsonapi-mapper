@@ -41,6 +41,7 @@
     "es5"
   ],
   "dependencies": {
+    "@types/bookshelf": "^0.8.34",
     "inflection": "1.10.0",
     "jsonapi-serializer": "^3.3.0",
     "lodash": "^4.14.2",
@@ -48,7 +49,6 @@
     "type-check": "^0.3.2"
   },
   "devDependencies": {
-    "@types/bookshelf": "^0.8.34",
     "@types/inflection": "^1.5.28",
     "@types/jasmine": "^2.5.38",
     "@types/knex": "0.0.36",
