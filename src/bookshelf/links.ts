@@ -4,7 +4,7 @@ import { stringify as queryParams } from 'qs';
 
 import { Model } from './extras';
 import { LinkOpts, PagOpts, QueryOpts } from '../links';
-import { LinkObj } from 'jsonapi-serializer';
+import { LinkObj } from '../jsonapi-serializer';
 
 function urlConcat(...parts: string[]): string {
   return parts.join('/');

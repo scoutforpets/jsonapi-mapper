@@ -1,6 +1,6 @@
 import { assign, identity } from 'lodash';
 import { pluralize as plural } from 'inflection';
-import { SerialOpts, Serializer } from 'jsonapi-serializer';
+import { SerialOpts, Serializer } from '../jsonapi-serializer';
 import { Mapper, MapOpts } from '../interfaces';
 import { Data, BookOpts } from './extras';
 import { LinkOpts } from '../links';

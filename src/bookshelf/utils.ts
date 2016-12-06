@@ -7,7 +7,7 @@
 import { assign, clone, cloneDeep, differenceWith, includes, intersection,
          escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 
-import { SerialOpts } from 'jsonapi-serializer';
+import { SerialOpts } from '../jsonapi-serializer';
 import { LinkOpts } from '../links';
 import { RelationOpts } from '../relations';
 import { topLinks, dataLinks, relationshipLinks, includedLinks } from './links';
