@@ -9,7 +9,7 @@ import { Information, processData, toJSON } from './utils';
 /**
  * Mapper class for Bookshelf sources
  */
-export default class Bookshelf implements Mapper {
+export class Bookshelf implements Mapper {
 
   /**
    * Standard constructor
