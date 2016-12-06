@@ -1,5 +1,3 @@
-'use strict';
-
 import Bookshelf from './bookshelf';
 
 export {

@@ -4,8 +4,6 @@
  * with the goal of simplifying the logic of the main 'map' method.
  */
 
-'use strict';
-
 import { assign, clone, cloneDeep, differenceWith, includes, intersection,
          escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce } from 'lodash';
 

@@ -3,8 +3,6 @@
  * behaviors and characteristics of the bookshelf API
  */
 
-'use strict';
-
 import { Model as BModel, Collection as BCollection } from 'bookshelf';
 import { MapOpts } from '../interfaces';
 import { RelationTypeOpt, RelationOpts } from '../relations';

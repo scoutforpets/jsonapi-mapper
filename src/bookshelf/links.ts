@@ -1,5 +1,3 @@
-'use strict';
-
 import { assign, omit, isEmpty } from 'lodash';
 import { pluralize as plural } from 'inflection';
 import { stringify as queryParams } from 'qs';
