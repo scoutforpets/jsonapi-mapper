@@ -492,6 +492,29 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should serialize a basic model without a top-level meta object', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '5',
+      name: 'A test model',
+      description: 'something to use as a test'
+    });
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        id: '5',
+        type: 'models',
+        attributes: {
+          name: 'A test model',
+          description: 'something to use as a test'
+        }
+      }
+    };
+
+    expect(_.has(result, 'meta')).toBe(false);
+  });
+
   it('should serialize a collection with a top-level meta object', () => {
     let elements: Model[] = _.range(5).map((num: number) => {
       return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
