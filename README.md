@@ -89,6 +89,7 @@ mapper#map(data, type, mapperOptions)
     - _(required)_ `offset` _(integer)_
     - _(required)_ `limit` _(integer)_
     - _(optional)_ `total` or `rowCount` _(integer)_
+  - _(optional)_ `meta` _(object)_: Top-level meta object to include in the document 
 
 # How can I contribute?
 The project is very open to collaboration from the public, especially on providing the groundwork for other ORM's (like [Sequelize](http://docs.sequelizejs.com/) or [Mongoose](http://mongoosejs.com/)). Just open a PR!
