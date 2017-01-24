@@ -140,7 +140,6 @@ function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
 
   let { attributes = { omit: [data.idAttribute]} }: BookOpts = bookOpts;
 
-  console.log(attributes);
   // cast it to the object version of the option
   if (attributes instanceof Array) {
     attributes = { include : attributes };
