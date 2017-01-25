@@ -6,12 +6,13 @@
 
 'use strict';
 
-import { assign, clone, cloneDeep, differenceWith, includes, intersection,
-         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce, pick } from 'lodash';
+import { assign, clone, cloneDeep, filter, includes, intersection,
+         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce, some } from 'lodash';
 
 import { SerialOpts } from 'jsonapi-serializer';
 import { LinkOpts } from '../links';
 import { RelationOpts } from '../relations';
+import { AttrMatcher, AttributesOpt } from '../interfaces';
 import { topLinks, dataLinks, relationshipLinks, includedLinks } from './links';
 import { BookOpts, Data, Model, isModel, isCollection } from './extras';
 
@@ -119,35 +120,47 @@ function mergeSample(main: Sample, toMerge: Model): Sample {
   return main;
 }
 
+function matches(matcher: AttrMatcher, str: string): boolean {
+  let reg: RegExp;
+
+  if (typeof matcher === 'string') {
+    reg = RegExp(`^${escapeRegExp(matcher)}$`);
+  } else {
+    reg = matcher;
+  }
+
+  return reg.test(str);
+}
 /**
  * Retrieve model's attribute names
  * following filtering rules
  */
 function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
-  let attrs: string[];
+  let attrs: string[] = keys(data.attributes);
 
-  if (bookOpts.attributes) {
-    attrs = keys(pick(data.attributes, bookOpts.attributes));
-  } else {
-    attrs = keys(data.attributes);
+  let { attributes = { omit: [data.idAttribute]} }: BookOpts = bookOpts;
+
+  // cast it to the object version of the option
+  if (attributes instanceof Array) {
+    attributes = { include : attributes };
   }
+  let { omit, include }: AttributesOpt = attributes;
 
-  let { omitAttrs = [data.idAttribute] }: BookOpts = bookOpts;
+  return filter(attrs, (attr: string) => {
+    let included: boolean = true;
+    let omitted: boolean = false;
 
-  // Only return attributes that don't match any pattern passed by the user
-  return differenceWith(attrs, omitAttrs,
-    (attr: string, omit: (RegExp | string)) => {
-      let reg: RegExp;
-
-      if (typeof omit === 'string') {
-        reg = RegExp(`^${escapeRegExp(omit)}$`);
-      } else {
-        reg = omit;
-      }
-
-      return reg.test(attr);
+    if (include) {
+      included = some(include, (m: AttrMatcher) => matches(m, attr));
     }
-  );
+
+    if (omit) {
+      omitted = some(omit, (m: AttrMatcher) => matches(m, attr));
+    }
+
+    // `omit` has more precedence than `include` option
+    return ! omitted && included;
+  });
 }
 
 /**

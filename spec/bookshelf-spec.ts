@@ -322,7 +322,7 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result2)).toBe(true);
   });
 
-  it('should omit the model idAttribute from the attributes', () => {
+  it('should omit the model idAttribute from the attributes by default', () => {
     let customModel: any = bookshelf.Model.extend<any>({
       idAttribute : 'email'
     });
@@ -360,7 +360,7 @@ describe('Bookshelf Adapter', () => {
       'someId': '890'
     });
 
-    let result: any = mapper.map(model, 'models', { omitAttrs: [/^id$/, /[_-]id$/, /Id$/] });
+    let result: any = mapper.map(model, 'models', { attributes: { omit: [/^id$/, /[_-]id$/, /Id$/] }});
 
     let expected: any = {
       data: {
@@ -386,7 +386,7 @@ describe('Bookshelf Adapter', () => {
       ids : [4, 5, 6]
     });
 
-    let result: any = mapper.map(model, 'models', { omitAttrs: ['id', 'to-omit'] });
+    let result: any = mapper.map(model, 'models', { attributes: { omit: ['id', 'to-omit'] } });
 
     let expected: any = {
       data: {
@@ -413,8 +413,7 @@ describe('Bookshelf Adapter', () => {
       email: 'email@example.com'
     });
 
-    let result1: any = mapper.map(model, 'models', { omitAttrs: [] });
-    let result2: any = mapper.map(model, 'models', { omitAttrs: null });
+    let result1: any = mapper.map(model, 'models', { attributes: { omit: [] } });
 
     let expected: any = {
       data: {
@@ -427,12 +426,92 @@ describe('Bookshelf Adapter', () => {
     };
 
     expect(_.isMatch(result1, expected)).toBe(true);
-    expect(_.isMatch(result2, expected)).toBe(true);
     expect(_.isEqual(result1.data.attributes, expected.data.attributes)).toBe(true);
-    expect(_.isEqual(result2.data.attributes, expected.data.attributes)).toBe(true);
   });
 
-  it('should only include attributes that match names passed by the user', () => {
+  it('should only include attributes that match regexes passed by the user', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '4',
+      Attr: 'value',
+      paid: true,
+      'related-id': 123,
+      'another_id': '456',
+      'someId': '890'
+    });
+
+    let result: any = mapper.map(model, 'models', { attributes: { include: [ /.*at.*/i ] } });
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          Attr: 'value',
+          'related-id': 123
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
+  it('should give more precedence to omit than include option for attributes', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '4',
+      Attr: 'value',
+      'related-id': 123,
+      'another_id': '456',
+      'someId': '890'
+    });
+
+    let result: any = mapper.map(model, 'models', { attributes: { omit: [ 'related-id' ], include: [ /id/i ] } });
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          id: '4',
+          'another_id': '456',
+          'someId': '890'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
+  it('passing attributes an array should be used as include the property', () => {
+    let model: Model = bookshelf.Model.forge<any>({
+      id: '4',
+      Attr: 'value',
+      'related-id': 123,
+      'another_id': '456',
+      'someId': '890'
+    });
+
+    let result: any = mapper.map(model, 'models', { attributes: [ /id/i ] });
+
+    let expected: any = {
+      data: {
+        id: '4',
+        type: 'models',
+        attributes: {
+          id: '4',
+          'related-id': 123,
+          'another_id': '456',
+          'someId': '890'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.isEqual(result.data.attributes, expected.data.attributes)).toBe(true);
+  });
+
+  it('should only include attributes that exactly equal strings passed by the user', () => {
     let model: Model = bookshelf.Model.forge<any>({
       id: '4',
       attr: 'value',

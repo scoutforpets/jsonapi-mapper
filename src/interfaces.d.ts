@@ -8,11 +8,17 @@ export interface Mapper {
   map(data: any, type: string, mapOpts?: MapOpts): any;
 }
 
+export type AttrMatcher = RegExp | string;
+
+export type AttributesOpt = {
+  omit?: AttrMatcher[],
+  include?: AttrMatcher[]
+};
+
 // Mapper Options
 export interface MapOpts {
   // Attributes-related
-  omitAttrs?: (RegExp | string)[] | null;
-  attributes?: string[] | null;
+  attributes?: AttrMatcher[] | AttributesOpt;
   keyForAttr?: (attr: string) => string;
 
   // Relations-related
