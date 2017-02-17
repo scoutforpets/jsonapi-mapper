@@ -41,22 +41,22 @@
     "es5"
   ],
   "dependencies": {
-    "@types/bookshelf": "^0.8.34",
-    "inflection": "1.10.0",
+    "@types/bookshelf": "^0.8.35",
+    "inflection": "1.12.0",
     "jsonapi-serializer": "^3.3.0",
-    "lodash": "^4.14.2",
-    "qs": "^6.2.1",
+    "lodash": "^4.17.4",
+    "qs": "^6.3.1",
     "type-check": "^0.3.2"
   },
   "devDependencies": {
     "@types/inflection": "^1.5.28",
-    "@types/jasmine": "^2.5.38",
-    "@types/knex": "0.0.36",
-    "@types/lodash": "^4.14.42",
+    "@types/jasmine": "^2.5.43",
+    "@types/knex": "0.0.41",
+    "@types/lodash": "4.14.51",
     "@types/qs": "^6.2.30",
-    "bookshelf": "^0.10.0",
-    "jasmine": "^2.5.2",
-    "knex": "^0.11.9",
-    "typescript": "^2.0.10"
+    "bookshelf": "^0.10.3",
+    "jasmine": "^2.5.3",
+    "knex": "^0.12.7",
+    "typescript": "~2.1.6"
   }
 }
