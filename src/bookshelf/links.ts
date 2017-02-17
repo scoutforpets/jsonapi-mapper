@@ -1,12 +1,10 @@
-'use strict';
-
 import { assign, omit, isEmpty } from 'lodash';
 import { pluralize as plural } from 'inflection';
 import { stringify as queryParams } from 'qs';
 
 import { Model } from './extras';
-import { LinkOpts, PagOpts, QueryOpts } from '../links';
-import { LinkObj } from 'jsonapi-serializer';
+import { LinkOpts, PagOpts, QueryOpts } from '../interfaces';
+import { LinkObj } from '../serializer';
 
 function urlConcat(...parts: string[]): string {
   return parts.join('/');
