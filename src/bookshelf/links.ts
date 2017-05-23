@@ -1,4 +1,4 @@
-import { assign, omit, isEmpty } from 'lodash';
+import { assign, omit, isEmpty, isNil } from 'lodash';
 import { pluralize as plural } from 'inflection';
 import { stringify as queryParams } from 'qs';
 
@@ -21,15 +21,15 @@ export function topLinks(linkOpts: LinkOpts): LinkObj {
   };
 
   // Build pagination if available
-  if (pag) {
+  if (!isNil(pag)) {
 
     // Support Bookshelf's built-in paging parameters
-    if (pag.rowCount) {
+    if (!isNil(pag.rowCount)) {
       pag.total = pag.rowCount;
     }
 
     // Only add pagination links when more than 1 page
-    if (pag.total > 0 && pag.total > pag.limit) {
+    if (!isNil(pag.total) && pag.total > 0 && pag.total > pag.limit) {
       assign(obj, pagLinks(linkOpts));
     }
   }
@@ -48,7 +48,7 @@ function pagLinks(linkOpts: LinkOpts): LinkObj | undefined {
     return undefined;
   }
 
-  let { offset, limit, total }: PagOpts = pag;
+  const { offset, limit, total}: PagOpts = pag;
   // All links are based on the resource type
   let baseLink: string = urlConcat(baseUrl, plural(type));
 

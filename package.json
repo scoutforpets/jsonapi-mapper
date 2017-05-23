@@ -52,11 +52,11 @@
     "@types/inflection": "^1.5.28",
     "@types/jasmine": "^2.5.43",
     "@types/knex": "0.0.41",
-    "@types/lodash": "4.14.51",
+    "@types/lodash": "^4.14.64",
     "@types/qs": "^6.2.30",
     "bookshelf": "^0.10.3",
     "jasmine": "^2.5.3",
     "knex": "^0.12.7",
-    "typescript": "~2.1.6"
+    "typescript": "^2.3.3"
   }
 }
