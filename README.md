@@ -75,7 +75,9 @@ mapper#map(data, type, mapperOptions)
 - `data` _(object)_: The data object from Bookshelf (either a Model or a Collection) to be serialized.
 - `type` _(string)_: The type of the resource being returned. For example, if you passed in an `Appointment` model, your `type` might be `appointment`.
 - _(optional)_ `mapperOptions` _(object)_:
-  - _(optional)_ `omitAttrs` _(RegExp | string)[]_: List of model attributes to omit from the resulting payload. For example, you may wish to exclude any foreign keys (as recommended by the JSON API-spec). Note: the model's `idAttribute` is automatically excluded by default.
+  - _(optional)_ `attributes` (object):
+    - _(optional)_ `omit` _(RegExp | string)[]_: List of model attributes to omit from the resulting payload. For example, you may wish to exclude any foreign keys (as recommended by the JSON API-spec). Note: the model's `idAttribute` is automatically excluded by default.
+    - _(optional)_ `include` _(RegExp | string)[]_: List of model attributes to explicitly include from the resulting payload.
   - _(optional)_ `keyForAttr` _(function (string => string))_: Function to customize the attributes keys. The function is passed as input the attribute key (`string`) and output the new attribute key (`string`).
   - _(optional)_ `relations` _(boolean | object)_: Flag to enable (`true`) or disable (`false`) serializing of related models on the response. Alternatively, you can provide an object containing the following options:
     - `included` _(boolean | string[])_ (default: `true`) - includes data for all relations in the response. You may optionally specify an array containing the names of specific relations to be included.

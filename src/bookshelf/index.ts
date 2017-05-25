@@ -26,7 +26,7 @@ export class Bookshelf implements Mapper {
 
     // Set default values for the options
     const {
-      omitAttrs,
+      attributes,
       keyForAttr = identity,
       relations = true,
       typeForModel = (attr: string) => plural(attr),
@@ -37,7 +37,7 @@ export class Bookshelf implements Mapper {
     }: MapOpts = mapOpts;
 
     const bookOpts: BookOpts = {
-      omitAttrs, keyForAttr,
+      attributes, keyForAttr,
       relations, typeForModel,
       enableLinks, pagination, query
     };
