@@ -2,13 +2,14 @@
   "name": "jsonapi-mapper",
   "version": "1.0.0-beta.10",
   "description": "JSON API-Compliant Serialization for your ORM",
-  "main": "es5/src/index.js",
-  "types": "es5/src/index.d.ts",
+  "main": "es5/index.js",
+  "types": "es5/index.d.ts",
   "scripts": {
-    "prepublish": "tsc",
-    "pretest": "tsc",
-    "test": "jasmine",
-    "tsc": "tsc"
+    "prebuild": "rm -rf es5 || true",
+    "build": "tsc -p tsconfig.publish.json",
+    "prepublish": "npm run build",
+    "pretest": "npm run build -- -p tsconfig.test.json",
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
