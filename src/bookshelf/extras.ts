@@ -35,6 +35,11 @@ export interface Attributes {
  */
 export interface Model extends BModel<any> {
   id: any;
+
+  // TODO: PR to fix Bookshelf types
+  // idAttribute?: string | string[];
+  idAttribute: any;
+
   attributes: Attributes;
   relations: RelationsObject;
 }

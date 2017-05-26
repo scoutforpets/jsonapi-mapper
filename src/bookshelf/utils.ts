@@ -4,8 +4,27 @@
  * with the goal of simplifying the logic of the main 'map' method.
  */
 
-import { assign, clone, cloneDeep, filter, includes, intersection,
-         escapeRegExp, forOwn, has, keys, mapValues, merge, omit, reduce, some } from 'lodash';
+import {
+  assign,
+  clone,
+  cloneDeep,
+  filter,
+  includes,
+  intersection,
+  isArray,
+  isString,
+  isUndefined,
+  escapeRegExp,
+  forOwn,
+  has,
+  keys,
+  map,
+  mapValues,
+  merge,
+  omit,
+  reduce,
+  some
+} from 'lodash';
 
 import { LinkOpts, RelationOpts } from '../interfaces';
 import { SerialOpts } from '../serializer';
@@ -133,9 +152,16 @@ function matches(matcher: AttrMatcher, str: string): boolean {
  * following filtering rules
  */
 function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
+  let idAttr: undefined | string | string[] = data.idAttribute;
+  if (isString(idAttr)) {
+    idAttr = [ idAttr ];
+  } else if (isUndefined(idAttr)) {
+    idAttr = [];
+  }
+
   let attrs: string[] = keys(data.attributes);
 
-  let { attributes = { omit: [data.idAttribute]} }: BookOpts = bookOpts;
+  let { attributes = { omit: idAttr } }: BookOpts = bookOpts;
 
   // cast it to the object version of the option
   if (attributes instanceof Array) {
@@ -213,8 +239,17 @@ export function toJSON(data: Data): any {
   if (isModel(data)) {
     json = data.toJSON({shallow: true}); // serialize without the relations
 
+    // When idAttribute is a composite id, calling .id returns `undefined`
+    const idAttr: undefined | string | string[] = data.idAttribute;
+    if (isArray(idAttr)) {
+      // the id will be the values in order separated by comma
+      data.id = map(idAttr, (attr: string) => data.attributes[attr]).join(',');
+    }
+
     // Assign the id for the model if it's not present already
-    if (!has(json, 'id')) { json.id = data.id; }
+    if (! has(json, 'id')) {
+      json.id = data.id;
+    }
 
     // Loop over model relations to call toJSON recursively on them
     forOwn(data.relations, function (relData: Data, relName: string): void {
