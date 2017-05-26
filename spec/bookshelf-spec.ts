@@ -73,6 +73,31 @@ describe('Bookshelf Adapter', () => {
     expect(_.matches(expected)(result)).toBe(true);
   });
 
+  it('should serialize a basic model with custom array of id attributes', () => {
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : ['email', 'name']
+    });
+
+    let model: any = customModel.forge({
+      email : 'foo@example.com',
+      name: 'A test model',
+      description: 'something to use as a test'
+    });
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        id: 'foo@example.com,A test model',
+        type: 'models',
+        attributes: {
+          description: 'something to use as a test'
+        }
+      }
+    };
+    expect(_.matches(expected)(result)).toBe(true);
+  });
+
   it('should serialize related model with custom id attribute in relationships object', () => {
 
     let customModel: any = bookshelf.Model.extend<any>({
@@ -348,6 +373,32 @@ describe('Bookshelf Adapter', () => {
 
     expect(_.matches(expected)(result)).toBe(true);
     expect(_.has(result.data.attributes, 'email')).toBe(false);
+  });
+
+  it('should omit the model idAttribute from the attributes by default with array idAttribute', () => {
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : ['email', 'name']
+    });
+
+    let model: any = customModel.forge({
+      email : 'foo@example.com',
+      name : 'A test model',
+      description: 'something to use as a test'
+    });
+
+    let result: any = mapper.map(model, 'models');
+
+    let expected: any = {
+      data: {
+        attributes: {
+          description: 'something to use as a test'
+        }
+      }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+    expect(_.has(result.data.attributes, 'email')).toBe(false);
+    expect(_.has(result.data.attributes, 'name')).toBe(false);
   });
 
   it('should omit attributes that match regexes passed by the user', () => {
@@ -1415,6 +1466,62 @@ describe('Bookshelf relations', () => {
                 }
             }
         }
+    };
+
+    expect(_.matches(expected)(result)).toBe(true);
+
+  });
+
+  it('should support including nested relationships', () => {
+
+    let customModel: any = bookshelf.Model.extend<any>({
+      idAttribute : ['id1', 'id2']
+    });
+
+    let model1: Model = bookshelf.Model.forge<any>({id: '5', attr: 'value'});
+    let model2: Model = bookshelf.Model.forge<any>({id: '6', attr: 'value'});
+    let model3: Model = customModel.forge({id1: '7', id2: '8', attr: 'value'});
+
+    (model1 as any).relations['related-model'] = model2;
+    (model2 as any).relations['nested-related-model'] = model3;
+
+    let result: any = mapper.map(model1, 'models');
+
+    let expected: any = {
+      included: [
+        {
+          id: '6',
+          type: 'related-models',
+          attributes: {
+            attr: 'value'
+          },
+          relationships: {
+              'nested-related-model': {
+                  data: {
+                      type: 'nested-related-models',
+                      id: '7,8'
+                  }
+              }
+          }
+        },
+        {
+          id: '7,8',
+          type: 'nested-related-models',
+          attributes: {
+            attr: 'value'
+          }
+        }
+      ],
+      data: {
+          relationships: {
+              'related-model': {
+                  data: {
+                      type: 'related-models',
+                      id: '6'
+                  }
+              }
+          }
+      }
     };
 
     expect(_.matches(expected)(result)).toBe(true);
