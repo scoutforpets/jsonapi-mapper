@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-mapper",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "description": "JSON API-Compliant Serialization for your ORM",
   "main": "es5/index.js",
   "types": "es5/index.d.ts",
