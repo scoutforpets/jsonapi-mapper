@@ -100,4 +100,4 @@ The project source has been recently rewritten using [Typescript](http://www.typ
 
 # Credits
 - Thanks to [@Seyz](https://github.com/SeyZ/). Without his work, the project would not be possible.
-- Thanks to the [ZOI Travel team](https://github.com/zoitravel) (especially [@ShadowManu](https://github.com/shadowmanu)) for their hard work in migrating the codebase to Typescript and writing a comprehensive test suite.
+- Thanks to the [zomoz team](https://github.com/zomoz) (especially [@ShadowManu](https://github.com/shadowmanu)) for their hard work in migrating the codebase to Typescript and writing a comprehensive test suite.
