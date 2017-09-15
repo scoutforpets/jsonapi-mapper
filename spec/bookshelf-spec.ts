@@ -2305,4 +2305,161 @@ describe('Issues', () => {
 
   });
 
+  describe('#35', () => {
+    beforeAll(() => {
+      bookshelf.plugin('virtuals');
+      mapper = new Mapper.Bookshelf(domain);
+    })
+
+    it('should return virtuals', () => {
+      let userModel: any = bookshelf.Model.extend<any>({
+        virtuals: {
+          full_name: function(this: Model) {
+            return `${this.get('first_name')} ${this.get('last_name')}`
+          }
+        }
+      });
+
+      let user: Model = userModel.forge({
+        id: 1,
+        first_name: 'Al',
+        last_name: 'Bundy'
+      });
+
+      let result: any = mapper.map(user, 'user')
+      let expected: any = {
+        links: {
+          self: 'https://domain.com/users'
+        },
+        data: {
+          type: 'users',
+          id: '1',
+          links: {
+            self: 'https://domain.com/users/1'
+          },
+          attributes: {
+            first_name: 'Al',
+            last_name: 'Bundy',
+            full_name: 'Al Bundy'
+          }
+        }
+      }
+
+      expect(_.isMatch(result, expected)).toBe(true)
+    })
+
+    it('shouldn\'t return virtuals if outputVirtuals is set to false', () => {
+      let userModel: any = bookshelf.Model.extend<any>({
+        virtuals: {
+          full_name: function(this: Model) {
+            return `${this.get('first_name')} ${this.get('last_name')}`
+          }
+        },
+        outputVirtuals: false
+      });
+
+      let user: Model = userModel.forge({
+        id: 1,
+        first_name: 'Al',
+        last_name: 'Bundy'
+      });
+
+      let result: any = mapper.map(user, 'user')
+      let expected: any = {
+        links: {
+          self: 'https://domain.com/users'
+        },
+        data: {
+          type: 'users',
+          id: '1',
+          links: {
+            self: 'https://domain.com/users/1'
+          },
+          attributes: {
+            first_name: 'Al',
+            last_name: 'Bundy'
+          }
+        }
+      }
+
+      expect(_.isMatch(result, expected)).toBe(true)
+    })
+
+    it('outputVirtuals as mapper option should override the default outputVirtuals', () => {
+      let userModel1: any = bookshelf.Model.extend<any>({
+        virtuals: {
+          full_name: function(this: Model) {
+            return `${this.get('first_name')} ${this.get('last_name')}`
+          }
+        },
+        outputVirtuals: false
+      });
+
+      let userModel2: any = bookshelf.Model.extend<any>({
+        virtuals: {
+          full_name: function(this: Model) {
+            return `${this.get('first_name')} ${this.get('last_name')}`
+          }
+        },
+        outputVirtuals: true
+      });
+
+      let user1: Model = userModel1.forge({
+        id: 1,
+        first_name: 'Al',
+        last_name: 'Bundy'
+      });
+
+      let user2: Model = userModel1.forge({
+        id: 1,
+        first_name: 'Al',
+        last_name: 'Bundy'
+      });
+
+      let result1_with: any = mapper.map(user1, 'user', {outputVirtuals: true})
+      let result1_without: any = mapper.map(user1, 'user', {outputVirtuals: false})
+      let result2_with: any = mapper.map(user2, 'user', {outputVirtuals: true})
+      let result2_without: any = mapper.map(user2, 'user', {outputVirtuals: false})
+
+      let expected_with: any = {
+        links: {
+          self: 'https://domain.com/users'
+        },
+        data: {
+          type: 'users',
+          id: '1',
+          links: {
+            self: 'https://domain.com/users/1'
+          },
+          attributes: {
+            first_name: 'Al',
+            last_name: 'Bundy'
+          }
+        }
+      }
+
+      let expected_without: any = {
+        links: {
+          self: 'https://domain.com/users'
+        },
+        data: {
+          type: 'users',
+          id: '1',
+          links: {
+            self: 'https://domain.com/users/1'
+          },
+          attributes: {
+            first_name: 'Al',
+            last_name: 'Bundy'
+          }
+        }
+      }
+
+      expect(_.isMatch(result1_with, expected_with)).toBe(true)
+      expect(_.isMatch(result2_with, expected_with)).toBe(true)
+      expect(_.isMatch(result1_without, expected_without)).toBe(true)
+      expect(_.isMatch(result2_without, expected_without)).toBe(true)
+    })
+  })
+
 });

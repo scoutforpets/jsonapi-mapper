@@ -33,13 +33,15 @@ export class Bookshelf implements Mapper {
       enableLinks = true,
       pagination,
       query,
-      meta
+      meta,
+      outputVirtuals
     }: MapOpts = mapOpts;
 
     const bookOpts: BookOpts = {
       attributes, keyForAttr,
       relations, typeForModel,
-      enableLinks, pagination, query
+      enableLinks, pagination,
+      query, outputVirtuals
     };
 
     const linkOpts: LinkOpts = { baseUrl: this.baseUrl, type, pag: pagination };
