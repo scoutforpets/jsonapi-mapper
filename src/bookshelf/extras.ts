@@ -19,7 +19,7 @@ export interface BookOpts extends MapOpts {
   enableLinks: boolean;
 
   // Virtuals-related;
-  outputVirtuals: boolean | undefined;
+  outputVirtuals?: boolean;
 }
 
 /**
@@ -45,8 +45,8 @@ export interface Model extends BModel<any> {
 
   attributes: Attributes;
   relations: RelationsObject;
-  virtuals: any | undefined;
-  outputVirtuals: boolean | undefined;
+  virtuals?: any;
+  outputVirtuals?: boolean;
 }
 
 /**
