@@ -32,4 +32,7 @@ export interface MapOpts {
 
   // Meta-related
   meta?: { [key:string]: any };
+
+  // Virtuals-related
+  outputVirtuals?: boolean;
 }

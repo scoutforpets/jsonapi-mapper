@@ -12,6 +12,7 @@ import {
   includes,
   intersection,
   isArray,
+  isNil,
   isString,
   isUndefined,
   escapeRegExp,
@@ -160,6 +161,15 @@ function getAttrsList(data: Model, bookOpts: BookOpts): string[] {
   }
 
   let attrs: string[] = keys(data.attributes);
+  let outputVirtuals = data.outputVirtuals;
+
+  if (!isNil(bookOpts.outputVirtuals)) {
+    outputVirtuals = bookOpts.outputVirtuals
+  }
+
+  if (data.virtuals && outputVirtuals) {
+    attrs = attrs.concat(keys(data.virtuals))
+  }
 
   let { attributes = { omit: idAttr } }: BookOpts = bookOpts;
 
