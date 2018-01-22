@@ -1,0 +1,23 @@
+# EditorConfig: http://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# For all files
+[*]
+charset = utf-8
+# Unix-style newlines
+end_of_line = lf
+# Whitespace handling
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# TypeScript
+[*.ts]
+indent_style = space
+indent_size = 2
+
+# JSON
+[*.json]
+indent_style = space
+indent_size = 2
