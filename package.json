@@ -42,22 +42,22 @@
     "es5"
   ],
   "dependencies": {
-    "@types/bookshelf": "^0.9.6",
+    "@types/bookshelf": "0.9.7",
     "inflection": "1.12.0",
-    "jsonapi-serializer": "^3.3.0",
-    "lodash": "^4.17.4",
-    "qs": "^6.3.1",
-    "type-check": "^0.3.2"
+    "jsonapi-serializer": "3.5.6",
+    "lodash": "4.17.4",
+    "qs": "6.5.1",
+    "type-check": "0.3.2"
   },
   "devDependencies": {
-    "@types/inflection": "^1.5.28",
-    "@types/jasmine": "^2.5.43",
+    "@types/inflection": "1.5.28",
+    "@types/jasmine": "2.8.4",
     "@types/knex": "0.0.61",
-    "@types/lodash": "^4.14.64",
-    "@types/qs": "^6.2.30",
-    "bookshelf": "^0.10.3",
-    "jasmine": "^2.5.3",
-    "knex": "^0.13.0",
-    "typescript": "^2.3.3"
+    "@types/lodash": "4.14.93",
+    "@types/qs": "6.5.1",
+    "bookshelf": "0.10.4",
+    "jasmine": "2.9.0",
+    "knex": "0.13.0",
+    "typescript": "2.6.2"
   }
 }
