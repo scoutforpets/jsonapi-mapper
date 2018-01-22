@@ -696,6 +696,47 @@ describe('Bookshelf Adapter', () => {
 
     expect(_.matches(expected)(result)).toBe(true);
   });
+
+  describe('should serialize id as string', () => {
+
+    it('for basic model', () => {
+      let model: Model = bookshelf.Model.forge<any>({ id: 5 });
+
+      let result: any = mapper.map(model, 'models');
+
+      expect(result.data.id).toBe('5');
+      expect(typeof result.data.id).toBe('string');
+    });
+
+    it('for collection', () => {
+      let elements: Model[] = _.times(5, (num) => {
+        return bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+      });
+
+      let collection: Collection = bookshelf.Collection.forge<any>(elements);
+
+      let result: any = mapper.map(collection, 'models');
+
+      _.times(5, (num) => {
+        expect(result.data[num].id).toBe(num.toString());
+        expect(typeof result.data[num].id).toBe('string');
+      });
+    });
+
+    it('for relationships', () => {
+      let model: Model = bookshelf.Model.forge<any>({id: 5, attr: 'value'});
+      (model as any).relations['related-model'] = bookshelf.Model.forge<any>({id: 10, attr2: 'value2'});
+
+      let result: any = mapper.map(model, 'model');
+
+      let related = result.data.relationships['related-model'];
+
+      expect(related.data.id).toBe('10');
+      expect(typeof related.data.id).toBe('string');
+
+    });
+
+  });
 });
 
 describe('Bookshelf links', () => {

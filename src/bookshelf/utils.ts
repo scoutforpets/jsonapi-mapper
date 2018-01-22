@@ -24,7 +24,9 @@ import {
   merge,
   omit,
   reduce,
-  some
+  some,
+  toString,
+  update
 } from 'lodash';
 
 import { LinkOpts, RelationOpts } from '../interfaces';
@@ -260,6 +262,8 @@ export function toJSON(data: Data): any {
     if (! has(json, 'id')) {
       json.id = data.id;
     }
+
+    update(json, 'id', toString);
 
     // Loop over model relations to call toJSON recursively on them
     forOwn(data.relations, function (relData: Data, relName: string): void {
