@@ -2221,131 +2221,6 @@ describe('Issues', () => {
     bookshelf.knex.destroy(done);
   });
 
-  it('#77', () => {
-
-    // model with full relations
-    let model1: Model = bookshelf.Model.forge<any>({
-      id: 14428,
-      foo_id: 2973,
-      bar_id: 59,
-      name: 'Bla #14428',
-      created_at: null,
-      updated_at: null,
-      deleted_at: null
-    });
-    (model1 as any).relations.foo = bookshelf.Model.forge<any>({
-      id: 2973,
-      name: 'Foo #2973',
-      created_at: null,
-      updated_at: null,
-      deleted_at: null
-    });
-    (model1 as any).relations.bar = bookshelf.Model.forge<any>({
-      id: 59,
-      foo_id: 2973,
-      name: 'Bar #59',
-      created_at: null,
-      updated_at: null,
-      deleted_at: null
-    });
-
-    // model with one relation bar_id = null
-    let model2: Model = bookshelf.Model.forge<any>({
-      id: 14417,
-      foo_id: 2973,
-      bar_id: null,
-      name: 'Bla #14417',
-      created_at: null,
-      updated_at: null,
-      deleted_at: null
-    });
-    (model2 as any).relations.foo = bookshelf.Model.forge<any>({
-      id: 2973,
-      name: 'Foo #2973',
-      created_at: null,
-      updated_at: null,
-      deleted_at: null
-    });
-    (model2 as any).relations.bar = bookshelf.Model.forge<any>({});
-
-    let collection1: Collection = bookshelf.Collection.forge<any>([
-      model1, model2
-    ]);
-    let result1: any = mapper.map(collection1, 'model');
-    let expected1: any = {
-      included: [{
-        type: 'foos',
-        id: '2973'
-      }, {
-        type: 'bars',
-        id: '59'
-      }]
-    };
-
-    expect(_.matches(expected1)(result1)).toBe(true);
-
-    let collection2: Collection = bookshelf.Collection.forge<any>([
-      model2, model1
-    ]);
-    let result2: any = mapper.map(collection2, 'model');
-    let expected2: any = {
-      included: [{
-        type: 'foos',
-        id: '2973'
-      }, {
-        type: 'bars',
-        id: '59'
-      }]
-    };
-
-    expect(_.matches(expected2)(result2)).toBe(true);
-
-  });
-
-  it('#81', () => {
-
-    let user: Model = bookshelf.Model.forge<any>({
-      id: 1,
-      email: 'email@gmail.com',
-      first_name: 'Ad',
-      last_name: 'Oner',
-      org_id: 1,
-      connect_type: '',
-      created_at: '2016-07-04T10:48:27.000Z',
-      updated_at: '2016-10-09T19:10:38.000Z'
-    });
-    (user as any).relations.organization = bookshelf.Model.forge<any>({
-      'id': 1,
-      phone: '',
-      company_name: 'MyCompany',
-      created_at: '2016-07-04T10:46:53.000Z',
-      updated_at: '2016-07-04T10:46:53.000Z'
-    });
-
-    let result: any = mapper.map(user, 'user');
-    let expected: any = {
-      data: {
-        type: 'users',
-        id: '1',
-        relationships: {
-          organization: {
-            data: {
-              type: 'organizations',
-              id: '1'
-            }
-          }
-        }
-      },
-      included: [{
-        type: 'organizations',
-        id: '1'
-      }]
-    };
-
-    expect(_.isMatch(result, expected)).toBe(true);
-
-  });
-
   describe('#35', () => {
     beforeAll(() => {
       bookshelf.plugin('virtuals');
@@ -2501,6 +2376,131 @@ describe('Issues', () => {
       expect(_.isMatch(result1_without, expected_without)).toBe(true)
       expect(_.isMatch(result2_without, expected_without)).toBe(true)
     })
-  })
+  });
+
+  it('#77', () => {
+
+    // model with full relations
+    let model1: Model = bookshelf.Model.forge<any>({
+      id: 14428,
+      foo_id: 2973,
+      bar_id: 59,
+      name: 'Bla #14428',
+      created_at: null,
+      updated_at: null,
+      deleted_at: null
+    });
+    (model1 as any).relations.foo = bookshelf.Model.forge<any>({
+      id: 2973,
+      name: 'Foo #2973',
+      created_at: null,
+      updated_at: null,
+      deleted_at: null
+    });
+    (model1 as any).relations.bar = bookshelf.Model.forge<any>({
+      id: 59,
+      foo_id: 2973,
+      name: 'Bar #59',
+      created_at: null,
+      updated_at: null,
+      deleted_at: null
+    });
+
+    // model with one relation bar_id = null
+    let model2: Model = bookshelf.Model.forge<any>({
+      id: 14417,
+      foo_id: 2973,
+      bar_id: null,
+      name: 'Bla #14417',
+      created_at: null,
+      updated_at: null,
+      deleted_at: null
+    });
+    (model2 as any).relations.foo = bookshelf.Model.forge<any>({
+      id: 2973,
+      name: 'Foo #2973',
+      created_at: null,
+      updated_at: null,
+      deleted_at: null
+    });
+    (model2 as any).relations.bar = bookshelf.Model.forge<any>({});
+
+    let collection1: Collection = bookshelf.Collection.forge<any>([
+      model1, model2
+    ]);
+    let result1: any = mapper.map(collection1, 'model');
+    let expected1: any = {
+      included: [{
+        type: 'foos',
+        id: '2973'
+      }, {
+        type: 'bars',
+        id: '59'
+      }]
+    };
+
+    expect(_.matches(expected1)(result1)).toBe(true);
+
+    let collection2: Collection = bookshelf.Collection.forge<any>([
+      model2, model1
+    ]);
+    let result2: any = mapper.map(collection2, 'model');
+    let expected2: any = {
+      included: [{
+        type: 'foos',
+        id: '2973'
+      }, {
+        type: 'bars',
+        id: '59'
+      }]
+    };
+
+    expect(_.matches(expected2)(result2)).toBe(true);
+
+  });
+
+  it('#81', () => {
+
+    let user: Model = bookshelf.Model.forge<any>({
+      id: 1,
+      email: 'email@gmail.com',
+      first_name: 'Ad',
+      last_name: 'Oner',
+      org_id: 1,
+      connect_type: '',
+      created_at: '2016-07-04T10:48:27.000Z',
+      updated_at: '2016-10-09T19:10:38.000Z'
+    });
+    (user as any).relations.organization = bookshelf.Model.forge<any>({
+      'id': 1,
+      phone: '',
+      company_name: 'MyCompany',
+      created_at: '2016-07-04T10:46:53.000Z',
+      updated_at: '2016-07-04T10:46:53.000Z'
+    });
+
+    let result: any = mapper.map(user, 'user');
+    let expected: any = {
+      data: {
+        type: 'users',
+        id: '1',
+        relationships: {
+          organization: {
+            data: {
+              type: 'organizations',
+              id: '1'
+            }
+          }
+        }
+      },
+      included: [{
+        type: 'organizations',
+        id: '1'
+      }]
+    };
+
+    expect(_.isMatch(result, expected)).toBe(true);
+
+  });
 
 });
