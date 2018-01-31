@@ -2503,4 +2503,54 @@ describe('Issues', () => {
 
   });
 
+  describe('#101', () => {
+
+    it('should not replicate included complex object attributes', () => {
+      let elements: Model[] = _.range(3).map((num: number) => {
+        const model = bookshelf.Model.forge<any>({id: num, attr: 'value' + num});
+
+        (model as any).relations['related-model'] = bookshelf.Model.forge<any>({
+          id: num+1,
+          attr2: ['value' + (num+1), 'value' + (num*10)]
+        });
+
+
+        return model;
+      });
+
+      let collection: Collection = bookshelf.Collection.forge<any>(elements);
+      // console.log(JSON.stringify(collection.toJSON(), null, 2));
+
+      let result: any = mapper.map(collection, 'models');
+
+      let expectedIncluded: any = [
+        {
+          type: "related-models",
+          id: "1",
+          attributes: { attr2: [ "value1", "value0" ] },
+          links: { self: "https://domain.com/related-models/1" }
+        },
+        {
+          type: "related-models",
+          id: "2",
+          attributes: { attr2: [ "value2", "value10" ] },
+          links: { self: "https://domain.com/related-models/2" }
+        },
+        {
+          type: "related-models",
+          id: "3",
+          attributes: { attr2: [ "value3", "value20" ] },
+          links: { self: "https://domain.com/related-models/3" }
+        }
+      ];
+
+      // console.log(JSON.stringify(expectedIncluded, null, 2));
+      // console.log(JSON.stringify(result.included, null, 2));
+      expect(result.included).toEqual(expectedIncluded);
+      expect(_.matches(expectedIncluded)(result.included)).toBe(true);
+
+    });
+
+  });
+
 });
