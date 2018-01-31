@@ -116,9 +116,9 @@ interface Sample extends Model {
 function sample(data: Data): Sample {
   if (isModel(data)) {
     // Override type because we will overwrite relations
-    const sampled: Sample = omit(clone(data), ['relations', 'attributes']) as Sample;
-    sampled.attributes = cloneDeep(data.attributes);
+    const sampled: Sample = cloneDeep(omit(data, 'relations')) as Sample;
     sampled.relations = mapValues(data.relations, sample);
+
     return sampled;
   } else if (isCollection(data)) {
     const first: Model = data.head();
