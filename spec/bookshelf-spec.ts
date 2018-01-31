@@ -2519,7 +2519,6 @@ describe('Issues', () => {
       });
 
       let collection: Collection = bookshelf.Collection.forge<any>(elements);
-      // console.log(JSON.stringify(collection.toJSON(), null, 2));
 
       let result: any = mapper.map(collection, 'models');
 
@@ -2544,8 +2543,6 @@ describe('Issues', () => {
         }
       ];
 
-      // console.log(JSON.stringify(expectedIncluded, null, 2));
-      // console.log(JSON.stringify(result.included, null, 2));
       expect(result.included).toEqual(expectedIncluded);
       expect(_.matches(expectedIncluded)(result.included)).toBe(true);
 
