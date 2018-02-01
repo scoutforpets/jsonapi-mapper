@@ -1,3 +1,5 @@
+"use strict"
+
 const _ = require('lodash')
 const Bookshelf = require('bookshelf')
 const knex = require('knex')
