@@ -8,7 +8,7 @@
     "prebuild": "rm -rf es5 || true",
     "build": "tsc -p tsconfig.publish.json",
     "prepublish": "npm run build",
-    "pretest": "npm run build -- -p tsconfig.test.json",
+    "pretest": "npm run build -- -p tsconfig.test.json && cpx ./spec/bookshelf-es6-spec.js ./es5/spec",
     "test": "jasmine"
   },
   "repository": {
