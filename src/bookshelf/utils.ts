@@ -118,7 +118,9 @@ function sample(data: Data): Sample {
     // Override type because we will overwrite relations
     const sampled: Sample = cloneDeep(omit(data, 'relations')) as Sample;
     sampled.relations = mapValues(data.relations, sample);
-
+    if (!isUndefined(data.virtuals)) {
+      sampled.virtuals = cloneDeep(data.virtuals);
+    }
     return sampled;
   } else if (isCollection(data)) {
     const first: Model = data.head();
