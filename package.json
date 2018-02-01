@@ -8,7 +8,7 @@
     "prebuild": "rm -rf es5 || true",
     "build": "tsc -p tsconfig.publish.json",
     "prepublish": "npm run build",
-    "pretest": "npm run build -- -p tsconfig.test.json && cpx ./spec/bookshelf-es6-spec.js ./es5/spec",
+    "pretest": "npm run build -- -p tsconfig.test.json && ./node_modules/.bin/cpx ./spec/bookshelf-es6-spec.js ./es5/spec",
     "test": "jasmine"
   },
   "repository": {
@@ -60,6 +60,7 @@
     "@types/lodash": "4.14.93",
     "@types/qs": "6.5.1",
     "bookshelf": "0.10.4",
+    "cpx": "^1.5.0",
     "jasmine": "2.9.0",
     "knex": "0.13.0",
     "typescript": "2.6.2"
